@@ -276,7 +276,7 @@ class Core:
                 await ctx.send("Alright then.")
         except asyncio.TimeoutError:
             await ctx.send("I won't leave any server then.")
-$
+
     @commands.command()
     @checks.is_owner()
     async def load(self, ctx, *, cog_name: str):
