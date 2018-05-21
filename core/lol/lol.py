@@ -1,7 +1,6 @@
 import discord
-from discord.ext import commands
-from .utils.chat_formatting import escape_mass_mentions, italics, pagify
-from __main__ import send_cmd_help
+from redbot.core import commands
+from redbot.core.bot import Red
 import urllib.request
 from urllib.parse import quote_plus
 import datetime
@@ -14,6 +13,9 @@ import random
 #DEVELOP. suppreg moved to loldata.json and many more. CHANGE ALL JSON FILES!!!
 class Lol:
 
+        def __init__(self, bot: Red):
+        self.bot = bot
+
     @commands.group()
     @commands.guild_only()
     async def lol(self, ctx):
@@ -21,6 +23,7 @@ class Lol:
         if ctx.invoked_subcommand is None:
             await ctx.send_help()
 
+    @staticmethod
     def loldata(option):
         with open("loldata.json") as handler:
             raw = handler.read()
@@ -54,7 +57,7 @@ class Lol:
             await ctx.send(":x: *Missing Parameters: Region & Summoner*".format())
             return
         region = args[0]
-        if region not in suppreg:
+        if region not in self.loldata("region"):
             await ctx.send(":x: *The region code isn't correct senpai 7w7*".format())
             return
         if len(args) < 2:
@@ -65,7 +68,7 @@ class Lol:
         if len(args) == 2:
             summ = args[1]
         #reponse error handler
-        summhandler = requests.get("https://"+loldata("region")+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+summ+"?api_key="+loldata("key"))
+        summhandler = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+summ+"?api_key="+self.loldata("key"))
         if summhandler.status_code == 429:
             await ctx.send("*Too much requests, pls try again in 2 minutes* :sweat: ".format())
             return
@@ -77,11 +80,11 @@ class Lol:
             return
         summdata = summhandler.json()
 
-        elodatah = requests.get("https://"+loldata("region")+".api.riotgames.com/lol/league/v3/positions/by-summoner/"+summidstr+"?api_key="+loldata("key"))
+        elodatah = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/league/v3/positions/by-summoner/"+summidstr+"?api_key="+self.loldata("key"))
         elodata = elodatah.json()
-        malvlh = requests.get("https://"+loldata("region")+".api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/"+summidstr+"?api_key="+loldata("key"))
+        malvlh = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/"+summidstr+"?api_key="+self.loldata("key"))
         malvl = malvlh.json()
-        maestryh = requests.get("https://"+loldata("region")+".api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/"+summidstr+"?api_key="+loldata("key"))
+        maestryh = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/"+summidstr+"?api_key="+self.loldata("key"))
         maestry = maestryh.json()
         if elodatah.status_code == 503 or malvlh.status_code == 503 or maestryh.status_code == 503:
             await self.bot.say("*The Riot API is currently unavailable. Please try again later :persevere:*".format())
@@ -91,16 +94,16 @@ class Lol:
         mains = maestry[0:3]
         champsid = [d["championId"] for d in mains]
         for a in champsid:
-            mainchamps.append(loldata(champsid)[str(a)]) #mainchamps
+            mainchamps.append(self.loldata(champsid)[str(a)]) #mainchamps
         rolcounts = {'Assassin': 0, 'Marksman': 0, 'Fighter': 0, 'Mage': 0, 'Support': 0, 'Tank': 0, 'Jungler': 0}
         jun = 0
         for champ in mainchamps:
-            rol = (requests.get("http://ddragon.leagueoflegends.com/cdn/"+loldata("version")+"/data/en_US/champion/"+champ+".json").json()['data'][champ]["tags"])
+            rol = (requests.get("http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/data/en_US/champion/"+champ+".json").json()['data'][champ]["tags"])
             for i in rol:
                 rolcounts[i] = rolcounts.get(i, 0) + 1
         for champi in champsid:
             try:
-                if str(champi) in loldata("junglersid").values():
+                if str(champi) in self.loldata("junglersid").values():
                     jun = jun + 1
             except:
                 continue;
@@ -178,8 +181,8 @@ class Lol:
             color = "0xffffff"
         mainchampsstr = ", ".join(mainchamps)
         colorh = int(color, 16)
-        opgg = "http://"+loldata("region")+".op.gg/summoner/userName="+summdata["name"].replace(" ", "")                                                   #embedformatforv3?
-        lolking = "http://www.lolking.net/summoner/"+loldata("region")+"/"+summidstr+"/"+summdata["name"].replace(" ", "")+"#/profile"
+        opgg = "http://"+self.loldata("region")[region]+".op.gg/summoner/userName="+summdata["name"].replace(" ", "")                                                   #embedformatforv3?
+        lolking = "http://www.lolking.net/summoner/"+self.loldata("region")[region]+"/"+summidstr+"/"+summdata["name"].replace(" ", "")+"#/profile"
         links = "[op.gg]({}) & [Lolking]({})".format(opgg, lolking)
         embed=discord.Embed(title=summdata["name"], description="Main"+" "+mainrole+" "+mainchampsstr, color=colorh)
         embed.set_thumbnail(url=summicon)
@@ -203,20 +206,20 @@ class Lol:
 
         [x.lower() for x in args]
         if len(args) == 0:
-            await self.bot.say(":x: *Missing Parameters: Region & Summoner*".format())
+            await ctx.send(":x: *Missing Parameters: Region & Summoner*".format())
             return
         region = args[0]
-        if region not in suppreg:
-            await self.bot.say(":x: *The region code isn't correct senpai 7w7*".format())
+        if region not in self.loldata("region")[region]:
+            await ctx.send(":x: *The region code isn't correct senpai 7w7*".format())
             return
         if len(args) < 2:
-            await self.bot.say(":x: *Summoner name missing or incorrect format.*".format())
+            await ctx.send(":x: *Summoner name missing or incorrect format.*".format())
             return
         if len(args) > 2:
             summ = "".join(args[1:69]) #python characteristic
         if len(args) == 2:
             summ = args[1]
-        summhandler = requests.get("https://"+loldata("region")+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+summ+"?api_key="+loldata("key"))
+        summhandler = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+summ+"?api_key="+self.loldata("key"))
         if summhandler.status_code == 429:
             await ctx.send("*I'm receiving too many requests, pls try again in 2 minutes* :sweat: ".format())
             return
@@ -228,7 +231,7 @@ class Lol:
             return
         summdata = summhandler.json()
         summidstr = str(summdata["id"])
-        gamehandler = requests.get("https://"+loldata("region")+".api.riotgames.com/lol/spectator/v3/active-games/by-summoner/"+summidstr+"?api_key="+loldata("key"))
+        gamehandler = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/spectator/v3/active-games/by-summoner/"+summidstr+"?api_key="+self.loldata("key"))
         if gamehandler.status_code == 404:
             await ctx.send("*Summoner isn't currently in a game* :expressionless: ".format()) #possible bug
             return
@@ -236,15 +239,15 @@ class Lol:
             await ctx.send("*The Riot API is currently unavailable. Please try again later :persevere:*".format())
             return
         gamedata = gamehandler.json()
-        gametype = loldata("gamemode")[gamedata["gameQueueConfigId"]]
-        maptype = loldata("map")[gamedata["mapId"]]
+        gametype = self.loldata("gamemode")[gamedata["gameQueueConfigId"]]
+        maptype = self.loldata("map")[gamedata["mapId"]]
         playersdata = []
         for summ in gamedata["participants"]:
             preplayer = [summ["teamId"],summ["championId"],summ["summonerId"], summ["summonerName"]]                            #player data key:  [team, champ, summid, name]
             playersdata.append(preplayer)
         iterator = 0
         for player in playersdata:
-            leaguehandler = requests.get("https://"+loldata("region")+".api.riotgames.com/lol/league/v3/positions/by-summoner/"+str(player[2])+"?api_key="+loldata("key"))
+            leaguehandler = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/league/v3/positions/by-summoner/"+str(player[2])+"?api_key="+self.loldata("key"))
             if leaguehandler.status_code == 503:
                 await ctx.send("*The Riot API is currently unavailable. Please try again later :persevere:*".format())
                 return
@@ -288,7 +291,7 @@ class Lol:
             iterator = iterator + 1                                         #player data key:  [team, champ, summid, name, soloq, flex, winrate, totalwins, totallosses]
         soloqelo = []
         flexelo = []
-        intelo = loldata("elo")
+        intelo = self.loldata("elo")
         for av in playersdata:              #average elo
             if av[4] in intelo:
                 soloqelo.append(intelo[av[4]])
@@ -302,25 +305,26 @@ class Lol:
         bestelo = max(totalsolo, totalflex)
         if intelo[bestelo].startswith("CHALLENGER"):
             color = "0xffff00"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+loldata("version")+"/img/profileicon/3206.png"
+            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3206.png"
         elif intelo[bestelo].startswith("MASTER"):
             color = "0xff8600"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+loldata("version")+"/img/profileicon/3202.png"
+            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3202.png"
         elif intelo[bestelo].startswith("DIAMOND"):
             color = "0x00ffff"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+loldata("version")+"/img/profileicon/3199.png"
+            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3199.png"
         elif intelo[bestelo].startswith("PLATINUM"):
             color = "0x97ffff"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+loldata("version")+"/img/profileicon/3196.png"
+            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3196.png"
         elif intelo[bestelo].startswith("GOLD"):
             color = "0xffff80"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+loldata("version")+"/img/profileicon/3193.png"
+            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3193.png"
         elif intelo[bestelo].startswith("SILVER"):
             color = "0x494949"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+loldata("version")+"/img/profileicon/3190.png"
+            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3190.png"
         elif intelo[bestelo].startswith("BRONZE"):
             color = "0x804000"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+loldata("version")+"/img/profileicon/3189.png"
+            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.
+            self.loldata("version")+"/img/profileicon/3189.png"
         else:
             color = "0xffffff"
             icon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/8/89/UnrankedBadge.png"
@@ -331,7 +335,7 @@ class Lol:
         avgflexelolist = avgflexelo.split(" ")
         avgflexleague = avgflexelo[0].lower().capitalize()
         avgflexnum = avgflexelolist[1]
-        champsid = loldata("champsid")
+        champsid = self.loldata("champsid")
         for aw in playersdata:
             if aw[4].startswith("BRONZE"):
                 if aw[4].endswith("V"):
