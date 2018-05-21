@@ -29,7 +29,7 @@ class Lol:
             elif option == "champsid":
                 return json.loads(raw)["champsid"]
             elif option == "junglersid":
-                return json.loads(raw)["junglersid]
+                return json.loads(raw)["junglersid"]
             elif option == "region":
                 return json.loads(raw)["region"]
             elif option == "map":
@@ -38,7 +38,7 @@ class Lol:
                 return json.loads(raw)["gamemode"]
             elif option == "elo":
                 return json.loads(raw)["elo"]
-            elif option == "version"
+            elif option == "version":
                 return requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()[0]
 
     @lol.command()
