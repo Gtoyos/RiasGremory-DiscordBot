@@ -299,6 +299,7 @@ class Audio:
         await self._embed_msg(ctx, "Song titles as status: {}.".format(not status))
 
     @commands.command()
+    @commands.guild_only()
     async def audiostats(self, ctx):
         """Audio stats."""
         server_num = len([p for p in lavalink.players if p.current is not None])
@@ -333,6 +334,7 @@ class Audio:
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.guild_only()
     async def bump(self, ctx, index: int):
         """Bump a song number to the top of the queue."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -359,6 +361,7 @@ class Audio:
         await self._embed_msg(ctx, "Moved {} to the top of the queue.".format(removed.title))
 
     @commands.command(aliases=["dc"])
+    @commands.guild_only()
     async def disconnect(self, ctx):
         """Disconnects from the voice channel."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -376,6 +379,7 @@ class Audio:
                 return await lavalink.get_player(ctx.guild.id).disconnect()
 
     @commands.command(aliases=["np", "n", "song"])
+    @commands.guild_only()
     async def now(self, ctx):
         """Now playing..."""
         if not self._player_check(ctx):
@@ -444,6 +448,7 @@ class Audio:
             await ctx.invoke(self.skip)
 
     @commands.command(aliases=["resume"])
+    @commands.guild_only()
     async def pause(self, ctx):
         """Pause and resume."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -490,6 +495,7 @@ class Audio:
         await self._embed_msg(ctx, "Nothing playing.")
 
     @commands.command()
+    @commands.guild_only()
     async def percent(self, ctx):
         """Queue percentage."""
         if not self._player_check(ctx):
@@ -545,6 +551,7 @@ class Audio:
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.guild_only()
     async def play(self, ctx, *, query):
         """Play a URL or search for a song."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -1004,6 +1011,7 @@ class Audio:
         return tracklist
 
     @commands.command()
+    @commands.guild_only()
     async def prev(self, ctx):
         """Skips to the start of the previously played track."""
         if not self._player_check(ctx):
@@ -1044,6 +1052,7 @@ class Audio:
             await ctx.send(embed=embed)
 
     @commands.command(aliases=["q"])
+    @commands.guild_only()
     async def queue(self, ctx, page: int = 1):
         """Lists the queue."""
         if not self._player_check(ctx):
@@ -1119,6 +1128,7 @@ class Audio:
         return embed
 
     @commands.command()
+    @commands.guild_only()
     async def repeat(self, ctx):
         """Toggles repeat."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -1144,6 +1154,7 @@ class Audio:
         await self._embed_msg(ctx, "Repeat songs: {}.".format(repeat))
 
     @commands.command()
+    @commands.guild_only()
     async def remove(self, ctx, index: int):
         """Remove a specific song number from the queue."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -1171,6 +1182,7 @@ class Audio:
         await self._embed_msg(ctx, "Removed {} from the queue.".format(removed.title))
 
     @commands.command()
+    @commands.guild_only()
     async def search(self, ctx, *, query):
         """Pick a song with a search.
         Use [p]search list <search term> to queue all songs found on YouTube.
@@ -1327,6 +1339,7 @@ class Audio:
         return embed
 
     @commands.command()
+    @commands.guild_only()
     async def seek(self, ctx, seconds: int = 30):
         """Seeks ahead or behind on a track by seconds."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -1361,6 +1374,7 @@ class Audio:
             await self._embed_msg(ctx, "Nothing playing. (・_・;)")
 
     @commands.command()
+    @commands.guild_only()
     async def shuffle(self, ctx):
         """Toggles shuffle."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -1506,6 +1520,7 @@ class Audio:
         await player.skip()
 
     @commands.command(aliases=["s"])
+    @commands.guild_only()
     async def stop(self, ctx):
         """Stops playback and clears the queue."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
@@ -1540,6 +1555,7 @@ class Audio:
             player.store("requester", None)
 
     @commands.command()
+    @commands.guild_only()
     async def volume(self, ctx, vol: int = None):
         """Sets the volume, 1% - 150%."""
         dj_enabled = await self.config.guild(ctx.guild).dj_enabled()
