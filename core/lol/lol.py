@@ -10,7 +10,6 @@ import asyncio
 import requests
 import json
 import random
-#DEVELOP. suppreg moved to loldata.json and many more. CHANGE ALL JSON FILES!!!
 class Lol:
 
     def __init__(self, bot: Red):
@@ -25,7 +24,7 @@ class Lol:
 
     @staticmethod
     def loldata(option):
-        with open("loldata.json") as handler:
+        with open("/home/gtoyos/.local/lib/python3.6/site-packages/redbot/cogs/lol/loldata.json", "r") as handler:
             raw = handler.read()
             if option == "key":
                 return json.loads(raw)["token"]["0"]
