@@ -38,8 +38,8 @@ class Reaction:
             await ctx.send("{} greets himself...weird...".format(author.mention))
             img = random.choice(self.getreaction("greet", "himself"))
         elif user.id == 343156375800643594:
-            await ctx.send("{} greeted me. :3".format(author.mention))
-            img = random.choice(self.getreaction("greet", "0"))
+            await ctx.send("{} greeted me. ^^".format(author.mention))
+            img = random.choice(self.getreaction("greet", "rias"))
         else:
             await ctx.send("{} greets {}".format(author.mention, user.mention))
             img = random.choice(self.getreaction("greet", "0"))
