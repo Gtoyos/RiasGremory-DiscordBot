@@ -27,7 +27,7 @@ class Reaction:
 
     @staticmethod
     def getreaction(option, mode):
-        with open("/home/gtoyos/.local/lib/python3.6/site-packages/redbot/cogs/reaction/reactiondata.JSON", "r") as handler:
+        with open(os.path.dirname(os.path.abspath(__file__))+"reactiondata.json", "r") as handler:
             raw = handler.read()
             return json.loads(raw)[option][mode]
 

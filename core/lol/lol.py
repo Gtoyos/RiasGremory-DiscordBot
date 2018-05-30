@@ -10,6 +10,7 @@ import asyncio
 import requests
 import json
 import random
+import os
 class Lol:
 
     def __init__(self, bot: Red):
@@ -24,7 +25,7 @@ class Lol:
 
     @staticmethod
     def loldata(option):
-        with open("/home/gtoyos/.local/lib/python3.6/site-packages/redbot/cogs/lol/loldata.json", "r") as handler:
+        with open(os.path.dirname(os.path.abspath(__file__))+"loldata.json", "r") as handler:
             raw = handler.read()
             if option == "key":
                 return json.loads(raw)["token"]["0"]
