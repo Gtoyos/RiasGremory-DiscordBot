@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import importlib
 import itertools
+import json
 import logging
 import os
 import sys
@@ -50,17 +51,10 @@ class Core:
     def __init__(self, bot):
         self.bot = bot  # type: Red
 
-        rpc.add_method("core", self.rpc_load)
-        rpc.add_method("core", self.rpc_unload)
-        rpc.add_method("core", self.rpc_reload)
-
     @commands.command(hidden=True)
     async def ping(self, ctx):
         """Pong."""
-        if ctx.guild is None or ctx.channel.permissions_for(ctx.guild.me).add_reactions:
-            await ctx.message.add_reaction("\U0001f3d3")  # ping pong paddle
-        else:
-            await ctx.maybe_send_embed("Pong.")
+        await ctx.send("Pong.")
 
     @commands.command()
     async def info(self, ctx: commands.Context):
@@ -305,8 +299,8 @@ class Core:
                 except Exception as e:
                     log.exception("Package loading failed UwU", exc_info=e)
 
-                    exception_log = (
-                        "Exception in command '{}'\n" "".format(ctx.command.qualified_name)
+                    exception_log = "Exception in command '{}'\n" "".format(
+                        ctx.command.qualified_name
                     )
                     exception_log += "".join(
                         traceback.format_exception(type(e), e, e.__traceback__)
@@ -391,9 +385,7 @@ class Core:
             except Exception as e:
                 log.exception("Package reloading failed", exc_info=e)
 
-                exception_log = (
-                    "Exception in command '{}'\n" "".format(ctx.command.qualified_name)
-                )
+                exception_log = "Exception in command '{}'\n" "".format(ctx.command.qualified_name)
                 exception_log += "".join(traceback.format_exception(type(e), e, e.__traceback__))
                 self.bot._last_exception = exception_log
 
@@ -405,7 +397,7 @@ class Core:
             await ctx.send(_(formed))
 
         if failed_packages:
-            fmt = ("Failed to reload package{plural} {packs}. Check your " "logs for details")
+            fmt = "Failed to reload package{plural} {packs}. Check your " "logs for details"
             formed = self.get_package_strings(failed_packages, fmt)
             await ctx.send(_(formed))
 
@@ -519,6 +511,42 @@ class Core:
         """Sets the mod role for this server"""
         await ctx.bot.db.guild(ctx.guild).mod_role.set(role.id)
         await ctx.send(_("The mod role for this guild has been set. ＼(≧▽≦)／"))
+
+    @_set.command(aliases=["usebotcolor"])
+    @checks.guildowner()
+    @commands.guild_only()
+    async def usebotcolour(self, ctx):
+        """
+        Toggle whether to use the bot owner-configured colour for embeds.
+
+        Default is to not use the bot's configured colour, in which case the
+        colour used will be the colour of the bot's top role.
+        """
+        current_setting = await ctx.bot.db.guild(ctx.guild).use_bot_color()
+        await ctx.bot.db.guild(ctx.guild).use_bot_color.set(not current_setting)
+        await ctx.send(
+            _("The bot {} use its configured color for embeds.").format(
+                _("will not") if current_setting else _("will")
+            )
+        )
+
+    @_set.command(aliases=["color"])
+    @checks.is_owner()
+    async def colour(self, ctx, *, colour: discord.Colour = None):
+        """
+        (Gtoyos's Command) Sets a default colour to be used for the bot's embeds.
+
+        Acceptable values cor the colour parameter can be found at:
+
+        http://discordpy.readthedocs.io/en/rewrite/ext/commands/api.html#discord.ext.commands.ColourConverter
+        """
+        if colour is None:
+            ctx.bot.color = discord.Color.red()
+            await ctx.bot.db.color.set(discord.Color.red().value)
+            return await ctx.send(_("The color has been reset."))
+        ctx.bot.color = colour
+        await ctx.bot.db.color.set(colour.value)
+        await ctx.send(_("The color has been set."))
 
     @_set.command()
     @checks.is_owner()
@@ -649,15 +677,13 @@ class Core:
                     "only do it up to 2 times an hour. Use "
                     "nicknames if you need frequent changes. "
                     "`{}set nickname`"
-                ).format(
-                    ctx.prefix
+                ).format(ctx.prefix)
                 )
-            )
         else:
             await ctx.send(_("Done."))
 
     @_set.command(name="nickname")
-    @checks.guildowner_or_permissions(manage_nicknames=True)
+    @checks.admin()
     @commands.guild_only()
     async def _nickname(self, ctx, *, nickname: str = None):
         """Sets my nickname"""
@@ -714,10 +740,8 @@ class Core:
                     " it is recommended to reset it right now. Go to the following link and"
                     " select `Reveal Token` and `Generate a new token?`."
                     "\n\nhttps://discordapp.com/developers/applications/me/{}"
-                ).format(
-                    self.bot.user.id
+                ).format(self.bot.user.id)
                 )
-            )
             return
 
         await ctx.bot.db.token.set(token)
@@ -756,6 +780,75 @@ class Core:
             ctx.bot.disable_sentry()
             await ctx.send(_("Done. Sentry logging is now disabled."))
 
+    @commands.group()
+    @checks.is_owner()
+    async def helpset(self, ctx: commands.Context):
+        """Manage settings for the help command."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help()
+
+    @helpset.command(name="pagecharlimit")
+    async def helpset_pagecharlimt(self, ctx: commands.Context, limit: int):
+        """Set the character limit for each page in the help message.
+
+        This setting only applies to embedded help.
+
+        Please note that setting a relitavely small character limit may
+        mean some pages will exceed this limit. This is because categories
+        are never spread across multiple pages in the help message.
+
+        The default value is 1000 characters.
+        """
+        if limit <= 0:
+            await ctx.send(_("You must give a positive value!"))
+            return
+
+        await ctx.bot.db.help.page_char_limit.set(limit)
+        await ctx.send(_("Done. The character limit per page has been set to {}.").format(limit))
+
+    @helpset.command(name="maxpages")
+    async def helpset_maxpages(self, ctx: commands.Context, pages: int):
+        """Set the maximum number of help pages sent in a server channel.
+
+        This setting only applies to embedded help.
+
+        If a help message contains more pages than this value, the help message will
+        be sent to the command author via DM. This is to help reduce spam in server
+        text channels.
+
+        The default value is 2 pages.
+        """
+        if pages < 0:
+            await ctx.send(_("You must give a value of zero or greater!"))
+            return
+
+        await ctx.bot.db.help.max_pages_in_guild.set(pages)
+        await ctx.send(_("Done. The page limit has been set to {}.").format(pages))
+
+    @helpset.command(name="tagline")
+    async def helpset_tagline(self, ctx: commands.Context, *, tagline: str = None):
+        """
+        Set the tagline to be used.
+
+        This setting only applies to embedded help. If no tagline is
+        specified, the default will be used instead.
+        """
+        if tagline is None:
+            await ctx.bot.db.help.tagline.set("")
+            return await ctx.send(_("The tagline has been reset."))
+
+        if len(tagline) > 2048:
+            await ctx.send(
+                _(
+                    "Your tagline is too long! Please shorten it to be "
+                    "no more than 2048 characters long."
+                )
+            )
+            return
+
+        await ctx.bot.db.help.tagline.set(tagline)
+        await ctx.send(_("The tagline has been set to {}.").format(tagline[:1900]))
+
     @commands.command()
     @checks.is_owner()
     async def listlocales(self, ctx: commands.Context):
@@ -774,7 +867,7 @@ class Core:
 
     @commands.command()
     @checks.is_owner()
-    async def backup(self, ctx):
+    async def backup(self, ctx, backup_path: str = None):
         """Creates a backup of all my data."""
         from redbot.core.data_manager import basic_config, instance_name
         from redbot.core.drivers.red_json import JSON
@@ -802,14 +895,59 @@ class Core:
             instance_name, ctx.message.created_at.strftime("%Y-%m-%d %H-%M-%S")
         )
         if data_dir.exists():
-            home = data_dir.home()
-            backup_file = home / backup_filename
-            os.chdir(str(data_dir.parent))
+            if not backup_path:
+                backup_pth = data_dir.home()
+            else:
+                backup_pth = Path(backup_path)
+            backup_file = backup_pth / backup_filename
+
+            to_backup = []
+            exclusions = [
+                "__pycache__",
+                "Lavalink.jar",
+                os.path.join("Downloader", "lib"),
+                os.path.join("CogManager", "cogs"),
+                os.path.join("RepoManager", "repos"),
+            ]
+            downloader_cog = ctx.bot.get_cog("Downloader")
+            if downloader_cog and hasattr(downloader_cog, "_repo_manager"):
+                repo_output = []
+                repo_mgr = downloader_cog._repo_manager
+                for n, repo in repo_mgr._repos:
+                    repo_output.append(
+                        {{"url": repo.url, "name": repo.name, "branch": repo.branch}}
+                    )
+                repo_filename = data_dir / "cogs" / "RepoManager" / "repos.json"
+                with open(str(repo_filename), "w") as f:
+                    f.write(json.dumps(repo_output, indent=4))
+            instance_data = {instance_name: basic_config}
+            instance_file = data_dir / "instance.json"
+            with open(str(instance_file), "w") as instance_out:
+                instance_out.write(json.dumps(instance_data, indent=4))
+            for f in data_dir.glob("**/*"):
+                if not any(ex in str(f) for ex in exclusions):
+                    to_backup.append(f)
             with tarfile.open(str(backup_file), "w:gz") as tar:
-                tar.add(data_dir.stem)
+                for f in to_backup:
+                    tar.add(str(f), recursive=False)
+            print(str(backup_file))
             await ctx.send(
-                _("A backup has been made. It is at {}.").format(backup_file)
+                _("A backup has been made of this instance. It is at {}.").format((backup_file))
             )
+            await ctx.send(_("Would you like to receive a copy via DM? (y/n)"))
+
+            def same_author_check(m):
+                return m.author == ctx.author and m.channel == ctx.channel
+
+            try:
+                msg = await ctx.bot.wait_for("message", check=same_author_check, timeout=60)
+            except asyncio.TimeoutError:
+                await ctx.send(_("Ok then."))
+            else:
+                if msg.content.lower().strip() == "y":
+                    await ctx.author.send(
+                        _("Here's a copy of the backup"), file=discord.File(str(backup_file))
+                    )
         else:
             await ctx.send(_("That directory doesn't seem to exist..."))
 
@@ -862,11 +1000,11 @@ class Core:
                     _("I cannot send your message, I'm unable to find " "my owner... *sigh*")
                 )
             except:
-                await ctx.send(_("I'm unable to deliver your message. Sorry. >.<"))
+                await ctx.send("I'm unable to deliver your message. Sorry. >.<")
             else:
-                await ctx.send(_("Your message has been sent. ( ´ ▽ ` )"))
+                await ctx.send("Your message has been sent. ( ´ ▽ ` )")
         else:
-            msg_text = ("{}\nMessage:\n\n{}\n{}".format(description, message, footer))
+            msg_text = "{}\nMessage:\n\n{}\n{}".format(description, message, footer)
             try:
                 await owner.send("{}\n{}".format(content, box(msg_text)))
             except discord.InvalidArgument:
@@ -876,7 +1014,7 @@ class Core:
             except:
                 await ctx.send(_("I'm unable to deliver your message. Sorry."))
             else:
-                await ctx.send(_("Your message has been sent. ( ´ ▽ ` )"))
+                await ctx.send("Your message has been sent. ( ´ ▽ ` )")
 
     @commands.command()
     @checks.is_owner()

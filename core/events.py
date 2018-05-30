@@ -16,7 +16,6 @@ from discord.ext import commands
 from . import __version__
 from .data_manager import storage_type
 from .utils.chat_formatting import inline, bordered
-from .rpc import initialize
 from colorama import Fore, Style, init
 
 log = logging.getLogger("red")
@@ -24,12 +23,22 @@ sentry_log = logging.getLogger("red.sentry")
 init()
 
 INTRO = """
-______         _           ______ _                       _  ______       _   
-| ___ \       | |          |  _  (_)                     | | | ___ \     | |  
-| |_/ /___  __| |  ______  | | | |_ ___  ___ ___  _ __ __| | | |_/ / ___ | |_ 
-|    // _ \/ _` | |______| | | | | / __|/ __/ _ \| '__/ _` | | ___ \/ _ \| __|
-| |\ \  __/ (_| |          | |/ /| \__ \ (_| (_) | | | (_| | | |_/ / (_) | |_ 
-\_| \_\___|\__,_|          |___/ |_|___/\___\___/|_|  \__,_| \____/ \___/ \__|
+                                                                                                                             
+
+,-.----.                                               ,----..                             ____
+\    /  \    ,--,                                     /   /   \                          ,'  , `.
+;   :    \ ,--.'|                                    |   :     :   __  ,-.            ,-+-,.' _ |   ,---.    __  ,-.
+|   | .\ : |  |,                   .--.--.           .   |  ;. / ,' ,'/ /|         ,-+-. ;   , ||  '   ,'\ ,' ,'/ /|
+.   : |: | `--'_       ,--.--.    /  /    '          .   ; /--`  '  | |' | ,---.  ,--.'|'   |  || /   /   |'  | |' |   .--,
+|   |  \ : ,' ,'|     /       \  |  :  /`./          ;   | ;  __ |  |   ,'/     \|   |  ,', |  |,.   ; ,. :|  |   ,' /_ ./|
+|   : .  / '  | |    .--.  .-. | |  :  ;_            |   : |.' .''  :  / /    /  |   | /  | |--' '   | |: :'  :  /, ' , ' :
+;   | |  \ |  | :     \__\/: . .  \  \    `.         .   | '_.' :|  | ' .    ' / |   : |  | ,    '   | .; :|  | '/___/ \: |
+|   | ;\  \'  : |__   ," .--.; |   `----.   \        '   ; : \  |;  : | '   ;   /|   : |  |/     |   :    |;  : | .  \  ' |
+:   ' | \.'|  | '.'| /  /  ,.  |  /  /`--'  /        '   | '/  .'|  , ; '   |  / |   | |`-'       \   \  / |  , ;  \  ;   :
+:   : :-'  ;  :    ;;  :   .'   \'--'.     /         |   :    /   ---'  |   :    |   ;/            `----'   ---'    \  \  ;
+|   |.'    |  ,   / |  ,     .-./  `--'---'           \   \ .'           \   \  /'---'                               :  \  \
+`---'       ---`-'   `--`---'                          `---`              `----'                                      \  ' ;
+                                                                                                                       `--`
 """
 
 
@@ -122,6 +131,7 @@ def init_events(bot, cli_flags):
         async with aiohttp.ClientSession() as session:
             async with session.get("https://pypi.python.org/pypi/red-discordbot/json") as r:
                 data = await r.json()
+        """
         if StrictVersion(data["info"]["version"]) > StrictVersion(red_version):
             INFO.append(
                 "Outdated version! {} is available "
@@ -137,6 +147,7 @@ def init_events(bot, cli_flags):
                 )
             except:
                 pass
+        """
         INFO2 = []
 
         sentry = await bot.db.enable_sentry()
@@ -172,8 +183,9 @@ def init_events(bot, cli_flags):
         if invite_url:
             print("\nInvite URL: {}\n".format(invite_url))
 
+        bot.color = discord.Colour(await bot.db.color())
         if bot.rpc_enabled:
-            await initialize(bot)
+            await bot.rpc.initialize()
 
     @bot.event
     async def on_error(event_method, *args, **kwargs):
@@ -214,7 +226,7 @@ def init_events(bot, cli_flags):
                 "logs for details."
                 "".format(ctx.command.qualified_name)
             )
-            exception_log = ("Exception in command '{}'\n" "".format(ctx.command.qualified_name))
+            exception_log = "Exception in command '{}'\n" "".format(ctx.command.qualified_name)
             exception_log += "".join(
                 traceback.format_exception(type(error), error, error.__traceback__)
             )
@@ -224,7 +236,7 @@ def init_events(bot, cli_flags):
         elif isinstance(error, commands.CommandNotFound):
             pass
         elif isinstance(error, commands.CheckFailure):
-            await ctx.send("⛔ You are not authorized to issue that command.")
+            pass
         elif isinstance(error, commands.NoPrivateMessage):
             await ctx.send("That command is not available in DMs.")
         elif isinstance(error, commands.CommandOnCooldown):
