@@ -46,7 +46,6 @@ class Lol:
         iconlist = host1.emojis + host2.emojis + host3.emojis + host4.emojis
         return str(discord.utils.get(iconlist, name=iconname))
 
-
     @commands.guild_only()
     @commands.command()
     async def lolsumm(self, ctx, *args):
@@ -215,11 +214,11 @@ class Lol:
         try:            #if its unranked
             embed.add_field(name="Solo/Duo", value=self.lolicons(tiersolo[0].lower().capitalize())+" "+tiersolo[0].lower().capitalize()+" "+tiersolo[1]+" *"+soloqlp+"*", inline=True)
         except:
-            embed.add_field(name="Solo/Duo", value="*Unranked*", inline = True)
+            embed.add_field(name="Solo/Duo", value=self.lolicons("Unranked")+" *Unranked*", inline = True)
         try:
             embed.add_field(name="Flex", value=self.lolicons(tierflex[0].lower().capitalize())+" "+tierflex[0].lower().capitalize()+" "+tierflex[1]+" *"+flexlp+"*", inline=True)
         except:
-            embed.add_field(name="Flex", value="*Unranked*", inline = True)
+            embed.add_field(name="Flex", value=self.lolicons("Unranked")+" *Unranked*", inline = True)
         embed.add_field(name="Winrate", value=str(winrate)[0:4]+"% *("+"W"+(str(totalwins))+", "+"L"+(str(totallosses))+")*", inline=True)
         embed.add_field(name="Last Games", value=lastgamesfinal, inline=True)
         embed.add_field(name="Maestry Score", value=malvl, inline=True)
@@ -227,6 +226,7 @@ class Lol:
         embed.add_field(name="More Info", value=links, inline=True)
         embed.set_footer(text='Summoner ID:'+" "+summidstr)
         await ctx.send(embed=embed)
+
     @commands.guild_only()
     @commands.command()
     async def lolgame(self, ctx, *args):
@@ -328,194 +328,79 @@ class Lol:
                 soloqelo.append(intelo[av[4]])
             if av[5] in intelo:
                 flexelo.append(intelo[av[5]])
+
         totalsolo = int(round(sum(soloqelo)/len(soloqelo)))
         totalflex = int(round(sum(flexelo)/len(flexelo)))
         intelo = dict([[v,k] for k,v in intelo.items()])#dictionary inverted
         avgsoloelo = intelo[totalsolo]
         avgflexelo = intelo[totalflex]
         bestelo = max(totalsolo, totalflex)
+        avgslist = avgsoloelo.split(" ")
+        avgflist = avgflexelo.split(" ")
+        avgstier,avgftier = avgslist[0].lower().capitalize(),avgflist[0].lower().capitalize()
+        avgsnum,avgfnum = avgslits[1],avgfnum[1]
         if intelo[bestelo].startswith("CHALLENGER"):
             color = "0xffff00"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3206.png"
         elif intelo[bestelo].startswith("MASTER"):
             color = "0xff8600"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3202.png"
         elif intelo[bestelo].startswith("DIAMOND"):
             color = "0x00ffff"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3199.png"
         elif intelo[bestelo].startswith("PLATINUM"):
             color = "0x97ffff"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3196.png"
         elif intelo[bestelo].startswith("GOLD"):
             color = "0xffff80"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3193.png"
         elif intelo[bestelo].startswith("SILVER"):
             color = "0x494949"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/3190.png"
         elif intelo[bestelo].startswith("BRONZE"):
             color = "0x804000"
-            icon = "http://ddragon.leagueoflegends.com/cdn/"+self.self.loldata("version")+"/img/profileicon/3189.png"
         else:
             color = "0xffffff"
-            icon = "https://vignette.wikia.nocookie.net/leagueoflegends/images/8/89/UnrankedBadge.png"
         colorh = int(color, 16)
-        avgsoloelolist = avgsoloelo.split(" ")
-        avgsololeague = avgsoloelo[0].lower().capitalize()
-        avgsolonum = avgsoloelolist[1]
-        avgflexelolist = avgflexelo.split(" ")
-        avgflexleague = avgflexelo[0].lower().capitalize()
-        avgflexnum = avgflexelolist[1]
         champsid = self.loldata("champsid")
-        for aw in playersdata:
-            if aw[4].startswith("BRONZE"):
-                if aw[4].endswith("V"):
-                    aw[4] = "B5"
-                elif aw[4].endswith("IV"):
-                    aw[4] = "B4"
-                elif aw[4].endswith("III"):
-                    aw[4] = "B3"
-                elif aw[4].endswith("II"):
-                    aw[4] = "B2"
-                elif aw[4].endswith("I"):
-                    aw[4] = "B1"
-            elif aw[4].startswith("SILVER"):
-                if aw[4].endswith("V"):
-                    aw[4] = "S5"
-                elif aw[4].endswith("IV"):
-                    aw[4] = "S4"
-                elif aw[4].endswith("III"):
-                    aw[4] = "S3"
-                elif aw[4].endswith("II"):
-                    aw[4] = "S2"
-                elif aw[4].endswith("I"):
-                    aw[4] = "S1"
-            elif aw[4].startswith("GOLD"):
-                if aw[4].endswith("V"):
-                    aw[4] = "G5"
-                elif aw[4].endswith("IV"):
-                    aw[4] = "G4"
-                elif aw[4].endswith("III"):
-                    aw[4] = "G3"
-                elif aw[4].endswith("II"):
-                    aw[4] = "G2"
-                elif aw[4].endswith("I"):
-                    aw[4] = "G1"
-            elif aw[4].startswith("PLATINUM"):
-                if aw[4].endswith("V"):
-                    aw[4] = "P5"
-                elif aw[4].endswith("IV"):
-                    aw[4] = "P4"
-                elif aw[4].endswith("III"):
-                    aw[4] = "P3"
-                elif aw[4].endswith("II"):
-                    aw[4] = "P2"
-                elif aw[4].endswith("I"):
-                    aw[4] = "P1"
-            elif aw[4].startswith("DIAMOND"):
-                if aw[4].endswith("V"):
-                    aw[4] = "D5"
-                elif aw[4].endswith("IV"):
-                    aw[4] = "D4"
-                elif aw[4].endswith("III"):
-                    aw[4] = "D3"
-                elif aw[4].endswith("II"):
-                    aw[4] = "D2"
-                elif aw[4].endswith("I"):
-                    aw[4] = "D1"
-            elif aw[4].startswith("MASTER"):
-                aw[4] = "M"
-            elif aw[4].startswith("CHALLENGER"):
-                aw[4] = "C"
-            else:
-                aw[4] = "U"
-        for aw in playersdata:
-            if aw[5].startswith("BRONZE"):
-                if aw[5].endswith("V"):
-                    aw[5] = "B5"
-                elif aw[5].endswith("IV"):
-                    aw[5] = "B4"
-                elif aw[5].endswith("III"):
-                    aw[5] = "B3"
-                elif aw[5].endswith("II"):
-                    aw[5] = "B2"
-                elif aw[5].endswith("I"):
-                    aw[5] = "B1"
-            elif aw[5].startswith("SILVER"):
-                if aw[5].endswith("V"):
-                    aw[5] = "S5"
-                elif aw[5].endswith("IV"):
-                    aw[5] = "S4"
-                elif aw[5].endswith("III"):
-                    aw[5] = "S3"
-                elif aw[5].endswith("II"):
-                    aw[5] = "S2"
-                elif aw[5].endswith("I"):
-                    aw[5] = "S1"
-            elif aw[5].startswith("GOLD"):
-                if aw[5].endswith("V"):
-                    aw[5] = "G5"
-                elif aw[5].endswith("IV"):
-                    aw[5] = "G4"
-                elif aw[5].endswith("III"):
-                    aw[5] = "G3"
-                elif aw[5].endswith("II"):
-                    aw[5] = "G2"
-                elif aw[5].endswith("I"):
-                    aw[5] = "G1"
-            elif aw[5].startswith("PLATINUM"):
-                if aw[5].endswith("V"):
-                    aw[5] = "P5"
-                elif aw[5].endswith("IV"):
-                    aw[5] = "P4"
-                elif aw[5].endswith("III"):
-                    aw[5] = "P3"
-                elif aw[5].endswith("II"):
-                    aw[5] = "P2"
-                elif aw[5].endswith("I"):
-                    aw[5] = "P1"
-            elif aw[5].startswith("DIAMOND"):
-                if aw[5].endswith("V"):
-                    aw[5] = "D5"
-                elif aw[5].endswith("IV"):
-                    aw[5] = "D4"
-                elif aw[5].endswith("III"):
-                    aw[5] = "D3"
-                elif aw[5].endswith("II"):
-                    aw[5] = "D2"
-                elif aw[5].endswith("I"):
-                    aw[5] = "D1"
-            elif aw[5].startswith("MASTER"):
-                aw[5] = "M"
-            elif aw[5].startswith("CHALLENGER"):
-                aw[5] = "C"
-            else:
-                aw[5] = "U"
-        for aw in playersdata:
-            aw[6] = str(aw[6])
-            aw[7] = str(aw[7])
-            aw[8] = str(aw[8])
-        embed=discord.Embed(title=maptype+" "+gametype+" "+"Game", description="Average Elo: "+"Solo/Duo:"+" "+avgsololeague+" "+avgsolonum+" , Flex: "+avgflexleague+" "+avgflexnum, color=colorh)
-        embed.set_thumbnail(url=icon)
-        embed.add_field(name=playersdata[0][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[0][1])]+")", value="**S:**".format()+playersdata[0][4]+" **F:**".format()+playersdata[0][5]+" WR:"+playersdata[0][6]+"%"+"(W"+playersdata[0][7]+",L"
-        +playersdata[0][8]+")", inline=True)
-        embed.add_field(name=playersdata[5][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[5][1])]+")", value="**S:**".format()+playersdata[5][4]+" **F:**".format()+playersdata[5][5]+" WR:"+playersdata[5][6]+"%"+"(W"+playersdata[0][7]+",L"
-        +playersdata[5][8]+")", inline=True)
-        embed.add_field(name=playersdata[1][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[1][1])]+")", value="**S:**".format()+playersdata[1][4]+" **F:**".format()+playersdata[1][5]+" WR:"+playersdata[1][6]+"%"+"(W"+playersdata[0][7]+",L"
-        +playersdata[1][8]+")", inline=True)
-        embed.add_field(name=playersdata[6][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[6][1])]+")", value="**S:**".format()+playersdata[6][4]+" **F:**".format()+playersdata[6][5]+" WR:"+playersdata[6][6]+"%"+"(W"+playersdata[6][7]+",L"
-        +playersdata[6][8]+")", inline=True)
-        embed.add_field(name=playersdata[2][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[2][1])]+")", value="**S:**".format()+playersdata[2][4]+" **F:**".format()+playersdata[2][5]+" WR:"+playersdata[2][6]+"%"+"(W"+playersdata[2][7]+",L"
-        +playersdata[2][8]+")", inline=True)
-        embed.add_field(name=playersdata[7][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[7][1])]+")", value="**S:**".format()+playersdata[7][4]+" **F:**".format()+playersdata[7][5]+" WR:"+playersdata[7][6]+"%"+"(W"+playersdata[7][7]+",L"
-        +playersdata[7][8]+")", inline=True)
-        embed.add_field(name=playersdata[3][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[3][1])]+")", value="**S:**".format()+playersdata[3][4]+" **F:**".format()+playersdata[3][5]+" WR:"+playersdata[3][6]+"%"+"(W"+playersdata[3][7]+",L"
-        +playersdata[3][8]+")", inline=True)
-        embed.add_field(name=playersdata[8][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[8][1])]+")", value="**S:**".format()+playersdata[8][4]+" **F:**".format()+playersdata[8][5]+" WR:"+playersdata[8][6]+"%"+"(W"+playersdata[8][7]+",L"
-        +playersdata[8][8]+")", inline=True)
-        embed.add_field(name=playersdata[4][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[4][1])]+")", value="**S:**".format()+playersdata[4][4]+" **F:**".format()+playersdata[4][5]+" WR:"+playersdata[4][6]+"%"+"(W"+playersdata[4][7]+",L"
-        +playersdata[4][8]+")", inline=True)
-        embed.add_field(name=playersdata[9][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[9][1])]+")", value="**S:**".format()+playersdata[9][4]+" **F:**".format()+playersdata[9][5]+" WR:"+playersdata[9][6]+"%"+"(W"+playersdata[9][7]+",L"
-        +playersdata[9][8]+")", inline=True)
-        await ctx.send(embed=embed)
+        blueteam = []
+        redteam = []
+
+        for k in playersdata:
+            if k["team"] == 100:
+                blueteam = blueteam+k
+            if k["team"] == 200:
+                redteam = redteam+k
+        embed = discord.Embed(title=maptype+" "+gametype+" Game", description="Average Tier: *Solo/Duo: **"+self.lolicons(avgstier)+avgsnum+"** , Flex: **"+        #name them mason avgs, avgf
+            self.lolicons(avgftier)+avgfnum+"**", color=colorh)
+        embed.add_field(title=":large_blue_circle: Blue Team", value=self.lolicons(blueteam[0][1].capitalize())+"**"+blueteam[0][3].capitalize()+"**\n"+
+            self.lolicons(blueteam[1][1].capitalize())+"**"+blueteam[1][3].capitalize()+"**\n"+
+            self.lolicons(blueteam[2][1].capitalize())+"**"+blueteam[2][3].capitalize()+"**\n"+
+            self.lolicons(blueteam[3][1].capitalize())+"**"+blueteam[3][3].capitalize()+"**\n"+
+            self.lolicons(blueteam[4][1].capitalize())+"**"+blueteam[4][3].capitalize()+"**\n"+
+        embed.add_field(title=self.lolicons("Null")+" Solo ｜ Flex", value=self.lolicons(blueteam[0][4].split()[0].lower().capitalize())+"**"+blueteam[0][4].split()[1]+"**  "+
+            self.lolicons(blueteam[0][5].split()[0].lower().capitalize())+"**"+blueteam[0][5].split()[1]+"**\n"
+            self.lolicons(blueteam[1][4].split()[0].lower().capitalize())+"**"+blueteam[1][4].split()[1]+"**  "+self.lolicons(blueteam[1][5].split()[0].lower().capitalize())+"**"+blueteam[1][5].split()[1]+"**\n"+
+            self.lolicons(blueteam[2][4].split()[0].lower().capitalize())+"**"+blueteam[2][4].split()[1]+"**  "+self.lolicons(blueteam[2][5].split()[0].lower().capitalize())+"**"+blueteam[2][5].split()[1]+"**\n"+
+            self.lolicons(blueteam[3][4].split()[0].lower().capitalize())+"**"+blueteam[3][4].split()[1]+"**  "+self.lolicons(blueteam[3][5].split()[0].lower().capitalize())+"**"+blueteam[3][5].split()[1]+"**\n"+
+            self.lolicons(blueteam[4][4].split()[0].lower().capitalize())+"**"+blueteam[4][4].split()[1]+"**  "+self.lolicons(blueteam[4][5].split()[0].lower().capitalize())+"**"+blueteam[4][5].split()[1]+"**\n", inline=True)
+        embed.add_field(title=self.lolicons("Null")+"Winrate", value = "Nandemonai")
+        #embed=discord.Embed(title=maptype+" "+gametype+" "+"Game", description="Average Elo: "+"Solo/Duo:"+" "+avgsololeague+" "+avgsolonum+" , Flex: "+avgflexleague+" "+avgflexnum, color=colorh)
+        #embed.set_thumbnail(url=icon)
+        #embed.add_field(name=playersdata[0][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[0][1])]+")", value="**S:**".format()+playersdata[0][4]+" **F:**".format()+playersdata[0][5]+" WR:"+playersdata[0][6]+"%"+"(W"+playersdata[0][7]+",L"
+        #+playersdata[0][8]+")", inline=True)
+        #embed.add_field(name=playersdata[5][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[5][1])]+")", value="**S:**".format()+playersdata[5][4]+" **F:**".format()+playersdata[5][5]+" WR:"+playersdata[5][6]+"%"+"(W"+playersdata[0][7]+",L"
+        #+playersdata[5][8]+")", inline=True)
+        #embed.add_field(name=playersdata[1][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[1][1])]+")", value="**S:**".format()+playersdata[1][4]+" **F:**".format()+playersdata[1][5]+" WR:"+playersdata[1][6]+"%"+"(W"+playersdata[0][7]+",L"
+        #+playersdata[1][8]+")", inline=True)
+        #embed.add_field(name=playersdata[6][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[6][1])]+")", value="**S:**".format()+playersdata[6][4]+" **F:**".format()+playersdata[6][5]+" WR:"+playersdata[6][6]+"%"+"(W"+playersdata[6][7]+",L"
+        #+playersdata[6][8]+")", inline=True)
+        #embed.add_field(name=playersdata[2][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[2][1])]+")", value="**S:**".format()+playersdata[2][4]+" **F:**".format()+playersdata[2][5]+" WR:"+playersdata[2][6]+"%"+"(W"+playersdata[2][7]+",L"
+        #+playersdata[2][8]+")", inline=True)
+        #embed.add_field(name=playersdata[7][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[7][1])]+")", value="**S:**".format()+playersdata[7][4]+" **F:**".format()+playersdata[7][5]+" WR:"+playersdata[7][6]+"%"+"(W"+playersdata[7][7]+",L"
+        #+playersdata[7][8]+")", inline=True)
+        #embed.add_field(name=playersdata[3][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[3][1])]+")", value="**S:**".format()+playersdata[3][4]+" **F:**".format()+playersdata[3][5]+" WR:"+playersdata[3][6]+"%"+"(W"+playersdata[3][7]+",L"
+        #+playersdata[3][8]+")", inline=True)
+        #embed.add_field(name=playersdata[8][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[8][1])]+")", value="**S:**".format()+playersdata[8][4]+" **F:**".format()+playersdata[8][5]+" WR:"+playersdata[8][6]+"%"+"(W"+playersdata[8][7]+",L"
+        #+playersdata[8][8]+")", inline=True)
+        #embed.add_field(name=playersdata[4][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[4][1])]+")", value="**S:**".format()+playersdata[4][4]+" **F:**".format()+playersdata[4][5]+" WR:"+playersdata[4][6]+"%"+"(W"+playersdata[4][7]+",L"
+        #+playersdata[4][8]+")", inline=True)
+        #embed.add_field(name=playersdata[9][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[9][1])]+")", value="**S:**".format()+playersdata[9][4]+" **F:**".format()+playersdata[9][5]+" WR:"+playersdata[9][6]+"%"+"(W"+playersdata[9][7]+",L"
+        #+playersdata[9][8]+")", inline=True)
+        #await ctx.send(embed=embed)
                         #index:               0     1       2      3      4     5       6       7           8
                           #player data key:  [team, champ, summid, name, soloq, flex, winrate, totalwins, totallosses]
