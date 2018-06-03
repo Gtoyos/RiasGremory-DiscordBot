@@ -359,12 +359,14 @@ class Lol:
         champsid = self.loldata("champsid")
         blueteam = []
         redteam = []
-
         for k in playersdata:
             if k["team"] == 100:
                 blueteam = blueteam+k
             if k["team"] == 200:
                 redteam = redteam+k
+        for k in blueteam:
+            k[4] = k[4].split()
+            k[5] = k[5].split()
         embed = discord.Embed(title=maptype+" "+gametype+" Game", description="Average Tier: *Solo/Duo: **"+self.lolicons(avgstier)+avgsnum+"** , Flex: **"+        #name them mason avgs, avgf
             self.lolicons(avgftier)+avgfnum+"**", color=colorh)
         embed.add_field(title=":large_blue_circle: Blue Team", value=self.lolicons(blueteam[0][1].capitalize())+"**"+blueteam[0][3].capitalize()+"**\n"+
@@ -372,13 +374,17 @@ class Lol:
             self.lolicons(blueteam[2][1].capitalize())+"**"+blueteam[2][3].capitalize()+"**\n"+
             self.lolicons(blueteam[3][1].capitalize())+"**"+blueteam[3][3].capitalize()+"**\n"+
             self.lolicons(blueteam[4][1].capitalize())+"**"+blueteam[4][3].capitalize()+"**\n"+
-        embed.add_field(title=self.lolicons("Null")+" Solo ｜ Flex", value=self.lolicons(blueteam[0][4].split()[0].lower().capitalize())+"**"+blueteam[0][4].split()[1]+"**  "+
-            self.lolicons(blueteam[0][5].split()[0].lower().capitalize())+"**"+blueteam[0][5].split()[1]+"**\n"+
-            self.lolicons(blueteam[1][4].split()[0].lower().capitalize())+"**"+blueteam[1][4].split()[1]+"**  "+self.lolicons(blueteam[1][5].split()[0].lower().capitalize())+"**"+blueteam[1][5].split()[1]+"**\n"+
-            self.lolicons(blueteam[2][4].split()[0].lower().capitalize())+"**"+blueteam[2][4].split()[1]+"**  "+self.lolicons(blueteam[2][5].split()[0].lower().capitalize())+"**"+blueteam[2][5].split()[1]+"**\n"+
-            self.lolicons(blueteam[3][4].split()[0].lower().capitalize())+"**"+blueteam[3][4].split()[1]+"**  "+self.lolicons(blueteam[3][5].split()[0].lower().capitalize())+"**"+blueteam[3][5].split()[1]+"**\n"+
-            self.lolicons(blueteam[4][4].split()[0].lower().capitalize())+"**"+blueteam[4][4].split()[1]+"**  "+self.lolicons(blueteam[4][5].split()[0].lower().capitalize())+"**"+blueteam[4][5].split()[1]+"**\n", inline=True)
-        embed.add_field(title=self.lolicons("Null")+"Winrate", value = "Nandemonai")
+        embed.add_field(title=self.lolicons("Null")+" Solo ｜ Flex", value=self.lolicons(blueteam[0][4][0].lower().capitalize())+"**"+blueteam[0][4][1]+"**  "+
+            self.lolicons(blueteam[0][5][0].lower().capitalize())+"**"+blueteam[0][5][1]+"**\n"+
+            self.lolicons(blueteam[1][4][0].lower().capitalize())+"**"+blueteam[1][4][1]+"**  "+
+            self.lolicons(blueteam[1][5][0].lower().capitalize())+"**"+blueteam[1][5][1]+"**\n"+
+            self.lolicons(blueteam[2][4][0].lower().capitalize())+"**"+blueteam[2][4][1]+"**  "+
+            self.lolicons(blueteam[2][5][0].lower().capitalize())+"**"+blueteam[2][5][1]+"**\n"+
+            self.lolicons(blueteam[3][4][0].lower().capitalize())+"**"+blueteam[3][4][1]+"**  "+
+            self.lolicons(blueteam[3][5][0].lower().capitalize())+"**"+blueteam[3][5][1]+"**\n"+
+            self.lolicons(blueteam[4][4][0].lower().capitalize())+"**"+blueteam[4][4][1]+"**  "+
+            self.lolicons(blueteam[4][5][0].lower().capitalize())+"**"+blueteam[4][5][1]+"**\n", inline=True)
+        embed.add_field(title=self.lolicons("Null")+"Winrate",value="Nandemonai")
         #embed=discord.Embed(title=maptype+" "+gametype+" "+"Game", description="Average Elo: "+"Solo/Duo:"+" "+avgsololeague+" "+avgsolonum+" , Flex: "+avgflexleague+" "+avgflexnum, color=colorh)
         #embed.set_thumbnail(url=icon)
         #embed.add_field(name=playersdata[0][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[0][1])]+")", value="**S:**".format()+playersdata[0][4]+" **F:**".format()+playersdata[0][5]+" WR:"+playersdata[0][6]+"%"+"(W"+playersdata[0][7]+",L"
