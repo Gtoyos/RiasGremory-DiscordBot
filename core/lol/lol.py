@@ -212,8 +212,8 @@ class Lol:
             " "+mainchamps[0]+", "+self.lolicons(mainchamps[1])+" "+mainchamps[1]+", "+self.lolicons(mainchamps[2])+
             " "+mainchamps[2]+".*", color=colorh)
         embed.set_thumbnail(url=summicon)
-        embed.add_field(name="Solo/Duo", value=self.lolicons(tiersolo[0].lower().capitalize())+" "+soloq[:-1].lower().capitalize()+soloq[-1:]+" *"+soloqlp+"*", inline=True)
-        embed.add_field(name="Flex", value=self.lolicons(tierflex[0].lower().capitalize())+" "+flex[:-1].lower().capitalize()+flex[-1:]+" *"+flexlp+"*", inline=True)
+        embed.add_field(name="Solo/Duo", value=self.lolicons(tiersolo[0].lower().capitalize())+" "+tiersolo[0].lower().capitalize()+" "+tiersolo[1]+" *"+soloqlp+"*", inline=True)
+        embed.add_field(name="Flex", value=self.lolicons(tierflex[0].lower().capitalize())+" "+tierflex[0].lower().capitalize()+" "+tierflex[1]+" *"+flexlp+"*", inline=True)
         embed.add_field(name="Winrate", value=str(winrate)[0:4]+"% *("+"W"+(str(totalwins))+", "+"L"+(str(totallosses))+")*", inline=True)
         embed.add_field(name="Last Games", value=lastgamesfinal, inline=True)
         embed.add_field(name="Maestry Score", value=malvl, inline=True)
