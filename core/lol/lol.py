@@ -37,7 +37,7 @@ class Lol:
             elif option == "version":
                 return requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()[0]
 
-    def lolicons(iconname):
+    def lolicons(self, iconname):
         host1,host2,host3,host4 = [
             self.bot.get_guild(435125536407420929),
             self.bot.get_guild(450402584839323649),         #emojidatabase
@@ -212,8 +212,14 @@ class Lol:
             " "+mainchamps[0]+", "+self.lolicons(mainchamps[1])+" "+mainchamps[1]+", "+self.lolicons(mainchamps[2])+
             " "+mainchamps[2]+".*", color=colorh)
         embed.set_thumbnail(url=summicon)
-        embed.add_field(name="Solo/Duo", value=self.lolicons(tiersolo[0].lower().capitalize())+" "+tiersolo[0].lower().capitalize()+" "+tiersolo[1]+" *"+soloqlp+"*", inline=True)
-        embed.add_field(name="Flex", value=self.lolicons(tierflex[0].lower().capitalize())+" "+tierflex[0].lower().capitalize()+" "+tierflex[1]+" *"+flexlp+"*", inline=True)
+        try:            #if its unranked
+            embed.add_field(name="Solo/Duo", value=self.lolicons(tiersolo[0].lower().capitalize())+" "+tiersolo[0].lower().capitalize()+" "+tiersolo[1]+" *"+soloqlp+"*", inline=True)
+        except:
+            embed.add_field(name="Solo/Duo", value="*Unranked*", inline = True)
+        try:
+            embed.add_field(name="Flex", value=self.lolicons(tierflex[0].lower().capitalize())+" "+tierflex[0].lower().capitalize()+" "+tierflex[1]+" *"+flexlp+"*", inline=True)
+        except:
+            embed.add_field(name="Flex", value="*Unranked*", inline = True)
         embed.add_field(name="Winrate", value=str(winrate)[0:4]+"% *("+"W"+(str(totalwins))+", "+"L"+(str(totallosses))+")*", inline=True)
         embed.add_field(name="Last Games", value=lastgamesfinal, inline=True)
         embed.add_field(name="Maestry Score", value=malvl, inline=True)
