@@ -12,20 +12,13 @@ import json
 import random
 import os
 class Lol:
-
+    """League of Legends commands"""
     def __init__(self, bot: Red):
         self.bot = bot
 
-    @commands.group()
-    @commands.guild_only()
-    async def lol(self, ctx):
-        """League of Legends commands"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help()
-
     @staticmethod
     def loldata(option):
-        with open(os.path.dirname(os.path.abspath(__file__))+"loldata.json", "r") as handler:
+        with open(os.path.dirname(os.path.abspath(__file__))+"/loldata.json", "r") as handler:
             raw = handler.read()
             if option == "key":
                 return json.loads(raw)["token"]["0"]
@@ -44,14 +37,27 @@ class Lol:
             elif option == "version":
                 return requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()[0]
 
-    @lol.command()
-    async def summ(self, ctx, *args):
-        """Obtains Summoner info.
+    @staticmethod
+    def lolicons(iconname):
+        host1,host2,host3,host4 = [
+            self.bot.get_guild(435125536407420929),
+            self.bot.get_guild(450402584839323649),         #emojidatabase
+            self.bot.get_guild(450403317051293707),
+            self.bot.get_guild(450412933105713172)]
+        iconlist = host1.emojis + host2.emojis + host3.emojis + host4.emojis
+        return str(discord.utils.get(iconlist, name=iconname))
+
+
+    @commands.guild_only()
+    @commands.command()
+    async def lolsumm(self, ctx, *args):
+        """Gets summoner's profile info.
 
         syntax: $lol summ [reg] [name].
         Summoner's name doesn't need to be
         written case sensitive nor with spaces"""
-
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help()
         [x.lower() for x in args]
         if len(args) == 0:
             await ctx.send(":x: *Missing Parameters: Region & Summoner*".format())
@@ -80,14 +86,17 @@ class Lol:
             return
         summdata = summhandler.json()
         summidstr = str(summdata["id"])
+        accidstr = str(summdata["accountId"])
         elodatah = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/league/v3/positions/by-summoner/"+summidstr+"?api_key="+self.loldata("key"))
         elodata = elodatah.json()
         malvlh = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/"+summidstr+"?api_key="+self.loldata("key"))
         malvl = malvlh.json()
         maestryh = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/"+summidstr+"?api_key="+self.loldata("key"))
         maestry = maestryh.json()
-        if elodatah.status_code == 503 or malvlh.status_code == 503 or maestryh.status_code == 503:
-            await self.bot.say("*The Riot API is currently unavailable. Please try again later :persevere:*".format())
+        lastgamesh = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+accidstr+"?endIndex=10&api_key="+self.loldata("key"))
+        lastganes = lastgamesh.json()
+        if elodatah.status_code == 503 or malvlh.status_code == 503 or maestryh.status_code == 503 or lastgamesh.status_code == 503:
+            await ctx.send("*The Riot API is currently unavailable. Please try again later :persevere:*".format())
             return
         #main role and champs
         mainchamps = []
@@ -134,6 +143,17 @@ class Lol:
                 mainrole = "TOP"
         summdataicon = str(summdata["profileIconId"])
         summicon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/"+summdataicon+".png"
+        #last Games
+        wins = []
+        for k in lastgames["matches"]
+            matchdata = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/match/v3/matches/"+str(k["gameId"])+"?api_key="+self.loldata("key")).json()
+            participantgameid = [obj for obj in matchdata["participantIdentities"] if obj["player"]["summonerId"]==summid]
+            participantgameteam = [obj for obj in matchdata["participants"] if obj["participantId"]==participantgameid["participantId"]]
+            winnerteam = [obj for obj in matchdata["teams"] if obj["win"]=="Win"]
+            if participantgameteam["teamId"] == winnerteam["teamId"]:
+                wins.append(1)
+        lastgameswr = (len(wins)*100)/len(lastgames["matches"])
+        lastgamesfinal = str(len(wins))+"W "+str((len(lastgames["matches"])-len(wins)))+"L *("+str(lastgameswr[0:4])+"% WR)*"
         if len(elodata) == 0:
             soloq = "Unranked"
             flex = "Unranked"
@@ -143,12 +163,14 @@ class Lol:
         elif len(elodata) == 1:
             if "RANKED_SOLO_5x5" in elodata[0]["queueType"]:
                 soloq = elodata[0]["tier"]+" "+elodata[0]["rank"]
+                soloqlp = str(elodata[0]["leaguepoints"])+"LP"
                 winrate = (elodata[0]["wins"])*100/(elodata[0]["wins"]+elodata[0]["losses"])
                 totalwins = elodata[0]["wins"]
                 totallosses = elodata[0]["losses"]
                 flex = "Unranked"
             if "RANKED_FLEX_SR" in elodata[0]["queueType"]:
                 flex= elodata[0]["tier"]+" "+elodata[0]["rank"]
+                flexlp = str(elodata[0]["leaguepoints"]) + " lp"
                 winrate = (elodata[0]["wins"])*100/(elodata[0]["wins"]+elodata[0]["losses"])
                 totalwins = elodata[0]["wins"]
                 totallosses = elodata[0]["losses"]
@@ -156,10 +178,14 @@ class Lol:
         elif len(elodata) == 2:
             if "RANKED_FLEX_SR" in elodata[0]["queueType"]:
                 flex= elodata[0]["tier"]+" "+elodata[0]["rank"]
+                flexlp = str(elodata[0]["leaguepoints"]) + "LP"
                 soloq= elodata[1]["tier"]+" "+elodata[1]["rank"]
+                soloqlp = str(elodata[1]["leaguepoints"])+ "LP"
             elif "RANKED_SOLO_5x5" in elodata[0]["queueType"]:
                 soloq= elodata[0]["tier"]+" "+elodata[0]["rank"]
+                soloqlp = str(elodata[0]["leaguepoints"]) + "LP"
                 flex= elodata[1]["tier"]+" "+elodata[1]["rank"]
+                flexlp = str(elodata[1]["leaguepoints"]) + "LP"
             winrate = ((elodata[0]["wins"]+elodata[1]["wins"])*100/((elodata[0]["wins"]+elodata[1]["wins"])+(elodata[0]["losses"]+elodata[1]["losses"])))
             totalwins = elodata[0]["wins"] + elodata[1]["wins"]
             totallosses = elodata[0]["losses"] + elodata[1]["losses"]
@@ -179,31 +205,33 @@ class Lol:
             color = "0x804000"
         else:
             color = "0xffffff"
-        mainchampsstr = ", ".join(mainchamps)
         colorh = int(color, 16)
-        opgg = "http://"+self.loldata("region")[region]+".op.gg/summoner/userName="+summdata["name"].replace(" ", "")                                                   #embedformatforv3?
-        lolking = "http://www.lolking.net/summoner/"+self.loldata("region")[region]+"/"+summidstr+"/"+summdata["name"].replace(" ", "")+"#/profile"
+        opgg = "http://"+region+".op.gg/summoner/userName="+summdata["name"].replace(" ", "")                                                   #embedformatforv3?
+        lolking = "http://www.lolking.net/summoner/"+region+"/"+summidstr+"/"+summdata["name"].replace(" ", "")+"#/profile"
         links = "[op.gg]({}) & [Lolking]({})".format(opgg, lolking)
-        embed=discord.Embed(title=summdata["name"], description="Main"+" "+mainrole+" "+mainchampsstr, color=colorh)
+        embed=discord.Embed(title=summdata["name"], description="*Main "+mainrole+": "+self.lolicons(mainchamps[0])+
+            " "+mainchamps[0]+", "+self.lolicons(mainchamps[1])+" "+mainchamps[1]+", "+self.lolicons(mainchamps[2]+
+            " "+mainchamps[2]+".*"), color=colorh)
         embed.set_thumbnail(url=summicon)
-        embed.add_field(name="Solo/Duo", value=soloq, inline=True)
-        embed.add_field(name="Flex", value=flex, inline=True)
-        embed.add_field(name="Winrate", value=winrate, inline=True)
-        embed.add_field(name="Games", value="W"+(str(totalwins))+" "+"L"+(str(totallosses)), inline=True)
+        embed.add_field(name="Solo/Duo", value=self.lolicons(soloq.lower().capitalize())+" "+soloq[:-1].lower().capitalize()+soloq[-1:]+" *"+soloqlp+"*", inline=True)
+        embed.add_field(name="Flex", value=self.lolicons(flex.lower().capitalize())+" "+flex[:-1].lower().capitalize()+flex[-1:]+" *"+flexlp+"*", inline=True)
+        embed.add_field(name="Winrate", value=winrate[0:4]+"% *("+"W"+(str(totalwins))+", "+"L"+(str(totallosses))+")*", inline=True)
+        embed.add_field(name="Last Games", value=lastgamesfinal, inline=True)
         embed.add_field(name="Maestry Score", value=malvl, inline=True)
         embed.add_field(name="Summoner Level", value=summdata["summonerLevel"], inline=True)
         embed.add_field(name="More Info", value=links, inline=True)
         embed.set_footer(text='Summoner ID:'+" "+summidstr)
         await ctx.send(embed=embed)
-
-    @lol.command(no_pm=True)
-    async def game(self, ctx, *args):
-        """Obtains Summoner's game info.
+    @commands.guild_only()
+    @commands.command()
+    async def lolgame(self, ctx, *args):
+        """Obtains summoner's game info.
 
         syntax: $lol game [reg] [name].
         Summoner's name doesn't need to be
         written case sensitive nor with spaces"""
-
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help()
         [x.lower() for x in args]
         if len(args) == 0:
             await ctx.send(":x: *Missing Parameters: Region & Summoner*".format())

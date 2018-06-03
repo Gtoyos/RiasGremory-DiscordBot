@@ -140,7 +140,6 @@
         "497": "Rakan",
         "498": "Xayah",
         "516": "Ornn"},
-
     "junglersid": {
         "2": "Olaf",
         "5": "XinZhao",
@@ -176,10 +175,8 @@
         "203": "Kindred",
         "254": "Vi",
         "421": "RekSai"},
-
     "token": {
         "0": "Token goes here"},
-
     "region": {
         "br":"br1",
         "eune":"eun1",
@@ -192,7 +189,6 @@
         "oce":"oc1",
         "tr":"tr1",
         "ru":"ru"},
-
     "map": {
         "1": "Summoner's Rift",
         "2":"Summoner's Rift",
@@ -206,7 +202,6 @@
         "16": "Cosmic Ruins",
         "18": "Valoran City Park",
         "19":"Substructure 43"},
-
     "gamemode": {
         "0": "Custom",
         "70": "One for All",
@@ -247,7 +242,6 @@
         "1000": "PROJECT: Hunters",
         "1010": "Snow ARURF",
         "1020":"One for All"},
-
     "elo": {
         "BRONZE V": 1,
         "BRONZE IV": 2,

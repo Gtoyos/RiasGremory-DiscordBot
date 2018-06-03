@@ -27,7 +27,7 @@ class Social:
 
     @staticmethod
     def getreaction(option, mode):
-        with open(os.path.dirname(os.path.abspath(__file__))+"reactiondata.json", "r") as handler:
+        with open(os.path.dirname(os.path.abspath(__file__))+"/reactiondata.JSON", "r") as handler:
             raw = handler.read()
             return json.loads(raw)[option][mode]
 
