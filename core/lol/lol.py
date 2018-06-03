@@ -373,7 +373,7 @@ class Lol:
             self.lolicons(blueteam[3][1].capitalize())+"**"+blueteam[3][3].capitalize()+"**\n"+
             self.lolicons(blueteam[4][1].capitalize())+"**"+blueteam[4][3].capitalize()+"**\n"+
         embed.add_field(title=self.lolicons("Null")+" Solo ｜ Flex", value=self.lolicons(blueteam[0][4].split()[0].lower().capitalize())+"**"+blueteam[0][4].split()[1]+"**  "+
-            self.lolicons(blueteam[0][5].split()[0].lower().capitalize())+"**"+blueteam[0][5].split()[1]+"**\n"
+            self.lolicons(blueteam[0][5].split()[0].lower().capitalize())+"**"+blueteam[0][5].split()[1]+"**\n"+
             self.lolicons(blueteam[1][4].split()[0].lower().capitalize())+"**"+blueteam[1][4].split()[1]+"**  "+self.lolicons(blueteam[1][5].split()[0].lower().capitalize())+"**"+blueteam[1][5].split()[1]+"**\n"+
             self.lolicons(blueteam[2][4].split()[0].lower().capitalize())+"**"+blueteam[2][4].split()[1]+"**  "+self.lolicons(blueteam[2][5].split()[0].lower().capitalize())+"**"+blueteam[2][5].split()[1]+"**\n"+
             self.lolicons(blueteam[3][4].split()[0].lower().capitalize())+"**"+blueteam[3][4].split()[1]+"**  "+self.lolicons(blueteam[3][5].split()[0].lower().capitalize())+"**"+blueteam[3][5].split()[1]+"**\n"+
