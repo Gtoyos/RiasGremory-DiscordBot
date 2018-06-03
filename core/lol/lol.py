@@ -37,7 +37,6 @@ class Lol:
             elif option == "version":
                 return requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()[0]
 
-    @staticmethod
     def lolicons(iconname):
         host1,host2,host3,host4 = [
             self.bot.get_guild(435125536407420929),
@@ -56,8 +55,6 @@ class Lol:
         syntax: $lol summ [reg] [name].
         Summoner's name doesn't need to be
         written case sensitive nor with spaces"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help()
         [x.lower() for x in args]
         if len(args) == 0:
             await ctx.send(":x: *Missing Parameters: Region & Summoner*".format())
@@ -94,7 +91,7 @@ class Lol:
         maestryh = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/"+summidstr+"?api_key="+self.loldata("key"))
         maestry = maestryh.json()
         lastgamesh = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+accidstr+"?endIndex=10&api_key="+self.loldata("key"))
-        lastganes = lastgamesh.json()
+        lastgames = lastgamesh.json()
         if elodatah.status_code == 503 or malvlh.status_code == 503 or maestryh.status_code == 503 or lastgamesh.status_code == 503:
             await ctx.send("*The Riot API is currently unavailable. Please try again later :persevere:*".format())
             return
@@ -145,14 +142,14 @@ class Lol:
         summicon = "http://ddragon.leagueoflegends.com/cdn/"+self.loldata("version")+"/img/profileicon/"+summdataicon+".png"
         #last Games
         wins = []
-        for k in lastgames["matches"]
+        for k in lastgames["matches"]:
             matchdata = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/match/v3/matches/"+str(k["gameId"])+"?api_key="+self.loldata("key")).json()
-            participantgameid = [obj for obj in matchdata["participantIdentities"] if obj["player"]["summonerId"]==summid]
-            participantgameteam = [obj for obj in matchdata["participants"] if obj["participantId"]==participantgameid["participantId"]]
+            participantgameid = [obj for obj in matchdata["participantIdentities"] if obj["player"]["summonerId"]==int(summidstr)]
+            participantgameteam = [obj for obj in matchdata["participants"] if obj["participantId"]==participantgameid[0]["participantId"]]
             winnerteam = [obj for obj in matchdata["teams"] if obj["win"]=="Win"]
-            if participantgameteam["teamId"] == winnerteam["teamId"]:
+            if participantgameteam[0]["teamId"] == winnerteam[0]["teamId"]:
                 wins.append(1)
-        lastgameswr = (len(wins)*100)/len(lastgames["matches"])
+        lastgameswr = str((len(wins)*100)/len(lastgames["matches"]))
         lastgamesfinal = str(len(wins))+"W "+str((len(lastgames["matches"])-len(wins)))+"L *("+str(lastgameswr[0:4])+"% WR)*"
         if len(elodata) == 0:
             soloq = "Unranked"
@@ -163,14 +160,14 @@ class Lol:
         elif len(elodata) == 1:
             if "RANKED_SOLO_5x5" in elodata[0]["queueType"]:
                 soloq = elodata[0]["tier"]+" "+elodata[0]["rank"]
-                soloqlp = str(elodata[0]["leaguepoints"])+"LP"
+                soloqlp = str(elodata[0]["leaguePoints"])+"LP"
                 winrate = (elodata[0]["wins"])*100/(elodata[0]["wins"]+elodata[0]["losses"])
                 totalwins = elodata[0]["wins"]
                 totallosses = elodata[0]["losses"]
                 flex = "Unranked"
             if "RANKED_FLEX_SR" in elodata[0]["queueType"]:
                 flex= elodata[0]["tier"]+" "+elodata[0]["rank"]
-                flexlp = str(elodata[0]["leaguepoints"]) + " lp"
+                flexlp = str(elodata[0]["leaguePoints"]) + " lp"
                 winrate = (elodata[0]["wins"])*100/(elodata[0]["wins"]+elodata[0]["losses"])
                 totalwins = elodata[0]["wins"]
                 totallosses = elodata[0]["losses"]
@@ -178,14 +175,14 @@ class Lol:
         elif len(elodata) == 2:
             if "RANKED_FLEX_SR" in elodata[0]["queueType"]:
                 flex= elodata[0]["tier"]+" "+elodata[0]["rank"]
-                flexlp = str(elodata[0]["leaguepoints"]) + "LP"
+                flexlp = str(elodata[0]["leaguePoints"]) + "LP"
                 soloq= elodata[1]["tier"]+" "+elodata[1]["rank"]
-                soloqlp = str(elodata[1]["leaguepoints"])+ "LP"
+                soloqlp = str(elodata[1]["leaguePoints"])+ "LP"
             elif "RANKED_SOLO_5x5" in elodata[0]["queueType"]:
                 soloq= elodata[0]["tier"]+" "+elodata[0]["rank"]
-                soloqlp = str(elodata[0]["leaguepoints"]) + "LP"
+                soloqlp = str(elodata[0]["leaguePoints"]) + "LP"
                 flex= elodata[1]["tier"]+" "+elodata[1]["rank"]
-                flexlp = str(elodata[1]["leaguepoints"]) + "LP"
+                flexlp = str(elodata[1]["leaguePoints"]) + "LP"
             winrate = ((elodata[0]["wins"]+elodata[1]["wins"])*100/((elodata[0]["wins"]+elodata[1]["wins"])+(elodata[0]["losses"]+elodata[1]["losses"])))
             totalwins = elodata[0]["wins"] + elodata[1]["wins"]
             totallosses = elodata[0]["losses"] + elodata[1]["losses"]
@@ -206,16 +203,18 @@ class Lol:
         else:
             color = "0xffffff"
         colorh = int(color, 16)
+        tierflex = flex.split()
+        tiersolo = soloq.split()
         opgg = "http://"+region+".op.gg/summoner/userName="+summdata["name"].replace(" ", "")                                                   #embedformatforv3?
         lolking = "http://www.lolking.net/summoner/"+region+"/"+summidstr+"/"+summdata["name"].replace(" ", "")+"#/profile"
         links = "[op.gg]({}) & [Lolking]({})".format(opgg, lolking)
         embed=discord.Embed(title=summdata["name"], description="*Main "+mainrole+": "+self.lolicons(mainchamps[0])+
-            " "+mainchamps[0]+", "+self.lolicons(mainchamps[1])+" "+mainchamps[1]+", "+self.lolicons(mainchamps[2]+
-            " "+mainchamps[2]+".*"), color=colorh)
+            " "+mainchamps[0]+", "+self.lolicons(mainchamps[1])+" "+mainchamps[1]+", "+self.lolicons(mainchamps[2])+
+            " "+mainchamps[2]+".*", color=colorh)
         embed.set_thumbnail(url=summicon)
-        embed.add_field(name="Solo/Duo", value=self.lolicons(soloq.lower().capitalize())+" "+soloq[:-1].lower().capitalize()+soloq[-1:]+" *"+soloqlp+"*", inline=True)
-        embed.add_field(name="Flex", value=self.lolicons(flex.lower().capitalize())+" "+flex[:-1].lower().capitalize()+flex[-1:]+" *"+flexlp+"*", inline=True)
-        embed.add_field(name="Winrate", value=winrate[0:4]+"% *("+"W"+(str(totalwins))+", "+"L"+(str(totallosses))+")*", inline=True)
+        embed.add_field(name="Solo/Duo", value=self.lolicons(tiersolo[0].lower().capitalize())+" "+soloq[:-1].lower().capitalize()+soloq[-1:]+" *"+soloqlp+"*", inline=True)
+        embed.add_field(name="Flex", value=self.lolicons(tierflex[0].lower().capitalize())+" "+flex[:-1].lower().capitalize()+flex[-1:]+" *"+flexlp+"*", inline=True)
+        embed.add_field(name="Winrate", value=str(winrate)[0:4]+"% *("+"W"+(str(totalwins))+", "+"L"+(str(totallosses))+")*", inline=True)
         embed.add_field(name="Last Games", value=lastgamesfinal, inline=True)
         embed.add_field(name="Maestry Score", value=malvl, inline=True)
         embed.add_field(name="Summoner Level", value=summdata["summonerLevel"], inline=True)
@@ -230,8 +229,6 @@ class Lol:
         syntax: $lol game [reg] [name].
         Summoner's name doesn't need to be
         written case sensitive nor with spaces"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help()
         [x.lower() for x in args]
         if len(args) == 0:
             await ctx.send(":x: *Missing Parameters: Region & Summoner*".format())
