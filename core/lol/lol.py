@@ -338,7 +338,7 @@ class Lol:
         avgslist = avgsoloelo.split(" ")
         avgflist = avgflexelo.split(" ")
         avgstier,avgftier = avgslist[0].lower().capitalize(),avgflist[0].lower().capitalize()
-        avgsnum,avgfnum = avgslits[1],avgfnum[1]
+        avgsnum,avgfnum = avgslist[1],avgflist[1]
         if intelo[bestelo].startswith("CHALLENGER"):
             color = "0xffff00"
         elif intelo[bestelo].startswith("MASTER"):
@@ -357,24 +357,26 @@ class Lol:
             color = "0xffffff"
         colorh = int(color, 16)
         champsid = self.loldata("champsid")
+        for k in playersdata:
+            k[1] = champsid[str(k[1])]
         blueteam = []
         redteam = []
         for k in playersdata:
-            if k["team"] == 100:
-                blueteam = blueteam+k
-            if k["team"] == 200:
-                redteam = redteam+k
-        for k in blueteam:
+            if k[0] == 100:
+                blueteam.append(k)
+            if k[0] == 200:
+                redteam.append(k)
+        for k in blueteam:  #do with readteam too
             k[4] = k[4].split()
             k[5] = k[5].split()
         embed = discord.Embed(title=maptype+" "+gametype+" Game", description="Average Tier: *Solo/Duo: **"+self.lolicons(avgstier)+avgsnum+"** , Flex: **"+        #name them mason avgs, avgf
             self.lolicons(avgftier)+avgfnum+"**", color=colorh)
-        embed.add_field(title=":large_blue_circle: Blue Team", value=self.lolicons(blueteam[0][1].capitalize())+"**"+blueteam[0][3].capitalize()+"**\n"+
-            self.lolicons(blueteam[1][1].capitalize())+"**"+blueteam[1][3].capitalize()+"**\n"+
-            self.lolicons(blueteam[2][1].capitalize())+"**"+blueteam[2][3].capitalize()+"**\n"+
-            self.lolicons(blueteam[3][1].capitalize())+"**"+blueteam[3][3].capitalize()+"**\n"+
-            self.lolicons(blueteam[4][1].capitalize())+"**"+blueteam[4][3].capitalize()+"**\n"+
-        embed.add_field(title=self.lolicons("Null")+" Solo ｜ Flex", value=self.lolicons(blueteam[0][4][0].lower().capitalize())+"**"+blueteam[0][4][1]+"**  "+
+        embed.add_field(name=":large_blue_circle: Blue Team", value=self.lolicons(blueteam[0][1].capitalize())+"**"+blueteam[0][3].capitalize()+"**\n"+
+            self.lolicons(blueteam[1][1])+"**"+blueteam[1][3].capitalize()+"**\n"+
+            self.lolicons(blueteam[2][1])+"**"+blueteam[2][3].capitalize()+"**\n"+      #La idea es que empiezen en mayuscula pero que el nombre no pierda
+            self.lolicons(blueteam[3][1])+"**"+blueteam[3][3].capitalize()+"**\n"+      #las mayusculas originales.
+            self.lolicons(blueteam[4][1])+"**"+blueteam[4][3].capitalize()+"**\n", inline=True)
+        embed.add_field(name=self.lolicons("Null")+" Solo ｜ Flex", value=self.lolicons(blueteam[0][4][0].lower().capitalize())+"**"+blueteam[0][4][1]+"**  "+
             self.lolicons(blueteam[0][5][0].lower().capitalize())+"**"+blueteam[0][5][1]+"**\n"+
             self.lolicons(blueteam[1][4][0].lower().capitalize())+"**"+blueteam[1][4][1]+"**  "+
             self.lolicons(blueteam[1][5][0].lower().capitalize())+"**"+blueteam[1][5][1]+"**\n"+
@@ -384,7 +386,7 @@ class Lol:
             self.lolicons(blueteam[3][5][0].lower().capitalize())+"**"+blueteam[3][5][1]+"**\n"+
             self.lolicons(blueteam[4][4][0].lower().capitalize())+"**"+blueteam[4][4][1]+"**  "+
             self.lolicons(blueteam[4][5][0].lower().capitalize())+"**"+blueteam[4][5][1]+"**\n", inline=True)
-        embed.add_field(title=self.lolicons("Null")+"Winrate",value="Nandemonai")
+        embed.add_field(name=self.lolicons("Null")+"Winrate",value="Nandemonai")
         #embed=discord.Embed(title=maptype+" "+gametype+" "+"Game", description="Average Elo: "+"Solo/Duo:"+" "+avgsololeague+" "+avgsolonum+" , Flex: "+avgflexleague+" "+avgflexnum, color=colorh)
         #embed.set_thumbnail(url=icon)
         #embed.add_field(name=playersdata[0][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[0][1])]+")", value="**S:**".format()+playersdata[0][4]+" **F:**".format()+playersdata[0][5]+" WR:"+playersdata[0][6]+"%"+"(W"+playersdata[0][7]+",L"
