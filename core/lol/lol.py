@@ -387,7 +387,7 @@ class Lol:
             self.lolicons(blueteam[2][1])+"**"+blueteam[2][3].title()+"**\n"+      #La idea es que empiezen en mayuscula pero que el nombre no pierda
             self.lolicons(blueteam[3][1])+"**"+blueteam[3][3].title()+"**\n"+      #las mayusculas originales.
             self.lolicons(blueteam[4][1])+"**"+blueteam[4][3].title()+"**\n", inline=True)
-        embed.add_field(name=self.lolicons("Null")+" Solo ｜ Flex", value=self.lolicons(blueteam[0][4][0].lower().capitalize())+"**"+blueteam[0][4][1]+"**  "+
+        embed.add_field(name=" Solo ｜ Flex", value=self.lolicons(blueteam[0][4][0].lower().capitalize())+"**"+blueteam[0][4][1]+"**  "+
             self.lolicons(blueteam[0][5][0].lower().capitalize())+"**"+blueteam[0][5][1]+"**\n"+
             self.lolicons(blueteam[1][4][0].lower().capitalize())+"**"+blueteam[1][4][1]+"**  "+
             self.lolicons(blueteam[1][5][0].lower().capitalize())+"**"+blueteam[1][5][1]+"**\n"+
