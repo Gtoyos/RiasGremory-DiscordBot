@@ -366,16 +366,27 @@ class Lol:
                 blueteam.append(k)
             if k[0] == 200:
                 redteam.append(k)
-        for k in blueteam:  #do with readteam too
-            k[4] = k[4].split()
-            k[5] = k[5].split()
+        for k in blueteam:
+            if k[4] == "Unranked" or k[5] == "Unranked":
+                k[4] = ["Unranked", " "]
+                k[5] = ["Unranked", " "]
+            else
+                k[4] = k[4].split()
+                k[5] = k[5].split()
+        for k in redteam:
+            if k[4] == "Unranked" or k[5] == "Unranked":
+                k[4] = ["Unranked", " "]
+                k[5] = ["Unranked", " "]
+            else
+                k[4] = k[4].split()
+                k[5] = k[5].split()
         embed = discord.Embed(title=maptype+" "+gametype+" Game", description="Average Tier: *Solo/Duo: **"+self.lolicons(avgstier)+avgsnum+"** , Flex: **"+        #name them mason avgs, avgf
             self.lolicons(avgftier)+avgfnum+"**", color=colorh)
         embed.add_field(name=":large_blue_circle: Blue Team", value=self.lolicons(blueteam[0][1].capitalize())+"**"+blueteam[0][3].capitalize()+"**\n"+
-            self.lolicons(blueteam[1][1])+"**"+blueteam[1][3].capitalize()+"**\n"+
-            self.lolicons(blueteam[2][1])+"**"+blueteam[2][3].capitalize()+"**\n"+      #La idea es que empiezen en mayuscula pero que el nombre no pierda
-            self.lolicons(blueteam[3][1])+"**"+blueteam[3][3].capitalize()+"**\n"+      #las mayusculas originales.
-            self.lolicons(blueteam[4][1])+"**"+blueteam[4][3].capitalize()+"**\n", inline=True)
+            self.lolicons(blueteam[1][1])+"**"+blueteam[1][3].title()+"**\n"+
+            self.lolicons(blueteam[2][1])+"**"+blueteam[2][3].title()+"**\n"+      #La idea es que empiezen en mayuscula pero que el nombre no pierda
+            self.lolicons(blueteam[3][1])+"**"+blueteam[3][3].title()+"**\n"+      #las mayusculas originales.
+            self.lolicons(blueteam[4][1])+"**"+blueteam[4][3].title()+"**\n", inline=True)
         embed.add_field(name=self.lolicons("Null")+" Solo ｜ Flex", value=self.lolicons(blueteam[0][4][0].lower().capitalize())+"**"+blueteam[0][4][1]+"**  "+
             self.lolicons(blueteam[0][5][0].lower().capitalize())+"**"+blueteam[0][5][1]+"**\n"+
             self.lolicons(blueteam[1][4][0].lower().capitalize())+"**"+blueteam[1][4][1]+"**  "+
