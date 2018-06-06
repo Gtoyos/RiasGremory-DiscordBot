@@ -380,12 +380,12 @@ class Lol:
             else:
                 k[4] = k[4].split()
                 k[5] = k[5].split()
-        embed = discord.Embed(title=maptype+" "+gametype+" Game", description="Average Tier: *Solo/Duo: **"+self.lolicons(avgstier)+avgsnum+"** , Flex: **"+        #name them mason avgs, avgf
-            self.lolicons(avgftier)+avgfnum+"**", color=colorh)
+        embed = discord.Embed(title=maptype+" "+gametype+" Game", description="Average Tier: *Solo/Duo: **"+self.lolicons(avgstier)+avgsnum+"** , Flex: **"+
+            self.lolicons(avgftier)+avgfnum+"***", color=colorh)
         embed.add_field(name=":large_blue_circle: Blue Team", value=self.lolicons(blueteam[0][1].capitalize())+"**"+blueteam[0][3].capitalize()+"**\n"+
             self.lolicons(blueteam[1][1])+"**"+blueteam[1][3].title()+"**\n"+
-            self.lolicons(blueteam[2][1])+"**"+blueteam[2][3].title()+"**\n"+      #La idea es que empiezen en mayuscula pero que el nombre no pierda
-            self.lolicons(blueteam[3][1])+"**"+blueteam[3][3].title()+"**\n"+      #las mayusculas originales.
+            self.lolicons(blueteam[2][1])+"**"+blueteam[2][3].title()+"**\n"+
+            self.lolicons(blueteam[3][1])+"**"+blueteam[3][3].title()+"**\n"+
             self.lolicons(blueteam[4][1])+"**"+blueteam[4][3].title()+"**\n", inline=True)
         embed.add_field(name=self.lolicons("Null")+"Solo ｜ Flex", value=self.lolicons("Null")+self.lolicons(blueteam[0][4][0].lower().capitalize())+"**"+blueteam[0][4][1]+"**  "+
             self.lolicons(blueteam[0][5][0].lower().capitalize())+"**"+blueteam[0][5][1]+"**\n"+
@@ -393,8 +393,8 @@ class Lol:
             self.lolicons(blueteam[1][5][0].lower().capitalize())+"**"+blueteam[1][5][1]+"**\n"+
             self.lolicons("Null")+self.lolicons(blueteam[2][4][0].lower().capitalize())+"**"+blueteam[2][4][1]+"**  "+
             self.lolicons(blueteam[2][5][0].lower().capitalize())+"**"+blueteam[2][5][1]+"**\n"+
-            self.lolicons("Null")+self.lolicons(blueteam[3][4][0].lower().capitalize())+"**"+blueteam[3][4][1]+"**  "+
-            self.lolicons(blueteam[3][5][0].lower().capitalize())+"**"+blueteam[3][5][1]+"**\n"+
+            self.lolicons("Null")+self.lolicons(blueteam[3][4][0].lower().capitalize())+"**"+blueteam[3][4][1]+"**  "+              #siguiente parche: hacer que las ligas I,II,V, unranked (doble espacio?)
+            self.lolicons(blueteam[3][5][0].lower().capitalize())+"**"+blueteam[3][5][1]+"**\n"+                                    #terminen con un espacio asi quedan todas alineadas...
             self.lolicons("Null")+self.lolicons(blueteam[4][4][0].lower().capitalize())+"**"+blueteam[4][4][1]+"**  "+
             self.lolicons(blueteam[4][5][0].lower().capitalize())+"**"+blueteam[4][5][1]+"**\n", inline=True)
         embed.add_field(name=self.lolicons("Null")+"Winrate",value=self.lolicons("Null")+str(blueteam[0][6])+"% *("+"W"+str(blueteam[0][7])+", "+"L"+str(blueteam[0][8])+")*\n"+
@@ -402,6 +402,27 @@ class Lol:
             self.lolicons("Null")+str(blueteam[2][6])+"% *("+"W"+(str(blueteam[2][7]))+", "+"L"+str(blueteam[2][8])+")*\n"+
             self.lolicons("Null")+str(blueteam[3][6])+"% *("+"W"+(str(blueteam[3][7]))+", "+"L"+str(blueteam[3][8])+")*\n"+
             self.lolicons("Null")+str(blueteam[4][6])+"% *("+"W"+(str(blueteam[4][7]))+", "+"L"+str(blueteam[4][8])+")*", inline=True)
+
+        embed.add_field(name=":large_red_circle: Red Team", value=self.lolicons(redteam[0][1].capitalize())+"**"+redteam[0][3].capitalize()+"**\n"+
+            self.lolicons(redteam[1][1])+"**"+redteam[1][3].title()+"**\n"+
+            self.lolicons(redteam[2][1])+"**"+redteam[2][3].title()+"**\n"+
+            self.lolicons(redteam[3][1])+"**"+redteam[3][3].title()+"**\n"+
+            self.lolicons(redteam[4][1])+"**"+redteam[4][3].title()+"**\n", inline=True)
+        embed.add_field(name=self.lolicons("Null"), value=self.lolicons("Null")+self.lolicons(redteam[0][4][0].lower().capitalize())+"**"+redteam[0][4][1]+"**  "+
+            self.lolicons(redteam[0][5][0].lower().capitalize())+"**"+redteam[0][5][1]+"**\n"+
+            self.lolicons("Null")+self.lolicons(redteam[1][4][0].lower().capitalize())+"**"+redteam[1][4][1]+"**  "+
+            self.lolicons(redteam[1][5][0].lower().capitalize())+"**"+redteam[1][5][1]+"**\n"+
+            self.lolicons("Null")+self.lolicons(redteam[2][4][0].lower().capitalize())+"**"+redteam[2][4][1]+"**  "+
+            self.lolicons(redteam[2][5][0].lower().capitalize())+"**"+redteam[2][5][1]+"**\n"+
+            self.lolicons("Null")+self.lolicons(redteam[3][4][0].lower().capitalize())+"**"+redteam[3][4][1]+"**  "+              #siguiente parche: hacer que las ligas I,II,V, unranked (doble espacio?)
+            self.lolicons(redteam[3][5][0].lower().capitalize())+"**"+redteam[3][5][1]+"**\n"+                                    #terminen con un espacio asi quedan todas alineadas...
+            self.lolicons("Null")+self.lolicons(redteam[4][4][0].lower().capitalize())+"**"+redteam[4][4][1]+"**  "+
+            self.lolicons(redteam[4][5][0].lower().capitalize())+"**"+redteam[4][5][1]+"**\n", inline=True)
+        embed.add_field(name=self.lolicons("Null"),value=self.lolicons("Null")+str(redteam[0][6])+"% *("+"W"+str(redteam[0][7])+", "+"L"+str(redteam[0][8])+")*\n"+
+            self.lolicons("Null")+str(redteam[1][6])+"% *("+"W"+(str(redteam[1][7]))+", "+"L"+str(redteam[1][8])+")*\n"+
+            self.lolicons("Null")+str(redteam[2][6])+"% *("+"W"+(str(redteam[2][7]))+", "+"L"+str(redteam[2][8])+")*\n"+
+            self.lolicons("Null")+str(redteam[3][6])+"% *("+"W"+(str(redteam[3][7]))+", "+"L"+str(redteam[3][8])+")*\n"+
+            self.lolicons("Null")+str(redteam[4][6])+"% *("+"W"+(str(redteam[4][7]))+", "+"L"+str(redteam[4][8])+")*", inline=True)
         await ctx.send(embed=embed)
         #embed=discord.Embed(title=maptype+" "+gametype+" "+"Game", description="Average Elo: "+"Solo/Duo:"+" "+avgsololeague+" "+avgsolonum+" , Flex: "+avgflexleague+" "+avgflexnum, color=colorh)
         #embed.set_thumbnail(url=icon)
