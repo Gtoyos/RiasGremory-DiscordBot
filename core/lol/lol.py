@@ -370,14 +370,14 @@ class Lol:
             if k[4] == "Unranked" or k[5] == "Unranked":
                 k[4] = ["Unranked", " "]
                 k[5] = ["Unranked", " "]
-            else
+            else:
                 k[4] = k[4].split()
                 k[5] = k[5].split()
         for k in redteam:
             if k[4] == "Unranked" or k[5] == "Unranked":
                 k[4] = ["Unranked", " "]
                 k[5] = ["Unranked", " "]
-            else
+            else:
                 k[4] = k[4].split()
                 k[5] = k[5].split()
         embed = discord.Embed(title=maptype+" "+gametype+" Game", description="Average Tier: *Solo/Duo: **"+self.lolicons(avgstier)+avgsnum+"** , Flex: **"+        #name them mason avgs, avgf
@@ -397,7 +397,12 @@ class Lol:
             self.lolicons(blueteam[3][5][0].lower().capitalize())+"**"+blueteam[3][5][1]+"**\n"+
             self.lolicons(blueteam[4][4][0].lower().capitalize())+"**"+blueteam[4][4][1]+"**  "+
             self.lolicons(blueteam[4][5][0].lower().capitalize())+"**"+blueteam[4][5][1]+"**\n", inline=True)
-        embed.add_field(name=self.lolicons("Null")+"Winrate",value="Nandemonai")
+        embed.add_field(name=self.lolicons("Null")+"Winrate",value=str(blueteam[0][6])+"% *("+"W"+(str(blueteam[0][7]))+", "+"L"+(str(blueteam[0][8]))+")*\n"+
+            str(blueteam[0][6])+"% *("+"W"+(str(blueteam[1][7]))+", "+"L"+(str(blueteam[1][8]))+")*\n"+
+            str(blueteam[0][6])+"% *("+"W"+(str(blueteam[2][7]))+", "+"L"+(str(blueteam[2][8]))+")*\n"+
+            str(blueteam[0][6])+"% *("+"W"+(str(blueteam[3][7]))+", "+"L"+(str(blueteam[3][8]))+")*\n"+
+            str(blueteam[0][6])+"% *("+"W"+(str(blueteam[4][7]))+", "+"L"+(str(blueteam[4][8]))+")*", inline=True)
+        await ctx.send(embed=embed)
         #embed=discord.Embed(title=maptype+" "+gametype+" "+"Game", description="Average Elo: "+"Solo/Duo:"+" "+avgsololeague+" "+avgsolonum+" , Flex: "+avgflexleague+" "+avgflexnum, color=colorh)
         #embed.set_thumbnail(url=icon)
         #embed.add_field(name=playersdata[0][3].capitalize()+" ("+self.loldata("champsid")[str(playersdata[0][1])]+")", value="**S:**".format()+playersdata[0][4]+" **F:**".format()+playersdata[0][5]+" WR:"+playersdata[0][6]+"%"+"(W"+playersdata[0][7]+",L"
