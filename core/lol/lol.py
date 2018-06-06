@@ -388,15 +388,15 @@ class Lol:
             self.lolicons(blueteam[3][1])+"**"+blueteam[3][3].title()+"**\n"+      #las mayusculas originales.
             self.lolicons(blueteam[4][1])+"**"+blueteam[4][3].title()+"**\n", inline=True)
         embed.add_field(name=self.lolicons("Null")+"Solo ｜ Flex", value=self.lolicons("Null")+self.lolicons(blueteam[0][4][0].lower().capitalize())+"**"+blueteam[0][4][1]+"**  "+
-            self.lolicons("Null")+self.lolicons(blueteam[0][5][0].lower().capitalize())+"**"+blueteam[0][5][1]+"**\n"+
+            self.lolicons(blueteam[0][5][0].lower().capitalize())+"**"+blueteam[0][5][1]+"**\n"+
             self.lolicons("Null")+self.lolicons(blueteam[1][4][0].lower().capitalize())+"**"+blueteam[1][4][1]+"**  "+
-            self.lolicons("Null")+self.lolicons(blueteam[1][5][0].lower().capitalize())+"**"+blueteam[1][5][1]+"**\n"+
+            self.lolicons(blueteam[1][5][0].lower().capitalize())+"**"+blueteam[1][5][1]+"**\n"+
             self.lolicons("Null")+self.lolicons(blueteam[2][4][0].lower().capitalize())+"**"+blueteam[2][4][1]+"**  "+
-            self.lolicons("Null")+self.lolicons(blueteam[2][5][0].lower().capitalize())+"**"+blueteam[2][5][1]+"**\n"+
+            self.lolicons(blueteam[2][5][0].lower().capitalize())+"**"+blueteam[2][5][1]+"**\n"+
             self.lolicons("Null")+self.lolicons(blueteam[3][4][0].lower().capitalize())+"**"+blueteam[3][4][1]+"**  "+
-            self.lolicons("Null")+self.lolicons(blueteam[3][5][0].lower().capitalize())+"**"+blueteam[3][5][1]+"**\n"+
+            self.lolicons(blueteam[3][5][0].lower().capitalize())+"**"+blueteam[3][5][1]+"**\n"+
             self.lolicons("Null")+self.lolicons(blueteam[4][4][0].lower().capitalize())+"**"+blueteam[4][4][1]+"**  "+
-            self.lolicons("Null")+self.lolicons(blueteam[4][5][0].lower().capitalize())+"**"+blueteam[4][5][1]+"**\n", inline=True)
+            self.lolicons(blueteam[4][5][0].lower().capitalize())+"**"+blueteam[4][5][1]+"**\n", inline=True)
         embed.add_field(name=self.lolicons("Null")+"Winrate",value=self.lolicons("Null")+str(blueteam[0][6])+"% *("+"W"+str(blueteam[0][7])+", "+"L"+str(blueteam[0][8])+")*\n"+
             self.lolicons("Null")+str(blueteam[1][6])+"% *("+"W"+(str(blueteam[1][7]))+", "+"L"+str(blueteam[1][8])+")*\n"+
             self.lolicons("Null")+str(blueteam[2][6])+"% *("+"W"+(str(blueteam[2][7]))+", "+"L"+str(blueteam[2][8])+")*\n"+
