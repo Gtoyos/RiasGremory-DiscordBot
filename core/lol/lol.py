@@ -403,7 +403,7 @@ class Lol:
             self.lolicons("Null")+str(blueteam[3][6])+"% *("+"W"+(str(blueteam[3][7]))+", "+"L"+str(blueteam[3][8])+")*\n"+
             self.lolicons("Null")+str(blueteam[4][6])+"% *("+"W"+(str(blueteam[4][7]))+", "+"L"+str(blueteam[4][8])+")*", inline=True)
 
-        embed.add_field(name=":large_red_circle: Red Team", value=self.lolicons(redteam[0][1].capitalize())+"**"+redteam[0][3].capitalize()+"**\n"+
+        embed.add_field(name=":red_circle: Red Team", value=self.lolicons(redteam[0][1].capitalize())+"**"+redteam[0][3].capitalize()+"**\n"+
             self.lolicons(redteam[1][1])+"**"+redteam[1][3].title()+"**\n"+
             self.lolicons(redteam[2][1])+"**"+redteam[2][3].title()+"**\n"+
             self.lolicons(redteam[3][1])+"**"+redteam[3][3].title()+"**\n"+
