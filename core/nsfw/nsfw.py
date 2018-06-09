@@ -52,7 +52,7 @@ class Nsfw:
     @commands.is_nsfw()
     @commands.command()
     async def yandere(self,ctx,user: discord.Member=None):
-        """Sends a lewd image owo"""
+        """Sends a lewd image OwO"""
         link = random.choice(self.getnsfw("yandere")).rstrip()
         data = requests.get(link, headers=self.headers).text
         soup = BeautifulSoup(data,"lxml")
