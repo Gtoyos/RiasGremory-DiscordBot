@@ -71,6 +71,7 @@ class Nsfw:
         data = requests.get(link, headers=self.headers).text
         soup = BeautifulSoup(data,"lxml")
         for img in soup.findAll(id = "highres"):
+            print(img)
             image = img.get('href')
         embed = discord.Embed(colour=ctx.guild.me.top_role.colour)
         embed.set_image(url=image)
