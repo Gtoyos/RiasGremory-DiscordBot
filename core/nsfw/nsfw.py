@@ -53,7 +53,7 @@ class Nsfw:
     @commands.command()
     async def yandere(self,ctx,user: discord.Member=None):
         """Sends a lewd image owo"""
-        link = random.choice(self.getnsfw("yandere"))
+        link = random.choice(self.getnsfw("yandere")).rstrip()
         data = requests.get(link, headers=self.headers).text
         soup = BeautifulSoup(data,"lxml")
         for img in soup.findAll(id = "highres"):
