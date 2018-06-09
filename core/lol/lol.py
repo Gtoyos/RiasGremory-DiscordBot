@@ -11,6 +11,7 @@ import requests
 import json
 import random
 import os
+
 class Lol:
     """League of Legends commands"""
     def __init__(self, bot: Red):
