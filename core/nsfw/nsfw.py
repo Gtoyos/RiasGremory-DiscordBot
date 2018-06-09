@@ -39,7 +39,7 @@ class Nsfw:
     @commands.command()
     async def furry(self,ctx,user: discord.Member=None):
         """Sends a furry image from e621"""
-        link = random.choice(self.getnsfw("furry"))
+        link = random.choice(self.getnsfw("furry")).rstrip()
         data = requests.get(link, headers=self.headers).text
         soup = BeautifulSoup(data,"lxml")
         for img in soup.findAll(id = "highres"):
