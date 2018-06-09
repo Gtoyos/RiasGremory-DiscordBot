@@ -55,7 +55,7 @@ class Nsfw:
         """Sends a furry image from e621"""
         link = random.choice(self.getnsfw("furry"))
         data = requests.get(link, headers=self.headers).text
-        soup = BeautifulSoup(data)
+        soup = BeautifulSoup(data,"lxml")
         for img in soup.findAll(id = "highres"):
             image = img.get('href')
         embed = discord.Embed(colour=ctx.guild.me.top_role.colour)
@@ -69,7 +69,7 @@ class Nsfw:
         """Sends a lewd image owo"""
         link = random.choice(self.getnsfw("yandere"))
         data = requests.get(link, headers=self.headers).text
-        soup = BeautifulSoup(data)
+        soup = BeautifulSoup(data,"lxml")
         for img in soup.findAll(id = "highres"):
             image = img.get('href')
         embed = discord.Embed(colour=ctx.guild.me.top_role.colour)
@@ -81,11 +81,7 @@ class Nsfw:
     @commands.command()
     async def nsfwgif(self,ctx,user: discord.Member=None):
         """Sends a Nsfw 3D gif"""
-        link = random.choice(self.getnsfw("3dnsfwgifs"))
-        data = requests.get(link, headers=self.headers).text
-        soup = BeautifulSoup(data)
-        for img in soup.findAll(id = "highres"):
-            image = img.get('href')
+        image = random.choice(self.getnsfw("3dnsfwgifs"))
         embed = discord.Embed(colour=ctx.guild.me.top_role.colour)
         embed.set_image(url=image)
         await ctx.send(embed=embed)
