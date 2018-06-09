@@ -37,20 +37,6 @@ class Nsfw:
     @commands.guild_only()
     @commands.is_nsfw()
     @commands.command()
-    async def yandere(self,ctx,user: discord.Member=None):
-        """Sends a lewd image owo"""
-        link = random.choice(self.getnsfw("yandere"))
-        data = requests.get(link, headers=self.headers).text
-        soup = BeautifulSoup(data)
-        for img in soup.findAll(id = "highres"):
-            image = img.get('href')
-        embed = discord.Embed(colour=ctx.guild.me.top_role.colour)
-        embed.set_image(url=image)
-        await ctx.send(embed=embed)
-
-    @commands.guild_only()
-    @commands.is_nsfw()
-    @commands.command()
     async def furry(self,ctx,user: discord.Member=None):
         """Sends a furry image from e621"""
         link = random.choice(self.getnsfw("furry"))
@@ -71,7 +57,6 @@ class Nsfw:
         data = requests.get(link, headers=self.headers).text
         soup = BeautifulSoup(data,"lxml")
         for img in soup.findAll(id = "highres"):
-            await ctx.send(img)
             image = img.get('href')
         embed = discord.Embed(colour=ctx.guild.me.top_role.colour)
         embed.set_image(url=image)
