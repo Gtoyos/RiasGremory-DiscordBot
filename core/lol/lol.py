@@ -368,21 +368,23 @@ class Lol:
             if k[0] == 200:
                 redteam.append(k)
         for k in blueteam:
+		    if k[4] is not "Unranked":
+                k[4] = k[4].split()
+		    if k[5] is not "Unranked":
+                k[5] = k[5].split()
             if k[4] == "Unranked":
                 k[4] = ["Unranked", " "]
             if k[5] == "Unranked":
                 k[5] = ["Unranked", " "]
-            else:
-                k[4] = k[4].split()
-                k[5] = k[5].split()
         for k in redteam:
+		    if k[4] is not "Unranked":
+                k[4] = k[4].split()
+		    if k[5] is not "Unranked":
+                k[5] = k[5].split()
             if k[4] == "Unranked":
                 k[4] = ["Unranked", " "]
             if k[5] == "Unranked":
                 k[5] = ["Unranked", " "]
-            else:
-                k[4] = k[4].split()
-                k[5] = k[5].split()
         embed = discord.Embed(title=maptype+" "+gametype+" Game", description="Average Tier: *Solo/Duo: **"+self.lolicons(avgstier)+avgsnum+"** , Flex: **"+
             self.lolicons(avgftier)+avgfnum+"***", color=colorh)
         embed.add_field(name=":large_blue_circle: Blue Team", value=self.lolicons(blueteam[0][1].capitalize())+"**"+blueteam[0][3].capitalize()+"**\n"+
