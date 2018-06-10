@@ -368,18 +368,18 @@ class Lol:
             if k[0] == 200:
                 redteam.append(k)
         for k in blueteam:
-		    if k[4] is not "Unranked":
+            if k[4] is not "Unranked":
                 k[4] = k[4].split()
-		    if k[5] is not "Unranked":
+            if k[5] is not "Unranked":
                 k[5] = k[5].split()
             if k[4] == "Unranked":
                 k[4] = ["Unranked", " "]
             if k[5] == "Unranked":
                 k[5] = ["Unranked", " "]
         for k in redteam:
-		    if k[4] is not "Unranked":
+            if k[4] is not "Unranked":
                 k[4] = k[4].split()
-		    if k[5] is not "Unranked":
+            if k[5] is not "Unranked":
                 k[5] = k[5].split()
             if k[4] == "Unranked":
                 k[4] = ["Unranked", " "]
