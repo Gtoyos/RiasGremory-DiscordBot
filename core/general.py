@@ -8,8 +8,9 @@ from urllib.parse import quote_plus
 import aiohttp
 import discord
 from redbot.core import commands
+from redbot.core.i18n import Translator, cog_i18n
 from redbot.core.utils.chat_formatting import escape, italics, pagify
-
+_ = Translator("General", __file__)
 class RPS(Enum):
     rock = "\N{MOYAI}"
     paper = "\N{PAGE FACING UP}"
@@ -178,20 +179,14 @@ class General:
     async def serverinfo(self, ctx):
         """Shows server's informations"""
         guild = ctx.guild
-        online = len(
-            [
-                m.status
-                for m in guild.members
-                if m.status == discord.Status.online or m.status == discord.Status.idle
-            ]
-        )
+        online = len([m.status for m in guild.members if m.status != discord.Status.offline])
         total_users = len(guild.members)
         text_channels = len(guild.text_channels)
         voice_channels = len(guild.voice_channels)
         passed = (ctx.message.created_at - guild.created_at).days
-        created_at = ("Since {}. That's over {} days ago!" "").format(
-                guild.created_at.strftime("%d %b %Y %H:%M"), passed
-            )
+        created_at = _("Since {}. That's over {} days ago!").format(
+            guild.created_at.strftime("%d %b %Y %H:%M"), passed
+        )
 
         colour = "".join([choice("0123456789ABCDEF") for x in range(6)])
         colour = randint(0, 0xFFFFFF)
@@ -214,7 +209,7 @@ class General:
         try:
             await ctx.send(embed=data)
         except discord.HTTPException:
-            await ctx.send(("I need the `Embed links` permission " "to send this."))
+            await ctx.send(("I need the `Embed links` permission to send this."))
 
     @commands.command()
     async def urban(self, ctx, *, search_terms: str, definition_number: int = 1):
@@ -251,7 +246,7 @@ class General:
                 definition = item_list[pos]["definition"]
                 example = item_list[pos]["example"]
                 defs = len(item_list)
-                msg = "**Definition #{} out of {}:\n**{}\n\n" "**Example:\n**{}".format(
+                msg = "**Definition #{} out of {}:\n**{}\n\n**Example:\n**{}".format(
                     pos + 1, defs, definition, example
                 )
                 msg = pagify(msg, ["\n"])
