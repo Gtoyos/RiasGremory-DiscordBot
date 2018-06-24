@@ -25,22 +25,27 @@ class Status:
 
     def __init__(self, bot: Red):
         self.bot = bot
+        self.task = bot.loop.create_task(self._status())
 
-    @client.async_event
-    def on_ready():
+    async def _status(self):
+        await self.bot.wait_until_ready()
         with open(os.path.dirname(os.path.abspath(__file__))+"/statusdata.json", "r") as handler:
             raw = handler.read()
         data = json.loads(raw)
-        while True:
-            asyncio.sleep(60)
-            print("a 60 seconds cycle has passed since i connected")
+        while self == self.bot.get_cog("Status"):
             statustype = random.randint(0,2)
             if statustype == 0:
                 status = random.choice(data["Playing"])
+                statustpye = 1 #discord.py changed 0 to unkown
             elif statustype == 1:
                 status = random.choice(data["Watching"])
+                statustype = 3 #discord.py changed watching to 3
             elif statustype ==2:
                 status = random.choice(data["Listening"])
-            await self.bot.change_presence(game=discord.Game(name=status, type=statustype))
-            await asyncio.sleep(900)
+            stad = discord.Activity(name=status, type=statustype)
+            await self.bot.change_presence(activity=stad)
+            await asyncio.sleep(900) #15min.
+
+    def __unload(self):
+        self.task.cancel()
  #presence types: 0 playing, 1 streaming, 2 listening to, 3 watching

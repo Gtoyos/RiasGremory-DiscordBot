@@ -200,7 +200,7 @@ class Social:
             img = self.getreaction("bully", "rias")
         else:
             await ctx.send("Oh no! {} started bullying {}!".format(ctx.author.mention, user.mention))
-            img = random.choice(self.getreaction("bully", "yes"))
+            img = self.getreaction("bully", "yes")
         embed = discord.Embed(colour=ctx.guild.me.top_role.colour)
         embed.set_image(url=img)
         await ctx.send(embed=embed)
@@ -219,7 +219,7 @@ class Social:
             img = self.getreaction("bully", "norias")
         else:
             await ctx.send("{} transformed into Anti-bully Ranger! You've been saved {}".format(ctx.author.mention, user.mention))
-            img = random.choice(self.getreaction("bully", "no"))
+            img =self.getreaction("bully", "no")
         embed = discord.Embed(colour=ctx.guild.me.top_role.colour)
         embed.set_image(url=img)
         await ctx.send(embed=embed)

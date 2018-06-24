@@ -644,7 +644,7 @@ class Audio:
             if not shuffle and queue_duration > 0:
                 embed.set_footer(
                     text="{} until track playback: #{} in queue".format(
-                        ueue_total_duration, before_queue_length + 1
+                        queue_total_duration, before_queue_length + 1
                     )
                 )
             elif queue_duration > 0:
