@@ -116,10 +116,11 @@ class Osu:
         sdlv = [str(x) for x in dlv]
         sdlv = [sdlv[0]+" year"+sdlv[1]+" month"+sdlv[2]+" day"+sdlv[3]+" hour"+sdlv[4]+" minute"]
         for n, k in enumerate(sdlv):
-            if not k.startswith("1"):
-                sdlv[n] += "s"
             if k.startswith("0"):
                 sdlv.pop(n)
+        for n, k in enumerate(sdlv):
+            if not k.startswith("1"):
+                sdlv[n] += "s"
             sdlv[n] += ","
         strlv = " ".join(sdlv)
         lastvisitformatted = strlv[:-1]+" ago."
