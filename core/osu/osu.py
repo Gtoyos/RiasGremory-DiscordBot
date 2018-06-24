@@ -116,10 +116,10 @@ class Osu:
         sdlv = list(map(str, dlv)) #int to str
         sdlv = [sdlv[0]+" year"+sdlv[1]+" month"+sdlv[2]+" day"+sdlv[3]+" hour"+sdlv[4]+" minute"]
         for n, k in enumerate(sdlv):
-            if k[n].startswith("0"):
+            if sdlv[n].startswith("0"):
                 sdlv.pop(n)
         for n, k in enumerate(sdlv):
-            if not k[n].startswith("1"):
+            if not sdlv[n].startswith("1"):
                 sdlv[n] += "s"
             sdlv[n] += ","
         strlv = " ".join(sdlv)
