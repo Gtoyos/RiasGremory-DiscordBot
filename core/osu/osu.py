@@ -20,6 +20,7 @@ import requests
 import json
 import random
 import os
+import datetime
 
 class Osu:
     """Osu! Commands"""
@@ -106,6 +107,20 @@ class Osu:
             "Play time: "+playtime+" hours\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
+        lastvisitpref = jsondata["lastvisit"][0:10]+"-"+jsondata["lastvisit"][14:-6]
+        lastvisitpref = lastvisitpref[:13]+"-"+lastvisitpref[14:]
+        lvyear,lvmonth,lvday,lvhour,lvminute = [int(x) for x in lastvisitpref.split("-")]
+        epochlvtime = time.time() - datetime.datetime(lvyear,lvmonth,lvday,lvhour,lvminute)
+        m,s = divmod(int(epochlvtime),60)
+        h,m = divmod(m,60)
+        d,h = divmod(m,24)
+        if d == 1:
+            lastvisitformatted = str(d)+" day, "str(h)+" hours and "+str(m)+"minutes ago."
+        elif d > 0:
+            lastvisitformatted = str(d)+" days, "str(h)+" hours and "+str(m)+"minutes ago."
+        else:
+            lastvisitformatted = str(h)+" hours and "+str(m)+"minutes ago."
+        jsondata["lastvisit"] = lastvisitformatted
         for k in localosudata["personalindex"]:
             z = str(jsondata[k])
             if z != "None":
