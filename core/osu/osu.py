@@ -172,7 +172,7 @@ class Osu:
                 personalinfo += localosudata["personalindex"][k]+z+"\n"
         if jsondata["avatar_url"].endswith("avatar-guest.png"):
             jsondata["avatar_url"] = "https://osu.ppy.sh/images/layout/avatar-guest.png"
-        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
+        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("taiko")+" Stats", description="Performance: **"+osudata["pp_raw"]+
             "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+",  :flag_"+osudata["country"].lower()+": #"+
             osudata["pp_country_rank"]+"*", colour=ctx.guild.me.top_role.colour)
         embed.set_thumbnail(url=jsondata["avatar_url"])
@@ -230,7 +230,7 @@ class Osu:
                 personalinfo += localosudata["personalindex"][k]+z+"\n"
         if jsondata["avatar_url"].endswith("avatar-guest.png"):
             jsondata["avatar_url"] = "https://osu.ppy.sh/images/layout/avatar-guest.png"
-        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
+        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("mania")+" Stats", description="Performance: **"+osudata["pp_raw"]+
             "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+",  :flag_"+osudata["country"].lower()+": #"+
             osudata["pp_country_rank"]+"*", colour=ctx.guild.me.top_role.colour)
         embed.set_thumbnail(url=jsondata["avatar_url"])
@@ -288,7 +288,7 @@ class Osu:
                 personalinfo += localosudata["personalindex"][k]+z+"\n"
         if jsondata["avatar_url"].endswith("avatar-guest.png"):
             jsondata["avatar_url"] = "https://osu.ppy.sh/images/layout/avatar-guest.png"
-        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
+        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("ctb")+" Stats", description="Performance: **"+osudata["pp_raw"]+
             "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+",  :flag_"+osudata["country"].lower()+": #"+
             osudata["pp_country_rank"]+"*", colour=ctx.guild.me.top_role.colour)
         embed.set_thumbnail(url=jsondata["avatar_url"])
