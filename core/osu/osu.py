@@ -113,7 +113,7 @@ class Osu:
         lvd = datetime.datetime(year=lvy,month=lvm,day=lvd,minute=lvmi,hour=lvh)
         crd = datetime.datetime.now()
         dlv = [crd.year-lvd.year,crd.month-lvd.month,crd.day-lvd.day,crd.hour-lvd.hour,crd.minute-lvd.minute]
-        sdlv = list(map(str, results)) #int to str
+        sdlv = list(map(str, dlv)) #int to str
         sdlv = [sdlv[0]+" year"+sdlv[1]+" month"+sdlv[2]+" day"+sdlv[3]+" hour"+sdlv[4]+" minute"]
         for n, k in enumerate(sdlv):
             if k.startswith("0"):
