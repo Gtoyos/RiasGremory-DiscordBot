@@ -110,7 +110,7 @@ class Osu:
         lastvisitpref = jsondata["lastvisit"][0:10]+"-"+jsondata["lastvisit"][14:-6]
         lastvisitpref = lastvisitpref[:13]+"-"+lastvisitpref[14:]
         lvy,lvm,lvd,lvh,lvmi = [int(x) for x in lastvisitpref.split("-")]
-        lvd = datetime.datetime(year=lvy,month=lvm,day=lvd,minute=lvmin,hour=lvh)
+        lvd = datetime.datetime(year=lvy,month=lvm,day=lvd,minute=lvmi,hour=lvh)
         crd = datetime.datetime.now()
         dlv = [crd.year-lvd.year,crd.month-lvd.month,crd.day-lvd.day,crd.hour-lvd.hour,crd.minute-lv.minute]
         sdlv = [str(x) for x in dlv]
