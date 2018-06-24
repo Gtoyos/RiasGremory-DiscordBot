@@ -106,7 +106,7 @@ class Osu:
             z = str(jsondata[k])
             if z != "None":
                 personalinfo += localosudata["personalindex"][k]+z+"\n"
-        if jsondata["avatar_url"] == "\\/images\\/layout\\/avatar-guest.png":
+        if jsondata["avatar_url"].endswith("avatar-guest.png"):
             jsondata["avatar_url"] = "https://osu.ppy.sh/images/layout/avatar-guest.png"
         embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
             "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+",  :flag_"+osudata["country"].lower()+": #"+
