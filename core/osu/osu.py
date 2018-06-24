@@ -99,7 +99,7 @@ class Osu:
         stats=("Ranked Score: "+osudata["ranked_score"]+"\n"+
             "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
             "Play count: "+osudata["playcount"]+"\n"+
-            "Play time: "+playtime+"\n"+
+            "Play time: "+playtime+" hours\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
         for k in localosudata["personalindex"]:
