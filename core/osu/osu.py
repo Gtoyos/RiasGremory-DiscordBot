@@ -112,7 +112,7 @@ class Osu:
         lvy,lvm,lvd,lvh,lvmi = [int(x) for x in lastvisitpref.split("-")]
         lvd = datetime.datetime(year=lvy,month=lvm,day=lvd,minute=lvmi,hour=lvh)
         crd = datetime.datetime.now()
-        dlv = [crd.year-lvd.year,crd.month-lvd.month,crd.day-lvd.day,crd.hour-lvd.hour,crd.minute-lv.minute]
+        dlv = [crd.year-lvd.year,crd.month-lvd.month,crd.day-lvd.day,crd.hour-lvd.hour,crd.minute-lvd.minute]
         sdlv = [str(x) for x in dlv]
         sdlv = [sdlv[0]+" year"+sdlv[1]+" month"+sdlv[2]+" day"+sdlv[3]+" hour"+sdlv[4]+" minute"]
         for n, k in enumerate(sdlv):
