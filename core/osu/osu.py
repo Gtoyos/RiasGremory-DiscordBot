@@ -85,7 +85,11 @@ class Osu:
             else:
                 user = ctx.author.name
         osudata = requests.get("https://osu.ppy.sh/api/get_user?k="+localosudata["key"]+"&u="+user+"&type=string&m=0").json()
-        osudata = osudata[0] #the api gives you a list
+        try:
+            osudata = osudata[0] #the api gives you a list also useful to chek if user exists.
+        except:
+            await ctx.send("*404 username not found* :confused: ".format())
+            return
         profilepage = requests.get("https://osu.ppy.sh/users/"+osudata["user_id"]).text
         soppy = BeautifulSoup(profilepage, "html.parser").find(id = "json-user")
         for k in soppy:
