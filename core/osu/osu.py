@@ -36,7 +36,7 @@ class Osu:
         iconlist = host1.emojis + host2.emojis + host3.emojis + host4.emojis
         return str(discord.utils.get(iconlist, name=iconname))
 
-    @commands.command
+    @commands.command()
     async def osulink(self,ctx,user: str=None):
         """Links your osu! profile
 
@@ -49,24 +49,24 @@ class Osu:
         """
         with open(os.path.dirname(os.path.abspath(__file__))+"/osudata.json", "r") as handler:
             raw = handler.read()
-            linkedusers = json.loads(raw)["linkedusers"]
+            localosudata = json.loads(raw)
         if user == None:
-            if str(ctx.author.id) in linkedusers:
-                linkedusers.pop(str(ctx.author.id))
+            if str(ctx.author.id) in localosudata["linkedusers"]:
+                localosudata["linkedusers"].pop(str(ctx.author.id))
                 await ctx.send("Your linked account has been removed. (>_<) ")
             else:
                 await ctx.send("You don't have a linked account yet. Write your osu! username after this command to add it (≧◡≦) ")
-        elif str(ctx.author.id) in linkedusers:
-            linkedusers[str(ctx.author.id)] = user
+        elif str(ctx.author.id) in localosudata["linkedusers"]:
+            localosudata["linkedusers"][str(ctx.author.id)] = user
             await ctx.send("Your linked account has been changed.")
         else:
-            linkedusers[str(ctx.author.id)] = user
+            localosudata["linkedusers"][str(ctx.author.id)] = user
             await ctx.send("Your Discord account has been linked! (⌒ω⌒)")
         with open(os.path.dirname(os.path.abspath(__file__))+"/osudata.json", "w") as handler:
-            json.dump(linkedusers, handler)
+            json.dump(localosudata, handler)
 
 
-    @commands.command
+    @commands.command()
     async def osu(self,ctx, user: str=None):
         """Gets Osu! profile stats.
 
@@ -95,11 +95,11 @@ class Osu:
             osudata["pp_raw"] = "0 (inactive)"
         personalinfo= ""
         playtime=str(int(jsondata["play_time"])/120) #only for osu mode (yet?)
-        stats="Ranked Score: "+osudata["ranked_score"]+"\n"+
+        stats=("Ranked Score: "+osudata["ranked_score"]+"\n"+
             "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
             "Play count: "+osudata["playcount"]+"\n"+
             "Total score: "+totalscore+"\n"+
-            "Total taps: "+totaltaps+"\n"
+            "Total taps: "+totaltaps+"\n")
         for k in localosudata["personalindex"]:
             z = jsondata[k]
             if z != None:
