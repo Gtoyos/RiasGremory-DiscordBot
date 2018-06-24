@@ -85,26 +85,27 @@ class Osu:
             else:
                 user = ctx.author.name
         osudata = requests.get("https://osu.ppy.sh/api/get_user?k="+localosudata["key"]+"&u="+user+"&type=string&m=0").json()
+        osudata = osudata[0] #the api gives you a list
         profilepage = requests.get("https://osu.ppy.sh/users/"+osudata["user_id"]).text
         soppy = BeautifulSoup(profilepage, "html.parser").find(id = "json-user")
         for k in soppy:
             jsondata= json.loads(k)
-        totaltaps=osudata["count50"]+osudata["count100"]+osudata["count300"]
-        totalscore="{:,}".format(osudata["total_score"])
+        totaltaps="{:,}".format(int(osudata["count50"])+int(osudata["count100"])+int(osudata["count300"]))
+        totalscore="{:,}".format(int(osudata["total_score"]))
         if osudata["pp_raw"] == "0":
             osudata["pp_raw"] = "0 (inactive)"
         personalinfo= ""
-        playtime=str(int(jsondata["play_time"])/120) #only for osu mode (yet?)
+        playtime=str(int(jsondata["statistics"]["play_time"])/120) #only for osu mode (yet?)
         stats=("Ranked Score: "+osudata["ranked_score"]+"\n"+
             "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
             "Play count: "+osudata["playcount"]+"\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
         for k in localosudata["personalindex"]:
-            z = jsondata[k]
-            if z != None:
+            z = str(jsondata[k])
+            if z != "None":
                 personalinfo += localosudata["personalindex"][k]+z+"\n"
-        embed=discord.Embed(title=osudata["username"]+"'s"+self.osuicon(mode)+" Stats", description="Performance: **"+osudata["pp_raw"]+
+        embed=discord.Embed(title=osudata["username"]+"'s"+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
             "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+", :flag_"+osudata["country"].lower()+": #"+
             osudata["pp_country_rank"]+"*", colour=ctx.guild.me.top_role.colour)
         embed.set_thumbnail(url=jsondata["avatar_url"])
