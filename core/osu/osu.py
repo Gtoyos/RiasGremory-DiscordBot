@@ -115,9 +115,9 @@ class Osu:
         h,m = divmod(m,60)
         d,h = divmod(m,24)
         if d == 1:
-            lastvisitformatted = str(d)+" day, "str(h)+" hours and "+str(m)+"minutes ago."
+            lastvisitformatted = str(d)+" day, "+str(h)+" hours and "+str(m)+"minutes ago."
         elif d > 0:
-            lastvisitformatted = str(d)+" days, "str(h)+" hours and "+str(m)+"minutes ago."
+            lastvisitformatted = str(d)+" days, "+str(h)+" hours and "+str(m)+"minutes ago."
         else:
             lastvisitformatted = str(h)+" hours and "+str(m)+"minutes ago."
         jsondata["lastvisit"] = lastvisitformatted
