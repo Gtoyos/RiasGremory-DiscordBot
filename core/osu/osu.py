@@ -110,19 +110,19 @@ class Osu:
         lastvisitpref = jsondata["lastvisit"][0:10]+"-"+jsondata["lastvisit"][14:-6]
         lastvisitpref = lastvisitpref[:13]+"-"+lastvisitpref[14:]
         lvy,lvm,lvd,lvh,lvmi = [int(x) for x in lastvisitpref.split("-")]
-        lvd = datetime.datetime(days=lvday,minutes=lvminute,hours=lvhour)
+        lvd = datetime.datetime(year=lvy,month=lvm,day=lvd,minute=lvmin,hour=lvh)
         crd = datetime.datetime.now()
         dlv = [crd.year-lvd.year,crd.month-lvd.month,crd.day-lvd.day,crd.hour-lvd.hour,crd.minute-lv.minute]
         sdlv = [str(x) for x in dlv]
-        sdlv = [sdlv[0]+" year"+sdlv[1]+" month"+sdlv[2]+" day"+sdlv[3]+" hour"+sdlv[4]+" minute"+
-        for n,k in enumerate(sdlv):
+        sdlv = [sdlv[0]+" year"+sdlv[1]+" month"+sdlv[2]+" day"+sdlv[3]+" hour"+sdlv[4]+" minute"]
+        for n, k in enumerate(sdlv):
             if not k.startswith("1"):
                 sdlv[n] += "s"
             if k.startswith("0"):
                 sdlv.pop(n)
             sdlv[n] += ","
         strlv = " ".join(sdlv)
-        lastvisitformatted = strlv[:-1]+" ago." 
+        lastvisitformatted = strlv[:-1]+" ago."
         jsondata["lastvisit"] = lastvisitformatted
         for k in localosudata["personalindex"]:
             z = str(jsondata[k])
