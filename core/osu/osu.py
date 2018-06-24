@@ -66,7 +66,6 @@ class Osu:
         with open(os.path.dirname(os.path.abspath(__file__))+"/osudata.json", "w") as handler:
             json.dump(localosudata, handler)
 
-
     @commands.command()
     async def osu(self,ctx, user: str=None):
         """Gets Osu! profile stats.
@@ -105,6 +104,180 @@ class Osu:
             "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
             "Play count: "+osudata["playcount"]+"\n"+
             "Play time: "+playtime+" hours\n"+
+            "Total score: "+totalscore+"\n"+
+            "Total taps: "+totaltaps+"\n")
+        lastvisitformatted = jsondata["lastvisit"][:-15]
+        jsondata["lastvisit"] = lastvisitformatted
+        for k in localosudata["personalindex"]:
+            z = str(jsondata[k])
+            if z != "None":
+                personalinfo += localosudata["personalindex"][k]+z+"\n"
+        if jsondata["avatar_url"].endswith("avatar-guest.png"):
+            jsondata["avatar_url"] = "https://osu.ppy.sh/images/layout/avatar-guest.png"
+        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
+            "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+",  :flag_"+osudata["country"].lower()+": #"+
+            osudata["pp_country_rank"]+"*", colour=ctx.guild.me.top_role.colour)
+        embed.set_thumbnail(url=jsondata["avatar_url"])
+        if jsondata["is_supporter"] == True:
+                embed.set_footer(text=osudata["username"]+" is an Osu! supporter.", icon_url="https://i.imgur.com/NffHBo0.png")
+        embed.add_field(name="Stats", value=stats, inline=False)
+        embed.add_field(name="Snipes", value="{}: {}  {}: {}  {}: {}  {}: {}  {}: {}".format(self.osuicon("XH"),osudata["count_rank_ssh"],self.osuicon("X_"),osudata["count_rank_ss"],
+            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=True)
+        embed.add_field(name="Personal Info", value=personalinfo, inline=True)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def taiko(self,ctx, user: str=None):
+        """Gets Osu! taiko profile stats.
+
+        Syntax: `$taiko usernamehere`
+        Username doesn't need to be written
+        case sensitive. If no user is written
+        it will use your Discord name. You can
+        change this by linking your osu name
+        using the comand $osulink"""
+        with open(os.path.dirname(os.path.abspath(__file__))+"/osudata.json", "r") as handler:
+            raw = handler.read()
+            localosudata = json.loads(raw)
+        if user == None:
+            if str(ctx.author.id) in localosudata["linkedusers"]:
+                user = localosudata["linkedusers"][str(ctx.author.id)]
+            else:
+                user = ctx.author.name
+        osudata = requests.get("https://osu.ppy.sh/api/get_user?k="+localosudata["key"]+"&u="+user+"&type=string&m=1").json()
+        try:
+            osudata = osudata[0] #the api gives you a list also useful to chek if user exists.
+        except:
+            await ctx.send("*404 username not found* :confused: ".format())
+            return
+        profilepage = requests.get("https://osu.ppy.sh/users/"+osudata["user_id"]).text
+        soppy = BeautifulSoup(profilepage, "html.parser").find(id = "json-user")
+        for k in soppy:
+            jsondata= json.loads(k)
+        totaltaps="{:,}".format(int(osudata["count50"])+int(osudata["count100"])+int(osudata["count300"]))
+        totalscore="{:,}".format(int(osudata["total_score"]))
+        if osudata["pp_raw"] == "0":
+            osudata["pp_raw"] = "0 (inactive)"
+        personalinfo= ""
+        stats=("Ranked Score: "+osudata["ranked_score"]+"\n"+
+            "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
+            "Play count: "+osudata["playcount"]+"\n"+
+            "Total score: "+totalscore+"\n"+
+            "Total taps: "+totaltaps+"\n")
+        lastvisitformatted = jsondata["lastvisit"][:-15]
+        jsondata["lastvisit"] = lastvisitformatted
+        for k in localosudata["personalindex"]:
+            z = str(jsondata[k])
+            if z != "None":
+                personalinfo += localosudata["personalindex"][k]+z+"\n"
+        if jsondata["avatar_url"].endswith("avatar-guest.png"):
+            jsondata["avatar_url"] = "https://osu.ppy.sh/images/layout/avatar-guest.png"
+        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
+            "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+",  :flag_"+osudata["country"].lower()+": #"+
+            osudata["pp_country_rank"]+"*", colour=ctx.guild.me.top_role.colour)
+        embed.set_thumbnail(url=jsondata["avatar_url"])
+        if jsondata["is_supporter"] == True:
+                embed.set_footer(text=osudata["username"]+" is an Osu! supporter.", icon_url="https://i.imgur.com/NffHBo0.png")
+        embed.add_field(name="Stats", value=stats, inline=False)
+        embed.add_field(name="Snipes", value="{}: {}  {}: {}  {}: {}  {}: {}  {}: {}".format(self.osuicon("XH"),osudata["count_rank_ssh"],self.osuicon("X_"),osudata["count_rank_ss"],
+            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=True)
+        embed.add_field(name="Personal Info", value=personalinfo, inline=True)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def mania(self,ctx, user: str=None):
+        """Gets Osu! mania profile stats.
+
+        Syntax: `$taiko usernamehere`
+        Username doesn't need to be written
+        case sensitive. If no user is written
+        it will use your Discord name. You can
+        change this by linking your osu name
+        using the comand $osulink"""
+        with open(os.path.dirname(os.path.abspath(__file__))+"/osudata.json", "r") as handler:
+            raw = handler.read()
+            localosudata = json.loads(raw)
+        if user == None:
+            if str(ctx.author.id) in localosudata["linkedusers"]:
+                user = localosudata["linkedusers"][str(ctx.author.id)]
+            else:
+                user = ctx.author.name
+        osudata = requests.get("https://osu.ppy.sh/api/get_user?k="+localosudata["key"]+"&u="+user+"&type=string&m=3").json()
+        try:
+            osudata = osudata[0] #the api gives you a list also useful to chek if user exists.
+        except:
+            await ctx.send("*404 username not found* :confused: ".format())
+            return
+        profilepage = requests.get("https://osu.ppy.sh/users/"+osudata["user_id"]).text
+        soppy = BeautifulSoup(profilepage, "html.parser").find(id = "json-user")
+        for k in soppy:
+            jsondata= json.loads(k)
+        totaltaps="{:,}".format(int(osudata["count50"])+int(osudata["count100"])+int(osudata["count300"]))
+        totalscore="{:,}".format(int(osudata["total_score"]))
+        if osudata["pp_raw"] == "0":
+            osudata["pp_raw"] = "0 (inactive)"
+        personalinfo= ""
+        stats=("Ranked Score: "+osudata["ranked_score"]+"\n"+
+            "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
+            "Play count: "+osudata["playcount"]+"\n"+
+            "Total score: "+totalscore+"\n"+
+            "Total taps: "+totaltaps+"\n")
+        lastvisitformatted = jsondata["lastvisit"][:-15]
+        jsondata["lastvisit"] = lastvisitformatted
+        for k in localosudata["personalindex"]:
+            z = str(jsondata[k])
+            if z != "None":
+                personalinfo += localosudata["personalindex"][k]+z+"\n"
+        if jsondata["avatar_url"].endswith("avatar-guest.png"):
+            jsondata["avatar_url"] = "https://osu.ppy.sh/images/layout/avatar-guest.png"
+        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
+            "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+",  :flag_"+osudata["country"].lower()+": #"+
+            osudata["pp_country_rank"]+"*", colour=ctx.guild.me.top_role.colour)
+        embed.set_thumbnail(url=jsondata["avatar_url"])
+        if jsondata["is_supporter"] == True:
+                embed.set_footer(text=osudata["username"]+" is an Osu! supporter.", icon_url="https://i.imgur.com/NffHBo0.png")
+        embed.add_field(name="Stats", value=stats, inline=False)
+        embed.add_field(name="Snipes", value="{}: {}  {}: {}  {}: {}  {}: {}  {}: {}".format(self.osuicon("XH"),osudata["count_rank_ssh"],self.osuicon("X_"),osudata["count_rank_ss"],
+            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=True)
+        embed.add_field(name="Personal Info", value=personalinfo, inline=True)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def ctb(self,ctx, user: str=None):
+        """Gets Osu! Ctb profile stats.
+
+        Syntax: `$taiko usernamehere`
+        Username doesn't need to be written
+        case sensitive. If no user is written
+        it will use your Discord name. You can
+        change this by linking your osu name
+        using the comand $osulink"""
+        with open(os.path.dirname(os.path.abspath(__file__))+"/osudata.json", "r") as handler:
+            raw = handler.read()
+            localosudata = json.loads(raw)
+        if user == None:
+            if str(ctx.author.id) in localosudata["linkedusers"]:
+                user = localosudata["linkedusers"][str(ctx.author.id)]
+            else:
+                user = ctx.author.name
+        osudata = requests.get("https://osu.ppy.sh/api/get_user?k="+localosudata["key"]+"&u="+user+"&type=string&m=2").json()
+        try:
+            osudata = osudata[0] #the api gives you a list also useful to chek if user exists.
+        except:
+            await ctx.send("*404 username not found* :confused: ".format())
+            return
+        profilepage = requests.get("https://osu.ppy.sh/users/"+osudata["user_id"]).text
+        soppy = BeautifulSoup(profilepage, "html.parser").find(id = "json-user")
+        for k in soppy:
+            jsondata= json.loads(k)
+        totaltaps="{:,}".format(int(osudata["count50"])+int(osudata["count100"])+int(osudata["count300"]))
+        totalscore="{:,}".format(int(osudata["total_score"]))
+        if osudata["pp_raw"] == "0":
+            osudata["pp_raw"] = "0 (inactive)"
+        personalinfo= ""
+        stats=("Ranked Score: "+osudata["ranked_score"]+"\n"+
+            "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
+            "Play count: "+osudata["playcount"]+"\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
         lastvisitformatted = jsondata["lastvisit"][:-15]
