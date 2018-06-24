@@ -99,14 +99,15 @@ class Osu:
         stats=("Ranked Score: "+osudata["ranked_score"]+"\n"+
             "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
             "Play count: "+osudata["playcount"]+"\n"+
+            "Play time: "+playtime+"\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
         for k in localosudata["personalindex"]:
             z = str(jsondata[k])
             if z != "None":
                 personalinfo += localosudata["personalindex"][k]+z+"\n"
-        embed=discord.Embed(title=osudata["username"]+"'s"+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
-            "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+", :flag_"+osudata["country"].lower()+": #"+
+        embed=discord.Embed(title=osudata["username"]+"'s  "+self.osuicon("osu")+" Stats", description="Performance: **"+osudata["pp_raw"]+
+            "pp**, ""*:earth_americas: #"+osudata["pp_rank"]+",  :flag_"+osudata["country"].lower()+": #"+
             osudata["pp_country_rank"]+"*", colour=ctx.guild.me.top_role.colour)
         embed.set_thumbnail(url=jsondata["avatar_url"])
         if jsondata["is_supporter"] == True:
