@@ -107,23 +107,7 @@ class Osu:
             "Play time: "+playtime+" hours\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
-        lastvisitpref = jsondata["lastvisit"][0:10]+"-"+jsondata["lastvisit"][14:-6]
-        lastvisitpref = lastvisitpref[:13]+"-"+lastvisitpref[14:]
-        lvy,lvm,lvd,lvh,lvmi = [int(x) for x in lastvisitpref.split("-")]
-        lvd = datetime.datetime(year=lvy,month=lvm,day=lvd,minute=lvmi,hour=lvh)
-        crd = datetime.datetime.now()
-        dlv = [crd.year-lvd.year,crd.month-lvd.month,crd.day-lvd.day,crd.hour-lvd.hour,crd.minute-lvd.minute]
-        sdlv = list(map(str, dlv)) #int to str
-        sdlv = [sdlv[0]+" year"+sdlv[1]+" month"+sdlv[2]+" day"+sdlv[3]+" hour"+sdlv[4]+" minute"]
-        for n, k in enumerate(sdlv):
-            if sdlv[n].startswith("0"):
-                sdlv.pop(n)
-        for n, k in enumerate(sdlv):
-            if not sdlv[n].startswith("1"):
-                sdlv[n] += "s"
-            sdlv[n] += ","
-        strlv = " ".join(sdlv)
-        lastvisitformatted = strlv[:-1]+" ago."
+        lastvisitformatted = jsondata["lastvisit"][:-15]
         jsondata["lastvisit"] = lastvisitformatted
         for k in localosudata["personalindex"]:
             z = str(jsondata[k])
