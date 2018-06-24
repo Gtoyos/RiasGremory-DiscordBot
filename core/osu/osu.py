@@ -180,8 +180,8 @@ class Osu:
                 embed.set_footer(text=osudata["username"]+" is an Osu! supporter.", icon_url="https://i.imgur.com/NffHBo0.png")
         embed.add_field(name="Stats", value=stats, inline=False)
         embed.add_field(name="Snipes", value="{}: {}  {}: {}  {}: {}  {}: {}  {}: {}".format(self.osuicon("XH"),osudata["count_rank_ssh"],self.osuicon("X_"),osudata["count_rank_ss"],
-            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=True)
-        embed.add_field(name="Personal Info", value=personalinfo, inline=True)
+            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=False)
+        embed.add_field(name="Personal Info", value=personalinfo, inline=False)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -238,8 +238,8 @@ class Osu:
                 embed.set_footer(text=osudata["username"]+" is an Osu! supporter.", icon_url="https://i.imgur.com/NffHBo0.png")
         embed.add_field(name="Stats", value=stats, inline=False)
         embed.add_field(name="Snipes", value="{}: {}  {}: {}  {}: {}  {}: {}  {}: {}".format(self.osuicon("XH"),osudata["count_rank_ssh"],self.osuicon("X_"),osudata["count_rank_ss"],
-            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=True)
-        embed.add_field(name="Personal Info", value=personalinfo, inline=True)
+            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=False)
+        embed.add_field(name="Personal Info", value=personalinfo, inline=False)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -296,6 +296,6 @@ class Osu:
                 embed.set_footer(text=osudata["username"]+" is an Osu! supporter.", icon_url="https://i.imgur.com/NffHBo0.png")
         embed.add_field(name="Stats", value=stats, inline=False)
         embed.add_field(name="Snipes", value="{}: {}  {}: {}  {}: {}  {}: {}  {}: {}".format(self.osuicon("XH"),osudata["count_rank_ssh"],self.osuicon("X_"),osudata["count_rank_ss"],
-            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=True)
-        embed.add_field(name="Personal Info", value=personalinfo, inline=True)
+            self.osuicon("SH"),osudata["count_rank_sh"],self.osuicon("S_"),osudata["count_rank_s"],self.osuicon("A_"),osudata["count_rank_a"]), inline=False)
+        embed.add_field(name="Personal Info", value=personalinfo, inline=False)
         await ctx.send(embed=embed)
