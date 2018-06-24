@@ -95,7 +95,7 @@ class Osu:
         if osudata["pp_raw"] == "0":
             osudata["pp_raw"] = "0 (inactive)"
         personalinfo= ""
-        playtime=str(int(jsondata["statistics"]["play_time"])/120) #only for osu mode (yet?)
+        playtime=str(int(int(jsondata["statistics"]["play_time"])/120)) #only for osu mode (yet?)
         stats=("Ranked Score: "+osudata["ranked_score"]+"\n"+
             "Accuracy: "+osudata["accuracy"][0:6]+"\n"+
             "Play count: "+osudata["playcount"]+"\n"+
