@@ -270,5 +270,6 @@
         "DIAMOND II": 24,
         "DIAMOND I": 25,
         "MASTER": 26,
-        "CHALLENGER":27}
+        "CHALLENGER":27},
+      "linkedsumms": {}
 }

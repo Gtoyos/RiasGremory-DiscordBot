@@ -304,7 +304,7 @@ class Core(CoreLogic):
 
         return fmt.format(d=days, h=hours, m=minutes, s=seconds)
 
-    @commands.group(autohelp=True)
+    @commands.group()
     async def embedset(self, ctx: commands.Context):
         """
         Commands for toggling embeds on or off.
@@ -317,6 +317,7 @@ class Core(CoreLogic):
         if ctx.invoked_subcommand is None:
             text = "Embed settings:\n\n"
             global_default = await self.bot.db.embeds()
+
             if ctx.guild:
                 guild_setting = await self.bot.db.guild(ctx.guild).embeds()
                 text += "Guild setting: {}\n".format(guild_setting)
@@ -341,6 +342,7 @@ class Core(CoreLogic):
 
     @embedset.command(name="guild")
     @checks.guildowner_or_permissions(administrator=True)
+    @commands.guild_only()
     async def embedset_guild(self, ctx: commands.Context, enabled: bool = None):
         """
         Toggle the guild's embed setting.
@@ -401,6 +403,7 @@ class Core(CoreLogic):
         """Show's Rias invite url ^^"""
         if self.bot.user.bot:
             await ctx.author.send(await self._invite_url())
+        else:
             await ctx.send("I'm not a bot account. I have no invite URL.")
 
     @commands.command()
@@ -553,7 +556,7 @@ class Core(CoreLogic):
             pass
         await ctx.bot.shutdown(restart=True)
 
-    @commands.group(name="set", autohelp=True)
+    @commands.group(name="set")
     async def _set(self, ctx):
         """Changes Red's settings"""
         if ctx.invoked_subcommand is None:
@@ -567,18 +570,18 @@ class Core(CoreLogic):
             else:
                 guild_settings = ""
                 prefixes = None  # This is correct. The below can happen in a guild.
-        if not prefixes:
-            prefixes = await ctx.bot.db.prefix()
-        locale = await ctx.bot.db.locale()
+            if not prefixes:
+                prefixes = await ctx.bot.db.prefix()
+            locale = await ctx.bot.db.locale()
 
-        prefix_string = " ".join(prefixes)
-        settings = (
-            f"{ctx.bot.user.name} Settings:\n\n"
-            f"Prefixes: {prefix_string}\n"
-            f"{guild_settings}"
-            f"Locale: {locale}"
-        )
-        await ctx.send(box(settings))
+            prefix_string = " ".join(prefixes)
+            settings = (
+                f"{ctx.bot.user.name} Settings:\n\n"
+                f"Prefixes: {prefix_string}\n"
+                f"{guild_settings}"
+                f"Locale: {locale}"
+            )
+            await ctx.send(box(settings))
 
     @_set.command()
     @checks.guildowner()
@@ -786,7 +789,7 @@ class Core(CoreLogic):
     async def _username(self, ctx, *, username: str):
         """(Gtoyos Command). Changes my name"""
         try:
-            await ctx.bot.user.edit(username=username)
+            await self._name(name=username)
         except discord.HTTPException:
             await ctx.send(
                 _(
@@ -795,7 +798,7 @@ class Core(CoreLogic):
                     "nicknames if you need frequent changes. "
                     "`{}set nickname`"
                 ).format(ctx.prefix)
-                )
+            )
         else:
             await ctx.send(_("Done."))
 
@@ -838,7 +841,7 @@ class Core(CoreLogic):
         await ctx.bot.db.guild(ctx.guild).prefix.set(prefixes)
         await ctx.send(_("Prefix(es) set."))
 
-        @_set.command()
+    @_set.command()
     @commands.cooldown(1, 60 * 10, commands.BucketType.default)
     async def owner(self, ctx):
         """Sets Red's main owner"""
@@ -901,7 +904,7 @@ class Core(CoreLogic):
                     " select `Reveal Token` and `Generate a new token?`."
                     "\n\nhttps://discordapp.com/developers/applications/me/{}"
                 ).format(self.bot.user.id)
-                )
+            )
             return
 
         await ctx.bot.db.token.set(token)
@@ -940,7 +943,7 @@ class Core(CoreLogic):
             ctx.bot.disable_sentry()
             await ctx.send(_("Done. Sentry logging is now disabled."))
 
-    @commands.group(autohelp = True)
+    @commands.group()
     @checks.is_owner()
     async def helpset(self, ctx: commands.Context):
         """Manage settings for the help command."""
@@ -1226,7 +1229,7 @@ class Core(CoreLogic):
             else:
                 await ctx.send(_("Message delivered to {}").format(destination))
 
-    @commands.group(autohelp=True)
+    @commands.group()
     @checks.is_owner()
     async def whitelist(self, ctx):
         """
@@ -1288,7 +1291,7 @@ class Core(CoreLogic):
         await ctx.bot.db.whitelist.set([])
         await ctx.send(_("Whitelist has been cleared."))
 
-    @commands.group(autohelp=True)
+    @commands.group()
     @checks.is_owner()
     async def blacklist(self, ctx):
         """

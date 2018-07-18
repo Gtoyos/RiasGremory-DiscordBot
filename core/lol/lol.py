@@ -35,6 +35,8 @@ class Lol:
                 return json.loads(raw)["gamemode"]
             elif option == "elo":
                 return json.loads(raw)["elo"]
+            elif option == "linkedsumms":
+                return json.loads(raw)["linkedsumms"]
             elif option == "version":
                 return requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()[0]
 
@@ -49,6 +51,42 @@ class Lol:
 
     @commands.guild_only()
     @commands.command()
+    async def lollink(self,ctx,region: str=None,user: str=None):
+        """Links your Lol summoner's name.
+
+        Syntax: `$lollink summonername`
+        Summoner doesn't need to be written
+        case sensitive. To link your username
+        with another summoner's name invoke
+        this command again. To reset it leave it
+        in blank.
+        """
+        with open(os.path.dirname(os.path.abspath(__file__))+"/loldata.json", "r") as handler:
+            raw = handler.read()
+            loldata = json.loads(raw)
+        if user == None and region == None:
+            if str(ctx.author.id) in loldata["linkedsumms"]:
+                loldata["linkedsumms"].pop(str(ctx.author.id))
+                await ctx.send("Your linked account has been removed. (>_<) ")
+            else:
+                await ctx.send("You don't have a linked account yet. Write your summoner's name after this command to add it (≧◡≦) ")
+        elif user == None or region == None:
+            await ctx.send(":x: *Summoner name or region code missing.*".format())
+            return
+        elif region not in self.loldata("region"):
+            await ctx.send(":x: *The region code isn't correct senpai 7w7*".format())
+            return
+        elif str(ctx.author.id) in loldata["linkedsumms"]:
+            loldata["linkedsumms"][str(ctx.author.id)] = [region,user]
+            await ctx.send("Your linked account has been changed.")
+        else:
+            loldata["linkedsumms"][str(ctx.author.id)] = [region,user]
+            await ctx.send("Your Discord account has been linked! (⌒ω⌒)")
+        with open(os.path.dirname(os.path.abspath(__file__))+"/loldata.json", "w") as handler:
+            json.dump(loldata, handler)
+
+    @commands.guild_only()
+    @commands.command()
     async def lolsumm(self, ctx, *args):
         """Gets summoner's profile info.
 
@@ -57,19 +95,24 @@ class Lol:
         written case sensitive nor with spaces"""
         [x.lower() for x in args]
         if len(args) == 0:
-            await ctx.send(":x: *Missing Parameters: Region & Summoner*".format())
-            return
-        region = args[0]
-        if region not in self.loldata("region"):
-            await ctx.send(":x: *The region code isn't correct senpai 7w7*".format())
-            return
-        if len(args) < 2:
-            await ctx.send(":x: *Summoner name missing or incorrect format.*".format())
-            return
-        if len(args) > 2:
-            summ = "".join(args[1:69])
-        if len(args) == 2:
-            summ = args[1]
+            if str(ctx.author.id) in self.loldata("linkedsumms"):
+                region = self.loldata("linkedsumms")[str(ctx.author.id)][0]
+                summ = self.loldata("linkedsumms")[str(ctx.author.id)][1]
+            else:
+                await ctx.send("You don't have a linked summoner yet. Use the command lollink to link one (≧◡≦) ")
+                return
+        if len(args) > 0:
+            region = args[0]
+            if region not in self.loldata("region"):
+                await ctx.send(":x: *The region code isn't correct senpai 7w7*".format())
+                return
+            if len(args) < 2:
+                await ctx.send(":x: *Summoner name missing or incorrect format.*".format())
+                return
+            if len(args) > 2:
+                summ = "".join(args[1:69])
+            if len(args) == 2:
+                summ = args[1]
         #reponse error handler
         summhandler = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+summ+"?api_key="+self.loldata("key"))
         if summhandler.status_code == 429:
@@ -238,19 +281,24 @@ class Lol:
         written case sensitive nor with spaces"""
         [x.lower() for x in args]
         if len(args) == 0:
-            await ctx.send(":x: *Missing Parameters: Region & Summoner*".format())
-            return
-        region = args[0]
-        if region not in self.loldata("region"):
-            await ctx.send(":x: *The region code isn't correct senpai 7w7*".format())
-            return
-        if len(args) < 2:
-            await ctx.send(":x: *Summoner name missing or incorrect format.*".format())
-            return
-        if len(args) > 2:
-            summ = "".join(args[1:69]) #python characteristic
-        if len(args) == 2:
-            summ = args[1]
+            if str(ctx.author.id) in self.loldata("linkedsumms"):
+                region = self.loldata("linkedsumms")[str(ctx.author.id)][0]
+                summ = self.loldata("linkedsumms")[str(ctx.author.id)][1]
+            else:
+                await ctx.send("You don't have a linked summoner yet. Use the command lollink to link one (≧◡≦) ")
+                return
+        if len(args) > 0:
+            region = args[0]
+            if region not in self.loldata("region"):
+                await ctx.send(":x: *The region code isn't correct senpai 7w7*".format())
+                return
+            if len(args) < 2:
+                await ctx.send(":x: *Summoner name missing or incorrect format.*".format())
+                return
+            if len(args) > 2:
+                summ = "".join(args[1:69])
+            if len(args) == 2:
+                summ = args[1]
         summhandler = requests.get("https://"+self.loldata("region")[region]+".api.riotgames.com/lol/summoner/v3/summoners/by-name/"+summ+"?api_key="+self.loldata("key"))
         if summhandler.status_code == 429:
             await ctx.send("*I'm receiving too many requests, pls try again in 2 minutes* :sweat: ".format())
