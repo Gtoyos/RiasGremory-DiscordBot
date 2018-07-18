@@ -400,7 +400,7 @@ class Osu:
             staricon = "osuextra"
         elif stars < 6.8:
             staricon = "osuultra"
-        starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**")
+        starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**"
         playscore="{:,}".format(int(recentplay["score"]))
         blinks = "[:tv:](https://osu.ppy.sh/d/"+recentplay["beatmap_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+recentplay["beatmap_id"]+"n) [:heart_decoration:](osu://b/"+recentplay["beatmap_id"]+")"
         embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1")
@@ -506,7 +506,7 @@ class Osu:
             staricon = "osuextra"
         elif stars < 6.8:
             staricon = "osuultra"
-        starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**")
+        starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**"
         playscore="{:,}".format(int(bestplay["score"]))
         blinks = "[:tv:](https://osu.ppy.sh/d/"+bestplay["beatmap_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+bestplay["beatmap_id"]+"n) [:heart_decoration:](osu://b/"+bestplay["beatmap_id"]+")"
         embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1")
