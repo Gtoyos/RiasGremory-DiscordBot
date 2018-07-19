@@ -348,10 +348,10 @@ class Osu:
         for k in soppy:
             juasondata= json.loads(k)
 
-        c100 = int(bestplay["count100"])
-        c50 = int(bestplay["count50"])
-        misses = int(bestplay["countmiss"])
-        combo = int(bestplay["maxcombo"])
+        c100 = int(recentplay["count100"])
+        c50 = int(recentplay["count50"])
+        misses = int(recentplay["countmiss"])
+        combo = int(recentplay["maxcombo"])
         acc = (50*int(recentplay["count50"])+100*int(recentplay["count100"])+300*int(recentplay["count300"]))/(300*(int(recentplay["count300"])+int(recentplay["count100"])+int(recentplay["count50"])+int(recentplay["countmiss"])))
         score_ver = 1 #score v2 or v1
 
