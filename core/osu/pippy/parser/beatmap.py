@@ -1,6 +1,6 @@
 import math
 import configparser
-from pippy.types import HitObject, TimingPoint, SliderData
+from osu.pippy.types import HitObject, TimingPoint, SliderData
 
 class Beatmap:
     # Slots are used to optimize memory usage

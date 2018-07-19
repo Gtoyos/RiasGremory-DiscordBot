@@ -3,8 +3,8 @@ import os
 
 import requests
 
-from pippy.parser.beatmap import Beatmap
-from pippy.pp.counter import calculate_pp, Mods, calculate_pp_by_acc
+from .pippy.parser.beatmap import Beatmap
+from .pippy.pp.counter import calculate_pp, Mods, calculate_pp_by_acc
 
 from pippy import diff
 

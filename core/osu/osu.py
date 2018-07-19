@@ -22,9 +22,9 @@ import random
 import os
 import datetime
 import argparse
-from pippy.parser.beatmap import Beatmap
-from pippy.pp.counter import calculate_pp, Mods, calculate_pp_by_acc
-from pippy import diff
+from .pippy.parser.beatmap import Beatmap
+from .pippy.pp.counter import calculate_pp, Mods, calculate_pp_by_acc
+from .pippy import diff
 
 class Osu:
     """Osu! Commands"""
@@ -348,10 +348,10 @@ class Osu:
         for k in soppy:
             juasondata= json.loads(k)
 
-        c100 = recentplay["count100"]
-        c50 = recentplay["count50"]
-        misses = recentplay["countmiss"]
-        combo = recentplay["maxcombo"]
+        c100 = int(bestplay["count100"])
+        c50 = int(bestplay["count50"])
+        misses = int(bestplay["countmiss"])
+        combo = int(bestplay["maxcombo"])
         acc = (50*int(recentplay["count50"])+100*int(recentplay["count100"])+300*int(recentplay["count300"]))/(300*(int(recentplay["count300"])+int(recentplay["count100"])+int(recentplay["count50"])+int(recentplay["countmiss"])))
         score_ver = 1 #score v2 or v1
 
@@ -431,7 +431,7 @@ class Osu:
             if str(ctx.author.id) in localosudata["linkedusers"]:
                 user = localosudata["linkedusers"][str(ctx.author.id)]
             else:
-                user = ctx.author.namer
+                user = ctx.author.name
         bestplay = requests.get("https://osu.ppy.sh/api/get_user_best?k="+localosudata["key"]+"&u="+user+"&type=string&m=0&limit=1").json()
         try:
             bestplay = bestplay[0] #the api gives you a list also useful to chek if user exists.
@@ -454,10 +454,10 @@ class Osu:
         for k in soppy:
             juasondata= json.loads(k)
 
-        c100 = bestplay["count100"]
-        c50 = bestplay["count50"]
-        misses = bestplay["countmiss"]
-        combo = bestplay["maxcombo"]
+        c100 = int(bestplay["count100"])
+        c50 = int(bestplay["count50"])
+        misses = int(bestplay["countmiss"])
+        combo = int(bestplay["maxcombo"])
         acc = (50*int(bestplay["count50"])+100*int(bestplay["count100"])+300*int(bestplay["count300"]))/(300*(int(bestplay["count300"])+int(bestplay["count100"])+int(bestplay["count50"])+int(bestplay["countmiss"])))
         score_ver = 1 #score v2 or v1
 
@@ -479,7 +479,7 @@ class Osu:
         if not good:
             raise ValueError("Beatmap verify failed. "
                     "Either beatmap is not for osu! standart, or it's malformed")
-        if not combo or combo > btmap.max_combo:
+        if not combo or int(combo) > int(btmap.max_combo):
             combo = btmap.max_combo
 
         mods = Mods(mod_s)

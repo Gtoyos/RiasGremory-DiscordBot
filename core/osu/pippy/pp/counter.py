@@ -1,5 +1,5 @@
 import math
-from pippy.types import Mods
+from osu.pippy.types import Mods
 
 
 def base_strain(strain):
