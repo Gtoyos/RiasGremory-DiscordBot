@@ -539,9 +539,9 @@ class Osu:
             staricon = "osuhard"
         elif stars < 4.8:
             staricon = "osuinsane"
-        elif stars < 5.8:
-            staricon = "osuextra"
         elif stars < 6.8:
+            staricon = "osuextra"
+        elif stars >= 6.8:
             staricon = "osuultra"
         if mod_s == "":
             starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: *None*"
