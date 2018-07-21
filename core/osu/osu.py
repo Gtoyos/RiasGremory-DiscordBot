@@ -427,7 +427,7 @@ class Osu:
             ranking = "D_"
         elif ranking == "F":
             ranking = "*Failed*"
-            performances = "~~"+str(pp.pp)[:5]+"**pp**~~ *Failed* "+
+            performances = "~~"+str(pp.pp)[:5]+"**pp**~~ *Failed* "
         playscore="{:,}".format(int(recentplay["score"]))
         if not ranking == "*Failed*":
             performances = str(pp.pp)[:5]+"**pp** "+self.osuicon(ranking)
@@ -562,7 +562,7 @@ class Osu:
             ranking = "D_"
         elif ranking == "F":
             ranking = "*Failed*"
-            performances = "~~"+str(pp.pp)[:5]+"**pp**~~ *Failed* "+
+            performances = "~~"+str(pp.pp)[:5]+"**pp**~~ *Failed* "
         playscore="{:,}".format(int(recentplay["score"]))
         if not ranking == "*Failed*":
             performances = str(pp.pp)[:5]+"**pp** "+self.osuicon(ranking)
