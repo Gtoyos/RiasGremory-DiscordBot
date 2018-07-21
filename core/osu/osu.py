@@ -412,6 +412,7 @@ class Osu:
             starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: "+mod_s
         else:
             starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**"
+        ranking = recentplay["rank"]
         if ranking == "S":
             ranking = "S_"
         elif ranking == "A":
@@ -427,7 +428,7 @@ class Osu:
         elif ranking == "F":
             ranking = "*Failed*"
         playscore="{:,}".format(int(recentplay["score"]))
-        blinks = "[:tv:](https://osu.ppy.sh/d/"+recentplay["beatmapset_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+recentplay["beatmapset_id"]+"n)"
+        blinks = "[:tv:](https://osu.ppy.sh/d/"+beatmap["beatmapset_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+beatmap["beatmapset_id"]+"n)"
         embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1", colour=ctx.guild.me.top_role.colour)
         embed.set_author(name=user+"'s latest play. (#"+osudata["pp_rank"]+")", url="https://osu.ppy.sh/users/"+recentplay["user_id"], icon_url=jsondata["avatar_url"])
         embed.set_thumbnail(url=juasondata["covers"]["list@2x"])
@@ -559,7 +560,7 @@ class Osu:
         elif ranking == "F":
             ranking = "*Failed*"
         playscore="{:,}".format(int(bestplay["score"]))
-        blinks = "[:tv:](https://osu.ppy.sh/d/"+bestplay["beatmapset_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+bestplay["beatmapset_id"]+"n)"
+        blinks = "[:tv:](https://osu.ppy.sh/d/"+beatmap["beatmapset_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+beatmap["beatmapset_id"]+"n)"
         embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1", colour=ctx.guild.me.top_role.colour)
         embed.set_author(name=user+"'s latest play. (#"+osudata["pp_rank"]+")", url="https://osu.ppy.sh/users/"+bestplay["user_id"], icon_url=jsondata["avatar_url"])
         embed.set_thumbnail(url=juasondata["covers"]["list@2x"])
