@@ -453,12 +453,16 @@ class Osu:
         soppy = BeautifulSoup(bpage, "html.parser").find(id = "json-beatmapset")
         for k in soppy:
             juasondata= json.loads(k)
-
+        c300 = int(bestplay["count300"])
         c100 = int(bestplay["count100"])
         c50 = int(bestplay["count50"])
         misses = int(bestplay["countmiss"])
         combo = int(bestplay["maxcombo"])
-        acc = (50*int(bestplay["count50"])+100*int(bestplay["count100"])+300*int(bestplay["count300"]))/(300*(int(bestplay["count300"])+int(bestplay["count100"])+int(bestplay["count50"])+int(bestplay["countmiss"])))
+        totalhits=300*(c100+c50+misses+c300)
+        buthitted=300*c300+100*c100+50*c50
+        acc = totalhits/buthitted
+        #acc = (50*int(bestplay["count50"])+100*int(bestplay["count100"])+300*int(bestplay["count300"]))/(300*(int(bestplay["count300"])+int(bestplay["count100"])+int(bestplay["count50"])+int(bestplay["countmiss"])))
+        #osu formula not working idk why
         score_ver = 1 #score v2 or v1
 
         #mod calculation
