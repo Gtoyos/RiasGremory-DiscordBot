@@ -56,7 +56,8 @@ class Lol:
 
         Syntax: `$lollink summonername`
         Summoner doesn't need to be written
-        case sensitive. To link your username
+        case sensitive but without spaces.
+        To link your username
         with another summoner's name invoke
         this command again. To reset it leave it
         in blank.
@@ -81,7 +82,8 @@ class Lol:
             await ctx.send("Your linked account has been changed.")
         else:
             loldata["linkedsumms"][str(ctx.author.id)] = [region,user]
-            await ctx.send("Your Discord account has been linked! (⌒ω⌒)")
+            await ctx.send("Your Discord account has been linked with: "+user+" from "+region+" (⌒ω⌒)")
+            await ctx.send("Remember that your summoner's name has to be written without spaces!")
         with open(os.path.dirname(os.path.abspath(__file__))+"/loldata.json", "w") as handler:
             json.dump(loldata, handler)
 
