@@ -563,7 +563,7 @@ class Osu:
         elif ranking == "F":
             ranking = "*Failed*"
             performances = "~~"+str(pp.pp)[:5]+"**pp**~~ *Failed* "
-        playscore="{:,}".format(int(recentplay["score"]))
+        playscore="{:,}".format(int(bestplay["score"]))
         if not ranking == "*Failed*":
             performances = str(pp.pp)[:5]+"**pp** "+self.osuicon(ranking)
         playscore="{:,}".format(int(bestplay["score"]))
