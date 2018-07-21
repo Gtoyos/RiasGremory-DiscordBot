@@ -410,14 +410,14 @@ class Osu:
             staricon = "osuultra"
         starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**"
         playscore="{:,}".format(int(recentplay["score"]))
-        blinks = "[:tv:](https://osu.ppy.sh/d/"+recentplay["beatmap_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+recentplay["beatmap_id"]+"n) [:heart_decoration:](osu://b/"+recentplay["beatmap_id"]+")"
-        embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1")
-        embed.set_author(name=user+"'s latest play. *(#"+osudata["pp_rank"]+")*", url="https://osu.ppy.sh/users/"+recentplay["user_id"], icon_url=jsondata["avatar_url"])
+        blinks = "[:tv:](https://osu.ppy.sh/d/"+recentplay["beatmapset_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+recentplay["beatmapset_id"]+"n)
+        embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1", colour=ctx.guild.me.top_role.colour)
+        embed.set_author(name=user+"'s latest play. (#"+osudata["pp_rank"]+")", url="https://osu.ppy.sh/users/"+recentplay["user_id"], icon_url=jsondata["avatar_url"])
         embed.set_thumbnail(url=juasondata["covers"]["list@2x"])
         embed.add_field(name="Difficulty and Mods" ,value=starsandmods ,inline=True)
-        embed.add_field(name="Score and Accuracy" ,value="*"+str(playscore)+" Acc: %"+str(round(pp.acc_percent, 2)),inline=True)
-        embed.add_field(name="Combo" ,value="{comb}/{max_comb} with {miss} misses".format(comb=combo, max_comb=btmap.max_combo, miss=misses) ,inline=True)
-        embed.add_field(name="Performance" ,value=str(pp.pp)+"**pp**" ,inline=True)
+        embed.add_field(name="Score and Accuracy" ,value="*"+str(playscore)+"  Acc: %"+str(round(pp.acc_percent, 2))+"*",inline=True)
+        embed.add_field(name="Combo" ,value="{comb}/{max_comb} with {miss} misses".format(comb=combo, max_comb=beatmap["max_combo"], miss=misses) ,inline=True)
+        embed.add_field(name="Performance" ,value=str(pp.pp)[:5]+"**pp**" ,inline=True)
         embed.add_field(name="Date" ,value=recentplay["date"] ,inline=True)
         embed.add_field(name="Download Beatmap", value=blinks,inline=True)
         await ctx.send(embed=embed)
@@ -524,14 +524,14 @@ class Osu:
             staricon = "osuultra"
         starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**"
         playscore="{:,}".format(int(bestplay["score"]))
-        blinks = "[:tv:](https://osu.ppy.sh/d/"+bestplay["beatmap_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+bestplay["beatmap_id"]+"n) [:heart_decoration:](osu://b/"+bestplay["beatmap_id"]+")"
-        embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1")
-        embed.set_author(name=user+"'s latest play. *(#"+osudata["pp_rank"]+")*", url="https://osu.ppy.sh/users/"+bestplay["user_id"], icon_url=jsondata["avatar_url"])
+        blinks = "[:tv:](https://osu.ppy.sh/d/"+bestplay["beatmapset_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+bestplay["beatmapset_id"]+"n)
+        embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1", colour=ctx.guild.me.top_role.colour)
+        embed.set_author(name=user+"'s latest play. (#"+osudata["pp_rank"]+")", url="https://osu.ppy.sh/users/"+bestplay["user_id"], icon_url=jsondata["avatar_url"])
         embed.set_thumbnail(url=juasondata["covers"]["list@2x"])
         embed.add_field(name="Difficulty and Mods" ,value=starsandmods ,inline=True)
-        embed.add_field(name="Score and Accuracy" ,value="*"+str(playscore)+" Acc: %"+str(round(pp.acc_percent, 2)),inline=True)
-        embed.add_field(name="Combo" ,value="{comb}/{max_comb} with {miss} misses".format(comb=combo, max_comb=btmap.max_combo, miss=misses) ,inline=True)
-        embed.add_field(name="Performance" ,value=str(pp.pp)+"**pp**" ,inline=True)
+        embed.add_field(name="Score and Accuracy" ,value="*"+str(playscore)+"  Acc: %"+str(round(pp.acc_percent, 2))+"*",inline=True)
+        embed.add_field(name="Combo" ,value="{comb}/{max_comb} with {miss} misses".format(comb=combo, max_comb=beatmap["max_combo"], miss=misses) ,inline=True)
+        embed.add_field(name="Performance" ,value=str(pp.pp)[:5]+"**pp**" ,inline=True)
         embed.add_field(name="Date" ,value=bestplay["date"] ,inline=True)
         embed.add_field(name="Download Beatmap", value=blinks,inline=True)
         await ctx.send(embed=embed)
