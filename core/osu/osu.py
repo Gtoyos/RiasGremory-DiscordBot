@@ -409,7 +409,7 @@ class Osu:
         elif stars < 6.8:
             staricon = "osuultra"
         if mod_s == "":
-            starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: "+mod_s
+            starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: *None*"
         else:
             starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**"
         ranking = recentplay["rank"]
@@ -427,7 +427,10 @@ class Osu:
             ranking = "D_"
         elif ranking == "F":
             ranking = "*Failed*"
+            performances = "~~"+str(pp.pp)[:5]+"**pp**~~ *Failed* "+
         playscore="{:,}".format(int(recentplay["score"]))
+        if not ranking == "*Failed*":
+            performances = str(pp.pp)[:5]+"**pp** "+self.osuicon(ranking)
         blinks = "[:tv:](https://osu.ppy.sh/d/"+beatmap["beatmapset_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+beatmap["beatmapset_id"]+"n)"
         embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1", colour=ctx.guild.me.top_role.colour)
         embed.set_author(name=user+"'s latest play. (#"+osudata["pp_rank"]+")", url="https://osu.ppy.sh/users/"+recentplay["user_id"], icon_url=jsondata["avatar_url"])
@@ -435,7 +438,7 @@ class Osu:
         embed.add_field(name="Difficulty and Mods" ,value=starsandmods ,inline=True)
         embed.add_field(name="Score and Accuracy" ,value="*"+str(playscore)+"  Acc: %"+str(round(pp.acc_percent, 2))+"*",inline=True)
         embed.add_field(name="Combo" ,value="{comb}/{max_comb} with {miss} misses".format(comb=combo, max_comb=beatmap["max_combo"], miss=misses) ,inline=True)
-        embed.add_field(name="Performance" ,value=str(pp.pp)[:5]+"**pp** "+self.osuicon(ranking) ,inline=True)
+        embed.add_field(name="Performance" ,value=performances ,inline=True)
         embed.add_field(name="Date Played" ,value=recentplay["date"] ,inline=True)
         embed.add_field(name="Download Beatmap", value=blinks,inline=True)
         await ctx.send(embed=embed)
@@ -541,7 +544,7 @@ class Osu:
         elif stars < 6.8:
             staricon = "osuultra"
         if mod_s == "":
-            starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: "+mod_s
+            starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: *None*"
         else:
             starsandmods = "Stars: "+str(round(stars,2))+" "+self.osuicon(staricon)+" Mods: **"+mod_s+"**"
         ranking = bestplay["rank"]
@@ -559,6 +562,10 @@ class Osu:
             ranking = "D_"
         elif ranking == "F":
             ranking = "*Failed*"
+            performances = "~~"+str(pp.pp)[:5]+"**pp**~~ *Failed* "+
+        playscore="{:,}".format(int(recentplay["score"]))
+        if not ranking == "*Failed*":
+            performances = str(pp.pp)[:5]+"**pp** "+self.osuicon(ranking)
         playscore="{:,}".format(int(bestplay["score"]))
         blinks = "[:tv:](https://osu.ppy.sh/d/"+beatmap["beatmapset_id"]+") [:musical_note:](https://osu.ppy.sh/d/"+beatmap["beatmapset_id"]+"n)"
         embed = discord.Embed(title=title, url="https://osu.ppy.sh/b/"+beatmap["beatmap_id"]+"&m=1", colour=ctx.guild.me.top_role.colour)
