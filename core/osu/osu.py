@@ -347,12 +347,20 @@ class Osu:
         soppy = BeautifulSoup(bpage, "html.parser").find(id = "json-beatmapset")
         for k in soppy:
             juasondata= json.loads(k)
-
+        c300 = int(recentplay["count300"])
         c100 = int(recentplay["count100"])
         c50 = int(recentplay["count50"])
         misses = int(recentplay["countmiss"])
         combo = int(recentplay["maxcombo"])
-        acc = (50*int(recentplay["count50"])+100*int(recentplay["count100"])+300*int(recentplay["count300"]))/(300*(int(recentplay["count300"])+int(recentplay["count100"])+int(recentplay["count50"])+int(recentplay["countmiss"])))
+        maxacc = float(c300)
+        maxacc += float(c100)
+        maxacc += float(c50)
+        maxacc += float(misses)
+        maxacc *= 300
+        useracc = float(c300) * 300.0
+        useracc = float(c100) * 100.0
+        useracc = float(c50) * 50.0
+        acc =  (float(useracc)/float(maxacc)) * 100.0
         score_ver = 1 #score v2 or v1
 
         #mod calculation
@@ -458,11 +466,15 @@ class Osu:
         c50 = int(bestplay["count50"])
         misses = int(bestplay["countmiss"])
         combo = int(bestplay["maxcombo"])
-        totalhits=300*(c100+c50+misses+c300)
-        buthitted=300*c300+100*c100+50*c50
-        acc = totalhits/buthitted
-        #acc = (50*int(bestplay["count50"])+100*int(bestplay["count100"])+300*int(bestplay["count300"]))/(300*(int(bestplay["count300"])+int(bestplay["count100"])+int(bestplay["count50"])+int(bestplay["countmiss"])))
-        #osu formula not working idk why
+        maxacc = float(c300)
+        maxacc += float(c100)
+        maxacc += float(c50)
+        maxacc += float(misses)
+        maxacc *= 300
+        useracc = float(c300) * 300.0
+        useracc = float(c100) * 100.0
+        useracc = float(c50) * 50.0
+        acc =  (float(useracc)/float(maxacc)) * 100.0
         score_ver = 1 #score v2 or v1
 
         #mod calculation
