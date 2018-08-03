@@ -357,9 +357,9 @@ class Osu:
         maxacc += float(c50)
         maxacc += float(misses)
         maxacc *= 300
-        useracc = float(c300) * 300.0
-        useracc = float(c100) * 100.0
-        useracc = float(c50) * 50.0
+        useracc += float(c300) * 300.0
+        useracc += float(c100) * 100.0
+        useracc += float(c50) * 50.0
         acc =  (float(useracc)/float(maxacc)) * 100.0
         score_ver = 1 #score v2 or v1
 
@@ -492,9 +492,9 @@ class Osu:
         maxacc += float(c50)
         maxacc += float(misses)
         maxacc *= 300
-        useracc = float(c300) * 300.0
-        useracc = float(c100) * 100.0
-        useracc = float(c50) * 50.0
+        useracc += float(c300) * 300.0
+        useracc += float(c100) * 100.0
+        useracc += float(c50) * 50.0
         acc =  (float(useracc)/float(maxacc)) * 100.0
         score_ver = 1 #score v2 or v1
 
