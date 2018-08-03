@@ -64,7 +64,7 @@ class Akinator:
         Play Akinator whith Rias!
         """
         try:
-            akinator_session = requests.get(self.wslinks("NEW_SESSION_URL")+ctx.author.nick+"&constraint=ETAT<>'AV'")
+            akinator_session = requests.get(self.wslinks("NEW_SESSION_URL")+str(ctx.author)+"&constraint=ETAT<>'AV'")
         except Exception as e:
             print("Exception in new session. {}".format(e))
             akinator_session = requests.get(self.wslinks("NEW_SESSION_URL")+"weirdname&constraint=ETAT<>'AV'")    #if ws throws an error if name is too weird
@@ -93,7 +93,7 @@ class Akinator:
                 ans_ok = False
                 while not ans_ok:
                     try:
-                        answer = await self.bot.wait_for("message",check=msg_check,timeout=15)
+                        answer = await self.bot.wait_for("message", timeout=15.0, check=msg_check)
                     except asyncio.TimeoutError:
                         await ctx.send("You are taking too long to answer, baka. If you want to play again you will have to invoke `akinator` again. 	(・_・ヾ ")
                         break
@@ -111,7 +111,7 @@ class Akinator:
                 session = akinator_data["parameters"]["identification"]["session"]
                 signature = akinator_data["parameters"]["identification"]["signature"]
 
-                akinator_session = requests.get(self.wslinks("ANSWER_URL")+ctx.author.nick+"&constraint=ETAT<>'AV'", params=params)
+                akinator_session = requests.get(self.wslinks("ANSWER_URL")+str(ctx.author)+"&constraint=ETAT<>'AV'", params=params)
                 #culd passs player and etat as params too!
                 akinator_data = akinator_session.json()
                 if int(float(akinator_data["parameters"]["progression"])) > 91 and not guessed_wrong_once:
@@ -122,7 +122,7 @@ class Akinator:
                 "signature": signature,
                 "step": akinator_data["parameters"]["step"]
             }
-            guess_session = requests.get(self.wslinks("GET_GUESS_URL")+ctx.author.nick+"&constraint=ETAT<>'AV'", params=params)
+            guess_session = requests.get(self.wslinks("GET_GUESS_URL")+str(ctx.author)+"&constraint=ETAT<>'AV'", params=params)
             guess_data = guess_session.json()
 
             name = guess_data["parameters"]["elements"][0]["element"]["name"]
@@ -146,7 +146,7 @@ class Akinator:
                     pass
             if answer.lower() in a_sym["yes"]:
                 await ctx.send("I guessed right! Thanks for playing with me uwu")
-                akinator_r = requests.get(self.wslinks("CHOICE_URL")+ctx.author.nick+"&constraint=ETAT<>'AV'", params=params)
+                akinator_r = requests.get(self.wslinks("CHOICE_URL")+str(ctx.author)+"&constraint=ETAT<>'AV'", params=params)
                 game_over = True
                 break
 
@@ -158,7 +158,7 @@ class Akinator:
                     "step": akinator_data['parameters']['step'],
                     "forward_answer": response
                 }
-                akinator_r = requests.get(self.wslinks("EXCLUSION_URL")+ctx.author.nick+"&constraint=ETAT<>'AV'", params=params)
+                akinator_r = requests.get(self.wslinks("EXCLUSION_URL")+str(ctx.author)+"&constraint=ETAT<>'AV'", params=params)
                 can_guess= False
                 guessed_wrong_once = True
             else:
