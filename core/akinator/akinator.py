@@ -65,8 +65,8 @@ class Akinator:
         """
         try:
             akinator_session = requests.get(self.wslinks("NEW_SESSION_URL")+ctx.author.nick+"&constraint=ETAT<>'AV'")
-        except:
-            print("Exception in new session.")
+        except Exception as e:
+            print("Exception in new session. {}".format(e))
             akinator_session = requests.get(self.wslinks("NEW_SESSION_URL")+"weirdname&constraint=ETAT<>'AV'")    #if ws throws an error if name is too weird
         akinator_data = akinator_session.json()
         try:
@@ -101,7 +101,7 @@ class Akinator:
                         ans_ok = True
                     else:
                         pass
-                response = anstostrint(answer)
+                response = self.anstostrint(answer)
                 params = {
                     "session": akinator_data['parameters']['identification']['session'],
                     "signature": akinator_data['parameters']['identification']['signature'],
