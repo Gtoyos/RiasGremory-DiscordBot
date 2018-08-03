@@ -84,7 +84,7 @@ class Akinator:
         guessed_wrong_once = False
         a_sym = self.getanswer("all")
 
-        def msg_check(m):
+        def check(m):
             return m.author == ctx.author
 
         while not game_over:
