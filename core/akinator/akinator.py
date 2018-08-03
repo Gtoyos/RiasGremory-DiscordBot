@@ -30,7 +30,7 @@ class Akinator:
     def getanswer(answer):
         with open(os.path.dirname(os.path.abspath(__file__))+"/akinatordata.json", "r") as handler:
             raw = handler.read()
-            if answer == "all"
+            if answer == "all":
                 return json.loads(raw)["answers"]
             else:
                 return json.loads(raw)["answers"][answer]
@@ -55,7 +55,7 @@ class Akinator:
     def wslinks(type):
         with open(os.path.dirname(os.path.abspath(__file__))+"/akinatordata.json", "r") as handler:
             raw = handler.read()
-            return json.loads(raw)["links"][answer]
+            return json.loads(raw)["links"][type]
 
     @commands.guild_only()
     @commands.command()
