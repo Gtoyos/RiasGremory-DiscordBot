@@ -81,7 +81,7 @@ class Akinator:
         a_sym = self.wslinks("answers")
 
         def msg_check(m):
-            return m.author = ctx.author
+            return m.author == ctx.author
 
         while not game_over:
             while not can_guess:
