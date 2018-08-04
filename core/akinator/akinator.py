@@ -85,7 +85,7 @@ class Akinator:
         a_sym = self.getanswer("all")
 
         def check(m):
-            return m.author == ctx.author
+            return m.author == ctx.author and m.channel = ctx.channel
 
         while not game_over:
             while not can_guess:
