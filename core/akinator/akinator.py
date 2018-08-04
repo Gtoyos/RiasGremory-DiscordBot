@@ -96,10 +96,8 @@ class Akinator:
                 ans_ok = False
                 while not ans_ok:
                     try:
-                        await ctx.send("flag 1")
                         answer = await self.bot.wait_for("message", timeout=15.0, check=check)
                         answer = answer.content
-                        await ctx.send("flag 2")
                     except asyncio.TimeoutError:
                         await ctx.send("You are taking too long to answer, baka. If you want to play again you will have to invoke `akinator` again. 	(・_・ヾ ")
                         return
@@ -146,7 +144,7 @@ class Akinator:
             ans_ok = False
             while not ans_ok:
                 try:
-                    answer = await self.bot.wait_for("message",check=check,timeout=15)
+                    answer = await self.bot.wait_for("message",check=check,timeout=22)
                     answer = answer.content
                 except asyncio.TimeoutError:
                     await ctx.send("You are taking too long to answer, baka. If you want to play again you will have to invoke `akinator` again. 	(・_・ヾ ")
