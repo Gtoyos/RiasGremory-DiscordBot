@@ -142,7 +142,7 @@ class Akinator:
             await ctx.send("Is this your character?")
             embed = discord.Embed(colour=ctx.guild.me.top_role.colour,title=name,description="*"+desc+"*")
             embed.set_image(url=img)
-
+            await ctx.send(embed=embed)
             ans_ok = False
             while not ans_ok:
                 try:
