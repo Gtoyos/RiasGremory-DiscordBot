@@ -57,7 +57,7 @@ class Akinator:
             raw = handler.read()
             return json.loads(raw)["links"][type]
 
-    @commands.guild_only()
+    #@commands.guild_only()
     @commands.command()
     async def akinator(self,ctx):
         """
