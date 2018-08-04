@@ -57,7 +57,7 @@ class Akinator:
             raw = handler.read()
             return json.loads(raw)["links"][type]
 
-    #@commands.guild_only()
+    @commands.guild_only()
     @commands.command()
     async def akinator(self,ctx):
         """
@@ -124,7 +124,7 @@ class Akinator:
                 akinator_session = requests.get(self.wslinks("ANSWER_URL")+str(hash(ctx.author))+"&constraint=ETAT<>'AV'", params=params)
                 #culd passs player and etat as params too!
                 akinator_data = akinator_session.json()
-                if int(float(akinator_data["parameters"]["progression"])) > 91 and not guessed_wrong_once:
+                if int(float(akinator_data["parameters"]["progression"])) > 91:
                     can_guess = True
 
             params = {
@@ -174,10 +174,3 @@ class Akinator:
                 guessed_wrong_once = True
             else:
                 pass
-
-    @commands.command()
-    async def akinators(self, ctx):
-        def check(m):
-            return m.author == ctx.author
-        answer = await self.bot.wait_for("message", timeout=15.0, check=check)
-        await ctx.send(answer.content)
