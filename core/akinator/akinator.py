@@ -84,18 +84,16 @@ class Akinator:
         guessed_wrong_once = False
         a_sym = self.getanswer("all")
 
-#        def check(m):
-#            return m.author == ctx.author and m.channel == ctx.channel
+        def check(m):
+            return m.author == ctx.author and m.channel == ctx.channel
 
         while not game_over:
             while not can_guess:
                 await ctx.send("Question "+str(int(akinator_data['parameters']['step_information']['step'])+1)+": "+akinator_data["parameters"]["step_information"]["question"])
                 ans_ok = False
                 while not ans_ok:
-                    def check(m):
-                        return m.author == ctx.author and m.channel == ctx.channel
                     try:
-                        answer = await self.bot.wait_for("message", timeout=15.0, check=check)
+                        answer = await ctx.bot.wait_for("message", timeout=15.0, check=check)
                     except asyncio.TimeoutError:
                         await ctx.send("You are taking too long to answer, baka. If you want to play again you will have to invoke `akinator` again. 	(・_・ヾ ")
                         break
