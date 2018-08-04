@@ -85,7 +85,7 @@ class Akinator:
         a_sym = self.getanswer("all")
 
         def check(m):
-            return m.author == ctx.author and m.channel == ctx.channel
+            return m.author == ctx.author
 
         while not game_over:
             while not can_guess:
@@ -133,7 +133,7 @@ class Akinator:
             embed = discord.Embed(colour=ctx.guild.me.top_role.colour,title=name,description="*"+desc+"*")
             embed.set_image(url=img)
 
-            ans_ok = False
+            ans_ok = False22
             while not ans_ok:
                 try:
                     answer = await self.bot.wait_for("message",check=check,timeout=15)
@@ -168,4 +168,5 @@ class Akinator:
     async def akinators(self, ctx):
         def msg_check(m):
             return m.author == ctx.author
-        answer = await self.bot.wait_for("message", timeout=15.0, check=msg_check)
+        answer = await self.bot.wait_for("message", timeout=15.0, check=check)
+        await ctx.send(answer.content)
