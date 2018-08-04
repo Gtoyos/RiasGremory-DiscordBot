@@ -89,7 +89,10 @@ class Akinator:
 
         while not game_over:
             while not can_guess:
-                await ctx.send("Question "+str(int(akinator_data['parameters']['step_information']['step'])+1)+": "+akinator_data["parameters"]["step_information"]["question"])
+                try:
+                    await ctx.send("Question "+str(int(akinator_data['parameters']['step_information']['step'])+1)+": "+akinator_data["parameters"]["step_information"]["question"]) #for first question
+                except KeyError:
+                    await ctx.send("Question "+str(int(akinator_data['parameters']['step'])+1)+": "+akinator_data["parameters"]["question"]) #after first question
                 ans_ok = False
                 while not ans_ok:
                     try:
@@ -140,6 +143,7 @@ class Akinator:
             while not ans_ok:
                 try:
                     answer = await self.bot.wait_for("message",check=check,timeout=15)
+                    answer = answer.content
                 except asyncio.TimeoutError:
                     await ctx.send("You are taking too long to answer, baka. If you want to play again you will have to invoke `akinator` again. 	(・_・ヾ ")
                     break
