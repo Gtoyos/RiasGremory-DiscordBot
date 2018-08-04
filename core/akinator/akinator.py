@@ -165,7 +165,7 @@ class Akinator:
                 pass
 
     @commands.command()
-    async def akinator(self, ctx):
+    async def akinators(self, ctx):
         def msg_check(m):
             return m.author == ctx.author
         answer = await self.bot.wait_for("message", timeout=15.0, check=msg_check)
