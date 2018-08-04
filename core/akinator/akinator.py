@@ -102,7 +102,7 @@ class Akinator:
                         await ctx.send("flag 2")
                     except asyncio.TimeoutError:
                         await ctx.send("You are taking too long to answer, baka. If you want to play again you will have to invoke `akinator` again. 	(・_・ヾ ")
-                        break
+                        return
                     if answer in a_sym["yes"] or answer in a_sym["no"] or answer in a_sym["idk"] or answer in a_sym["probably"] or answer in a_sym["probablynot"]:
                         ans_ok = True
                     else:
@@ -150,7 +150,7 @@ class Akinator:
                     answer = answer.content
                 except asyncio.TimeoutError:
                     await ctx.send("You are taking too long to answer, baka. If you want to play again you will have to invoke `akinator` again. 	(・_・ヾ ")
-                    break
+                    return
                 if answer in a_sym["yes"] or answer in a_sym["no"] or answer in a_sym["idk"] or answer in a_sym["probably"] or answer in a_sym["probablynot"]:
                     ans_ok = True
                 else:
