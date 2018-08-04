@@ -93,11 +93,14 @@ class Akinator:
                 ans_ok = False
                 while not ans_ok:
                     try:
-                        answer = await ctx.bot.wait_for("message", timeout=15.0, check=check)
+                        await ctx.send("flag 1")
+                        answer = await self.bot.wait_for("message", timeout=15.0, check=check)
+                        await ctx.send("flag 2")
                     except asyncio.TimeoutError:
                         await ctx.send("You are taking too long to answer, baka. If you want to play again you will have to invoke `akinator` again. 	(・_・ヾ ")
                         break
                     if answer in a_sym["yes"] or answer in a_sym["no"] or answer in a_sym["idk"] or answer in a_sym["probably"] or answer in a_sym["probablynot"]:
+                        answer = answer.content
                         ans_ok = True
                     else:
                         pass
