@@ -84,15 +84,6 @@ class Akinator:
         guessed_wrong_once = False
         a_sym = self.getanswer("all")
 
-        params = {
-            "session": akinator_data['parameters']['identification']['session'],
-            "signature": akinator_data['parameters']['identification']['signature'],
-            "step": akinator_data['parameters']['step_information']['step'],
-            "answer": response
-            }
-        session = akinator_data["parameters"]["identification"]["session"]
-        signature = akinator_data["parameters"]["identification"]["signature"]
-
         def check(m):
             return m.author == ctx.author
 
@@ -117,6 +108,19 @@ class Akinator:
                     else:
                         pass
                 response = self.anstostrint(answer)
+                try:
+                    params = {
+                        "session": akinator_data['parameters']['identification']['session'],
+                        "signature": akinator_data['parameters']['identification']['signature'],
+                        "step": akinator_data['parameters']['step_information']['step'],
+                        "answer": response
+                        }
+                    session = akinator_data["parameters"]["identification"]["session"]
+                    signature = akinator_data["parameters"]["identification"]["signature"]
+                except KeyError:
+                    params["step"] = akinator_data['parameters']['step']    
+                    params["answer"] = response
+
                 akinator_session = requests.get(self.wslinks("ANSWER_URL")+str(hash(ctx.author))+"&constraint=ETAT<>'AV'", params=params)
                 #culd passs player and etat as params too!
                 akinator_data = akinator_session.json()
