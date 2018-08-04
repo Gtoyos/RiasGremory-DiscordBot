@@ -38,15 +38,15 @@ class Akinator:
     @staticmethod
     def anstostrint(ans: str):
         ans = ans.lower()
-        if ans in self.getanswer("yes"):
+        if ans in getanswer("yes"):
             return "0"
-        if ans in self.getanswer("no"):
+        if ans in getanswer("no"):
             return "1"
-        if ans in self.getanswer("idk"):
+        if ans in getanswer("idk"):
             return "2"
-        if ans in self.getanswer("probably"):
+        if ans in getanswer("probably"):
             return "3"
-        if ans in self.getanswer("probablynot"):
+        if ans in getanswer("probablynot"):
             return "4"
         else:
             return "-1"
