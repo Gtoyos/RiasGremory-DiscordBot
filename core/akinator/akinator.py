@@ -118,7 +118,7 @@ class Akinator:
                     session = akinator_data["parameters"]["identification"]["session"]
                     signature = akinator_data["parameters"]["identification"]["signature"]
                 except KeyError:
-                    params["step"] = akinator_data['parameters']['step']    
+                    params["step"] = akinator_data['parameters']['step']
                     params["answer"] = response
 
                 akinator_session = requests.get(self.wslinks("ANSWER_URL")+str(hash(ctx.author))+"&constraint=ETAT<>'AV'", params=params)
@@ -143,7 +143,7 @@ class Akinator:
             embed = discord.Embed(colour=ctx.guild.me.top_role.colour,title=name,description="*"+desc+"*")
             embed.set_image(url=img)
 
-            ans_ok = False22
+            ans_ok = False
             while not ans_ok:
                 try:
                     answer = await self.bot.wait_for("message",check=check,timeout=15)
