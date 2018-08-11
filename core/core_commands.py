@@ -556,9 +556,11 @@ class Core(CoreLogic):
             pass
         await ctx.bot.shutdown(restart=True)
 
-    @commands.group(name="set")
+
+    @commands.group(name="settings")
+    @checks.admin()
     async def _set(self, ctx):
-        """Changes Red's settings"""
+        """Change Rias config"""
         if ctx.invoked_subcommand is None:
             if ctx.guild:
                 admin_role_id = await ctx.bot.db.guild(ctx.guild).admin_role()
@@ -842,6 +844,7 @@ class Core(CoreLogic):
         await ctx.send(_("Prefix(es) set."))
 
     @_set.command()
+    @checks.admin()
     @commands.cooldown(1, 60 * 10, commands.BucketType.default)
     async def owner(self, ctx):
         """Sets Red's main owner"""
