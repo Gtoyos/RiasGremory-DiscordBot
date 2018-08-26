@@ -202,7 +202,8 @@
         "14": "Butcher's Bridge",
         "16": "Cosmic Ruins",
         "18": "Valoran City Park",
-        "19":"Substructure 43"},
+        "19":"Substructure 43",
+        "21": "Nexus Blitz"},
     "gamemode": {
         "0": "Custom",
         "70": "One for All",
@@ -242,7 +243,8 @@
         "990": "Star Guardian Invasion",
         "1000": "PROJECT: Hunters",
         "1010": "Snow ARURF",
-        "1020":"One for All"},
+        "1020":"One for All",
+        "1200":"Nexus Blitz Games"},
     "elo": {
         "BRONZE V": 1,
         "BRONZE IV": 2,
