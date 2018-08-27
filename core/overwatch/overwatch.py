@@ -140,7 +140,7 @@ class Overwatch:
         await ctx.send(embed=embed)
 
     @commands.guild_only()
-    @commands.commnd()
+    @commands.command()
     async def owmain(self,ctx,user: str=None):
         """ Get user's OW main heroes stats.
 
