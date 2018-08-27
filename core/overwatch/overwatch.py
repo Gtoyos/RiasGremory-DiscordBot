@@ -230,7 +230,7 @@ class Overwatch:
 
         embed = discord.Embed(title=title, description="**"+gblob["comprank"]+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
         embed.set_thumbnail(url=profileicon)
-        embed.add_field(name=mainone.capitalize() ,value=value="{}, {}, {}, {}, {}".format(mainone_playtime,mainone_winrate,mainone_gold,mainone_epl,mainone_hero), inline=False)
-        embed.add_field(name=maintwo.capitalize() ,value=value="{}, {}, {}, {}, {}".format(maintwo_playtime,maintwo_winrate,maintwo_gold,maintwo_epl,maintwo_hero), inline=False)
-        embed.add_field(name=mainthree.capitalize() ,value=value="{}, {}, {}, {}, {}".format(mainthree_playtime,mainthree_winrate,mainthree_gold,mainthree_epl,mainthree_hero), inline=False)
+        embed.add_field(name=mainone.capitalize() ,value="{}, {}, {}, {}, {}".format(mainone_playtime,mainone_winrate,mainone_gold,mainone_epl,mainone_hero), inline=False)
+        embed.add_field(name=maintwo.capitalize() ,value="{}, {}, {}, {}, {}".format(maintwo_playtime,maintwo_winrate,maintwo_gold,maintwo_epl,maintwo_hero), inline=False)
+        embed.add_field(name=mainthree.capitalize() ,value="{}, {}, {}, {}, {}".format(mainthree_playtime,mainthree_winrate,mainthree_gold,mainthree_epl,mainthree_hero), inline=False)
         await ctx.send(embed=embed)
