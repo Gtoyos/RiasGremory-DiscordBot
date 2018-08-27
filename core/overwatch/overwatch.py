@@ -126,7 +126,7 @@ class Overwatch:
             "* Most healing done: *"+"{:,}".format(int(sblob["healing_done_most_in_game"]))+"*")
         playtimeheroes=blob[region]["heroes"]["playtime"]["competitive"]
         sortedmains = {}
-        for key, value in sorted(playtimeheroes.iteritems(), key=lambda (k,v): (v,k)):
+        for key, value in sorted(playtimeheroes.items(), key=lambda kv: (kv[1], kv[0])):
             sortedmains[key] = value
         mains = list(sortedmains.keys())[0].capitalize()+", "+list(sortedmains.keys())[1].capitalize()+", "+list(sortedmains.keys())[2].capitalize()
         embed = discord.Embed(title=title, description=description ,colour=ctx.guild.me.top_role.colour)
