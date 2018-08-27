@@ -74,6 +74,7 @@ class Overwatch:
                 user = ctx.author.name
         user = user.replace("#", "-")
         region =  "us" # 3 regions show the same info, idk why there is a region parameter
+        private = False
         request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers)
         blob = request_blob.json()
         try:
@@ -160,6 +161,7 @@ class Overwatch:
                 user = ctx.author.name
         user = user.replace("#", "-")
         region =  "us" # 3 regions show the same info, idk why there is a region parameter
+        private = False
         request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers)
         blob = request_blob.json()
         try:
