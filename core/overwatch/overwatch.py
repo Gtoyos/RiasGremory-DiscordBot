@@ -110,7 +110,7 @@ class Overwatch:
         title=blob["_request"]["route"].split("/")[4].replace("-", "#")+" Current Season Stats" #Mark-1234 to Mark#1234
         if private == True:
             embed = discord.Embed(title=title, description="**"+str(gblob["comprank"])+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
-            embed.add_field(name="User has his current profile set to private", description="Is this your profile? You can change it by: Options->Social->Career Profile Visiblity->Public ")
+            embed.add_field(name="User has his current profile set to private", value="Is this your profile? You can change it by: Options->Social->Career Profile Visiblity->Public ")
             await ctx.send(embed=embed)
             return
         level="Level: "+str(int(gblob["level"])+(int(gblob["prestige"])*100)) #level+prestige*100
@@ -195,7 +195,7 @@ class Overwatch:
         title=blob["_request"]["route"].split("/")[4].replace("-", "#")+" Current Season Main Heroes" #Mark-1234 to Mark#1234
         if private == True:
             embed = discord.Embed(title=title, description="**"+str(gblob["comprank"])+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
-            embed.add_field(name="User has his current profile set to private", description="Is this your profile? You can change it by: Options->Social->Career Profile Visiblity->Public ")
+            embed.add_field(name="User has his current profile set to private", value="Is this your profile? You can change it by: Options->Social->Career Profile Visiblity->Public ")
             await ctx.send(embed=embed)
             return
         playtimeheroes=hblob["playtime"]["competitive"]
