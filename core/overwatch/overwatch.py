@@ -74,7 +74,8 @@ class Overwatch:
                 user = ctx.author.name
         user = user.replace("#", "-")
         region =  "us" # 3 regions show the same info, idk why there is a region parameter
-        blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers).json()
+        request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers)
+        blob = request_blob.json()
         try:
             if blob["error"] == 404:
                 await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag names are case sensitive.")
@@ -157,7 +158,8 @@ class Overwatch:
                 user = ctx.author.name
         user = user.replace("#", "-")
         region =  "us" # 3 regions show the same info, idk why there is a region parameter
-        blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers).json()
+        request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers).json()
+        blob = request_blob.json()
         try:
             if blob["error"] == 404:
                 await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag names are case sensitive.")
