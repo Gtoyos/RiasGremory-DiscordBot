@@ -78,7 +78,7 @@ class Overwatch:
         blob = request_blob.json()
         try:
             if blob["error"] == 404:
-                await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag names are case sensitive.")
+                await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag's names are case sensitive.")
                 return
         except:
             pass
@@ -109,12 +109,12 @@ class Overwatch:
             tier= "Null" #supposing tier will not be 0.
         title=blob["_request"]["route"].split("/")[4].replace("-", "#")+" Current Season Stats" #Mark-1234 to Mark#1234
         if private == True:
-            embed = discord.Embed(title=title, description="**"+gblob["comprank"]+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
+            embed = discord.Embed(title=title, description="**"+str(gblob["comprank"])+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
             embed.add_field(name="User has his current profile set to private", description="Is this your profile? You can change it by: Options->Social->Career Profile Visiblity->Public ")
             await ctx.send(embed=embed)
             return
         level="Level: "+str(int(gblob["level"])+(int(gblob["prestige"])*100)) #level+prestige*100
-        sr="**"+gblob["comprank"]+" SR **"+self.owicon(tier)
+        sr="**"+str(gblob["comprank"])+" SR **"+self.owicon(tier)
         description=level+", "+sr
         profileicon=gblob["avatar"]
         winrate = "*"+gblob["wins"]+"**W**, ",gblob["losses"]+"**L**, ("+gblob["win_rate"]+"% **WR**)*"
@@ -162,7 +162,7 @@ class Overwatch:
         blob = request_blob.json()
         try:
             if blob["error"] == 404:
-                await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag names are case sensitive.")
+                await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag's names are case sensitive.")
                 return
         except:
             pass
@@ -194,7 +194,7 @@ class Overwatch:
             tier= "Null" #supposing tier will not be 0.
         title=blob["_request"]["route"].split("/")[4].replace("-", "#")+" Current Season Main Heroes" #Mark-1234 to Mark#1234
         if private == True:
-            embed = discord.Embed(title=title, description="**"+gblob["comprank"]+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
+            embed = discord.Embed(title=title, description="**"+str(gblob["comprank"])+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
             embed.add_field(name="User has his current profile set to private", description="Is this your profile? You can change it by: Options->Social->Career Profile Visiblity->Public ")
             await ctx.send(embed=embed)
             return
@@ -230,7 +230,7 @@ class Overwatch:
             mainthree_hero = key.replace("_", " ").capitalize()+": "+str(hblob["stats"]["competitive"][mainthree]["hero_stats"][key])   #picks the first option of hero stats and breaks
             break;
 
-        embed = discord.Embed(title=title, description="**"+gblob["comprank"]+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
+        embed = discord.Embed(title=title, description="**"+str(gblob["comprank"])+" SR **"+self.owicon(tier) ,colour=ctx.guild.me.top_role.colour)
         embed.set_thumbnail(url=profileicon)
         embed.add_field(name=mainone.capitalize() ,value="{}, {}, {}, {}, {}".format(mainone_playtime,mainone_winrate,mainone_gold,mainone_epl,mainone_hero), inline=False)
         embed.add_field(name=maintwo.capitalize() ,value="{}, {}, {}, {}, {}".format(maintwo_playtime,maintwo_winrate,maintwo_gold,maintwo_epl,maintwo_hero), inline=False)
