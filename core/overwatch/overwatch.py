@@ -101,7 +101,7 @@ class Overwatch:
             elif sr_int < 3999:
                 tier="owmaster"
             elif sr_int > 4270:
-                tier="owtop":
+                tier="owtop"
             elif sr_int > 4000:
                 tier="owgrandmaster"
         except TypeError:
