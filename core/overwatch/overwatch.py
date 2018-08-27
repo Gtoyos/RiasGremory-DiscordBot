@@ -117,13 +117,13 @@ class Overwatch:
         description=level+", "+sr
         profileicon=gblob["avatar"]
         winrate = "*"+gblob["wins"]+"**W**, ",gblob["losses"]+"**L**, ("+gblob["win_rate"]+"% **WR**)*"
-        medals =  self.owicon("owgoldmedal")+": "+sblob["medals_gold"]+" "+self.owicon("owsilvermedal")+": "+sblob["medals_silver"]+
-            " "+self.owicon("owbronzemedal")+": "+sblob["medals_bronze"]
-        combat_stats = "Damage done: *"+"{:,}".format(int(sblob["hero_damage_done"]))+",* Healing done: *"+"{:,}".format(int(sblob["healing_done"]))+
-            ",* Time spent on fire: *"+sblob["time_spent_on_fire"][:4]+" hours*"
+        medals =  (self.owicon("owgoldmedal")+": "+sblob["medals_gold"]+" "+self.owicon("owsilvermedal")+": "+sblob["medals_silver"]+
+            " "+self.owicon("owbronzemedal")+": "+sblob["medals_bronze"])
+        combat_stats = ("Damage done: *"+"{:,}".format(int(sblob["hero_damage_done"]))+",* Healing done: *"+"{:,}".format(int(sblob["healing_done"]))+
+            ",* Time spent on fire: *"+sblob["time_spent_on_fire"][:4]+" hours*")
         kills = "KPD: **"+sblob["kpd"][:4]+"** Kills: *"+sblob["eliminations"]+"* Solo Kills: *"+sblob["solo_kills"]+"* Final Blows: *"+sblob["final_blows"]+"*"
-        bestgame = "Highest killstreak: *"+sblob["kill_streak_best"]+"* Most damage done: *"+"{:,}".format(int(sblob["hero_damage_done_most_in_game"]))+
-            "* Most healing done: *"+"{:,}".format(int(sblob["healing_done_most_in_game"]))+"*"
+        bestgame = ("Highest killstreak: *"+sblob["kill_streak_best"]+"* Most damage done: *"+"{:,}".format(int(sblob["hero_damage_done_most_in_game"]))+
+            "* Most healing done: *"+"{:,}".format(int(sblob["healing_done_most_in_game"]))+"*")
         playtimeheroes=blob[region]["heroes"]["playtime"]["competitive"]
         sortedmains = {}
         for key, value in sorted(playtimeheroes.iteritems(), key=lambda (k,v): (v,k)):
