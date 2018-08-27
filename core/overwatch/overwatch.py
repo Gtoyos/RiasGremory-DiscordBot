@@ -166,7 +166,7 @@ class Overwatch:
                 return
         except:
             pass
-        if  not blob[region]["stats"]["competitive"]["average_stats"]: #check if list is empty
+        if not blob[region]["stats"]["competitive"]["average_stats"]: #check if list is empty
             private = True
         #chek it is all good
         gblob=blob[region]["stats"]["competitive"]["overall_stats"]
