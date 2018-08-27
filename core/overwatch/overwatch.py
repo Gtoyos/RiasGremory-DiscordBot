@@ -160,6 +160,7 @@ class Overwatch:
         region =  "us" # 3 regions show the same info, idk why there is a region parameter
         request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers).json()
         blob = request_blob.json()
+        await ctx.send(type(blob))
         try:
             if blob["error"] == 404:
                 await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag names are case sensitive.")
