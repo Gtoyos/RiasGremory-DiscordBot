@@ -57,7 +57,7 @@ class Overwatch:
             json.dump(localosudata, handler)
 
     @commands.guild_only()
-    @commands.commnd()
+    @commands.command()
     async def owuser(self,ctx,user: str=None):
         """ Get user's OW profile info.
 
