@@ -76,18 +76,18 @@ class Overwatch:
         region =  "us" # 3 regions show the same info, idk why there is a region parameter
         blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers).json
         try:
-            if blob["eror"] == 404:
+            if blob["error"] == 404:
                 await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag names are case sensitive.")
                 return
         except:
             pass
-        if blob[region]["stats"]["competitive"]["average_stats"] == []:
+        if  not blob[region]["stats"]["competitive"]["average_stats"]: #check if list is empty
             private = True
         #chek it is all good
         gblob=blob[region]["stats"]["competitive"]["overall_stats"]
         sblob=blob[region]["stats"]["competitive"]["game_stats"]
         try:
-            sr_int = int(gblob["comprank"]) #BUG what would happen if user is not ranked?
+            sr_int = int(gblob["comprank"]) #BUG? what would happen if user is not ranked?
             if sr_int < 1499:
                 tier="owbronze"
             elif sr_int < 1999:
@@ -159,12 +159,12 @@ class Overwatch:
         region =  "us" # 3 regions show the same info, idk why there is a region parameter
         blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers).json
         try:
-            if blob["eror"] == 404:
+            if blob["error"] == 404:
                 await ctx.send("The username `"+user+"` was not found :confused:. Remember Battletag names are case sensitive.")
                 return
         except:
             pass
-        if blob[region]["stats"]["competitive"]["average_stats"] == []:
+        if  not blob[region]["stats"]["competitive"]["average_stats"]: #check if list is empty
             private = True
         #chek it is all good
         gblob=blob[region]["stats"]["competitive"]["overall_stats"]
