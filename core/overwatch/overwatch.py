@@ -199,7 +199,7 @@ class Overwatch:
         playtimeheroes=hblob["playtime"]["competitive"]
         profileicon=gblob["avatar"]
         sortedmains = {}
-        for key, value in sorted(playtimeheroes.iteritems(), key=lambda (k,v): (v,k)):
+        for key, value in sorted(playtimeheroes.items(), key=lambda kv: (kv[1], kv[0])):
             sortedmains[key] = value
         mainone = hblob["stats"]["competitive"][list(sortedmains.keys())[0]]
         mainone_playtime = "Playtime: "+str(playtimeheroes[mainone])[:4]+" hs"
