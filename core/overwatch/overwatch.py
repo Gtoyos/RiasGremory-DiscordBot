@@ -129,10 +129,8 @@ class Overwatch:
         bestgame = ("Highest killstreak: *"+sblob["kill_streak_best"]+"* Most damage done: *"+"{:,}".format(int(sblob["hero_damage_done_most_in_game"]))+
             "* Most healing done: *"+"{:,}".format(int(sblob["healing_done_most_in_game"]))+"*")
         playtimeheroes=blob[region]["heroes"]["playtime"]["competitive"]
-        sortedmains = {}
-        for key, value in sorted(playtimeheroes.items(), key=lambda kv: (kv[1], kv[0])):
-            sortedmains[key] = value
-        mains = list(sortedmains.keys())[0].capitalize()+", "+list(sortedmains.keys())[1].capitalize()+", "+list(sortedmains.keys())[2].capitalize()
+        sortedmains = sorted(playtimeheroes, key=lambda i: int(playtimeheroes[i]))
+        mains = sortedmains[0].capitalize()+", "+sortedmains[1].capitalize()+", "+sortedmains[2].capitalize()
         embed = discord.Embed(title=title, description=description ,colour=ctx.guild.me.top_role.colour)
         embed.set_thumbnail(url=profileicon)
         embed.add_field(name="Winrate" ,value=winrate ,inline=True)
@@ -206,10 +204,8 @@ class Overwatch:
             return
         playtimeheroes=hblob["playtime"]["competitive"]
         profileicon=gblob["avatar"]
-        sortedmains = {}
-        for key, value in sorted(playtimeheroes.items(), key=lambda kv: (kv[1], kv[0])):
-            sortedmains[key] = value
-        mainone = hblob["stats"]["competitive"][list(sortedmains.keys())[0]]
+        sortedmains = sorted(playtimeheroes, key=lambda i: int(playtimeheroes[i]))
+        mainone = hblob["stats"]["competitive"][sortedmains[0]]
         mainone_playtime = "Playtime: "+str(playtimeheroes[mainone])[:4]+" hs"
         mainone_winrate = "WR: "+str((int(hblob["stats"]["competitive"]["general_stats"][mainone]["win_percentage"])*100))[:4]+"%"
         mainone_gold = "Gold Medals: "+hblob["stats"]["competitive"][mainone]["general_stats"]["medals_gold"]+self.owicon("owgoldmedal")
@@ -218,7 +214,7 @@ class Overwatch:
             mainone_hero = key.replace("_", " ").capitalize()+": "+str(hblob["stats"]["competitive"][mainone]["hero_stats"][key])   #picks the first option of hero stats and breaks
             break;
 
-        maintwo = hblob["stats"]["competitive"][list(sortedmains.keys())[1]]
+        maintwo = hblob["stats"]["competitive"][sortedmains[1]]
         maintwo_playtime = "Playtime: "+str(playtimeheroes[maintwo])[:4]+" hs"
         maintwo_winrate = "WR: "+str((int(hblob["stats"]["competitive"]["general_stats"][maintwo]["win_percentage"])*100))[:4]+"%"
         maintwo_gold = "Gold Medals: "+hblob["stats"]["competitive"][maintwo]["general_stats"]["medals_gold"]+self.owicon("owgoldmedal")
@@ -227,7 +223,7 @@ class Overwatch:
             maintwo_hero = key.replace("_", " ").capitalize()+": "+str(hblob["stats"]["competitive"][maintwo]["hero_stats"][key])   #picks the first option of hero stats and breaks
             break;
 
-        mainthree = hblob["stats"]["competitive"][list(sortedmains.keys())[2]]
+        mainthree = hblob["stats"]["competitive"][sortedmains[2]]
         mainthree_playtime = "Playtime: "+str(playtimeheroes[mainthree])[:4]+" hs"
         mainthree_winrate = "WR: "+str((int(hblob["stats"]["competitive"]["general_stats"][mainthree]["win_percentage"])*100))[:4]+"%"
         mainthree_gold = "Gold Medals: "+hblob["stats"]["competitive"][mainthree]["general_stats"]["medals_gold"]+self.owicon("owgoldmedal")
