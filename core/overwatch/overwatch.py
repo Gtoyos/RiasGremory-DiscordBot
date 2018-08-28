@@ -205,7 +205,8 @@ class Overwatch:
         playtimeheroes=hblob["playtime"]["competitive"]
         profileicon=gblob["avatar"]
         sortedmains = sorted(playtimeheroes, key=lambda i: int(playtimeheroes[i]))
-        mainone = hblob["stats"]["competitive"][sortedmains[0]]
+        await ctx.send(sortedmains)
+        mainone = hblob["stats"]["competitive"][sortedmains[0]] #what is sortedmains really???
         mainone_playtime = "Playtime: "+str(playtimeheroes[mainone])[:4]+" hs"
         mainone_winrate = "WR: "+str((int(hblob["stats"]["competitive"]["general_stats"][mainone]["win_percentage"])*100))[:4]+"%"
         mainone_gold = "Gold Medals: "+hblob["stats"]["competitive"][mainone]["general_stats"]["medals_gold"]+self.owicon("owgoldmedal")
