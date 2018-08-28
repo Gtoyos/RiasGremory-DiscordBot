@@ -121,8 +121,8 @@ class Overwatch:
         description=level+", "+sr
         profileicon=gblob["avatar"]
         winrate = "*"+str(gblob["wins"])+"**W**, ",str(gblob["losses"])+"**L**, ("+str(gblob["win_rate"])+"% **WR**)*"
-        medals =  (self.owicon("owgoldmedal")+": "+str(sblob["medals_gold"])+" "+self.owicon("owsilvermedal")+": "+str(sblob["medals_silver"])+
-            " "+self.owicon("owbronzemedal")+": "+str(sblob["medals_bronze"]))
+        medals =  (self.owicon("owgoldmedal")+": "+str(sblob["medals_gold"])[:-2]+" "+self.owicon("owsilvermedal")+" "+str(sblob["medals_silver"])[:-2]+
+            " "+self.owicon("owbronzemedal")+": "+str(sblob["medals_bronze"])[:-2])
         combat_stats = ("Damage done: *"+"{:,}".format(int(sblob["hero_damage_done"]))+",* Healing done: *"+"{:,}".format(int(sblob["healing_done"]))+
             ",* Time spent on fire: *"+str(sblob["time_spent_on_fire"])[:4]+" hours*")
         kills = "KPD: **"+str(sblob["kpd"])[:4]+"** Kills: *"+str(sblob["eliminations"])+"* Solo Kills: *"+str(sblob["solo_kills"])+"* Final Blows: *"+str(sblob["final_blows"])+"*"
@@ -208,7 +208,7 @@ class Overwatch:
         mainone = sortedmains[0]
         mainone_playtime = "Playtime: "+str(playtimeheroes[mainone])[:4]+" hs"
         mainone_winrate = "WR: "+str((float(hblob["stats"]["competitive"][mainone]["general_stats"]["win_percentage"])*100))[:4]+"%"
-        mainone_gold = "Gold Medals: "+str(hblob["stats"]["competitive"][mainone]["general_stats"]["medals_gold"])[:-2]+self.owicon("owgoldmedal")
+        mainone_gold = "Gold Medals: "+str(hblob["stats"]["competitive"][mainone]["general_stats"]["medals_gold"])[:-2]+" "+self.owicon("owgoldmedal")
         mainone_epl = "K/D: "+str(hblob["stats"]["competitive"][mainone]["general_stats"]["eliminations_per_life"])[:4]
         for key in hblob["stats"]["competitive"][mainone]["hero_stats"].keys():
             mainone_hero = key.replace("_", " ").capitalize()+": "+str(hblob["stats"]["competitive"][mainone]["hero_stats"][key])   #picks the first option of hero stats and breaks
@@ -217,7 +217,7 @@ class Overwatch:
         maintwo = sortedmains[1]
         maintwo_playtime = "Playtime: "+str(playtimeheroes[maintwo])[:4]+" hs"
         maintwo_winrate = "WR: "+str((float(hblob["stats"]["competitive"][maintwo]["general_stats"]["win_percentage"])*100))[:4]+"%"
-        maintwo_gold = "Gold Medals: "+str(hblob["stats"]["competitive"][maintwo]["general_stats"]["medals_gold"])[:-2]+self.owicon("owgoldmedal")
+        maintwo_gold = "Gold Medals: "+str(hblob["stats"]["competitive"][maintwo]["general_stats"]["medals_gold"])[:-2]+" "+self.owicon("owgoldmedal")
         maintwo_epl = "K/D: "+str(hblob["stats"]["competitive"][maintwo]["general_stats"]["eliminations_per_life"])[:4]
         for key in hblob["stats"]["competitive"][maintwo]["hero_stats"].keys():
             maintwo_hero = key.replace("_", " ").capitalize()+": "+str(hblob["stats"]["competitive"][maintwo]["hero_stats"][key])   #picks the first option of hero stats and breaks
@@ -226,7 +226,7 @@ class Overwatch:
         mainthree = sortedmains[2]
         mainthree_playtime = "Playtime: "+str(playtimeheroes[mainthree])[:4]+" hs"
         mainthree_winrate = "WR: "+str((float(hblob["stats"]["competitive"][mainthree]["general_stats"]["win_percentage"])*100))[:4]+"%"
-        mainthree_gold = "Gold Medals: "+str(hblob["stats"]["competitive"][mainthree]["general_stats"]["medals_gold"])[:-2]+self.owicon("owgoldmedal")
+        mainthree_gold = "Gold Medals: "+str(hblob["stats"]["competitive"][mainthree]["general_stats"]["medals_gold"])[:-2]+" "+self.owicon("owgoldmedal")
         mainthree_epl = "K/D: "+str(hblob["stats"]["competitive"][mainthree]["general_stats"]["eliminations_per_life"])[:4]
         for key in hblob["stats"]["competitive"][mainthree]["hero_stats"].keys():
             mainthree_hero = key.replace("_", " ").capitalize()+": "+str(hblob["stats"]["competitive"][mainthree]["hero_stats"][key])   #picks the first option of hero stats and breaks
