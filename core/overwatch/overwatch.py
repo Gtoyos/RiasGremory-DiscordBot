@@ -120,8 +120,8 @@ class Overwatch:
         sr="**"+str(gblob["comprank"])+" SR **"+self.owicon(tier)
         description=level+", "+sr
         profileicon=gblob["avatar"]
-        winrate = "*"+str(gblob["wins"])+"**W**, ",str(gblob["losses"])+"**L**, ("+str(gblob["win_rate"])+"% **WR**)*"
-        medals =  (self.owicon("owgoldmedal")+": "+str(sblob["medals_gold"])[:-2]+" "+self.owicon("owsilvermedal")+" "+str(sblob["medals_silver"])[:-2]+
+        winrate = "*"+str(gblob["wins"])+"**W**, "+str(gblob["losses"])+"**L**, ("+str(gblob["win_rate"])+"% **WR**)*"
+        medals =  (self.owicon("owgoldmedal")+": "+str(sblob["medals_gold"])[:-2]+" "+self.owicon("owsilvermedal")+": "+str(sblob["medals_silver"])[:-2]+
             " "+self.owicon("owbronzemedal")+": "+str(sblob["medals_bronze"])[:-2])
         combat_stats = ("Damage done: *"+"{:,}".format(int(sblob["hero_damage_done"]))+",* Healing done: *"+"{:,}".format(int(sblob["healing_done"]))+
             ",* Time spent on fire: *"+str(sblob["time_spent_on_fire"])[:4]+" hours*")
