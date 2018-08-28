@@ -207,7 +207,7 @@ class Overwatch:
         sortedmains = sorted(playtimeheroes, key=lambda i: float(playtimeheroes[i]), reverse=True)
         mainone = sortedmains[0]
         mainone_playtime = "Playtime: "+str(playtimeheroes[mainone])[:4]+" hs"
-        mainone_winrate = "WR: "+str((int(hblob["stats"]["competitive"]["general_stats"][mainone]["win_percentage"])*100))[:4]+"%"
+        mainone_winrate = "WR: "+str((int(hblob["stats"]["competitive"][mainone]["general_stats"]["win_percentage"])*100))[:4]+"%"
         mainone_gold = "Gold Medals: "+hblob["stats"]["competitive"][mainone]["general_stats"]["medals_gold"]+self.owicon("owgoldmedal")
         mainone_epl = "K/D: "+str(hblob["stats"]["competitive"][mainone]["general_stats"]["eliminations_per_life"])[:4]
         for key in hblob["stats"]["competitive"][mainone]["hero_stats"].keys():
@@ -216,7 +216,7 @@ class Overwatch:
 
         maintwo = sortedmains[1]
         maintwo_playtime = "Playtime: "+str(playtimeheroes[maintwo])[:4]+" hs"
-        maintwo_winrate = "WR: "+str((int(hblob["stats"]["competitive"]["general_stats"][maintwo]["win_percentage"])*100))[:4]+"%"
+        maintwo_winrate = "WR: "+str((int(hblob["stats"]["competitive"][maintwo]["general_stats"]["win_percentage"])*100))[:4]+"%"
         maintwo_gold = "Gold Medals: "+hblob["stats"]["competitive"][maintwo]["general_stats"]["medals_gold"]+self.owicon("owgoldmedal")
         maintwo_epl = "K/D: "+str(hblob["stats"]["competitive"][maintwo]["general_stats"]["eliminations_per_life"])[:4]
         for key in hblob["stats"]["competitive"][maintwo]["hero_stats"].keys():
@@ -225,7 +225,7 @@ class Overwatch:
 
         mainthree = sortedmains[2]
         mainthree_playtime = "Playtime: "+str(playtimeheroes[mainthree])[:4]+" hs"
-        mainthree_winrate = "WR: "+str((int(hblob["stats"]["competitive"]["general_stats"][mainthree]["win_percentage"])*100))[:4]+"%"
+        mainthree_winrate = "WR: "+str((int(hblob["stats"]["competitive"][mainthree]["general_stats"]["win_percentage"])*100))[:4]+"%"
         mainthree_gold = "Gold Medals: "+hblob["stats"]["competitive"][mainthree]["general_stats"]["medals_gold"]+self.owicon("owgoldmedal")
         mainthree_epl = "K/D: "+str(hblob["stats"]["competitive"][mainthree]["general_stats"]["eliminations_per_life"])[:4]
         for key in hblob["stats"]["competitive"][mainthree]["hero_stats"].keys():
