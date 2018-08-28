@@ -73,12 +73,7 @@ class Overwatch:
             else:
                 user = ctx.author.name
         user = user.replace("#", "-")
-        try:
-            region =  "us" # 3 regions show the same info, idk why there is a region parameter
-        except:
-            private = True #when is private there is no region
-            await ctx.send("User has his current profile set to private.")
-            return
+        region =  "us" # 3 regions show the same info, idk why there is a region parameter
         private = False
         request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers)
         blob = request_blob.json()
@@ -163,12 +158,7 @@ class Overwatch:
             else:
                 user = ctx.author.name
         user = user.replace("#", "-")
-        try:
-            region =  "us" # 3 regions show the same info, idk why there is a region parameter
-        except:
-            private = True #when is private there is no region
-            await ctx.send("User has his current profile set to private.")
-            return
+        region =  "us" # 3 regions show the same info, idk why there is a region parameter
         private = False
         request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/blob", headers=self.headers)
         blob = request_blob.json()
