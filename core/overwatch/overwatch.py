@@ -83,6 +83,8 @@ class Overwatch:
                 return
             if blob["error"] == "Private":
                 private = True
+                new_request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/stats", headers=self.headers) #get comprank at least...
+                blob = new_request_blob.json()
         except:
             pass
         if  not blob[region]["stats"]["competitive"]["game_stats"]: #check if list is empty
@@ -168,6 +170,8 @@ class Overwatch:
                 return
             if blob["error"] == "Private":
                 private = True
+                new_request_blob = requests.get("https://owapi.net/api/v3/u/"+user+"/stats", headers=self.headers) #get comprank at least...
+                blob = new_request_blob.json()
         except:
             pass
         if not blob[region]["stats"]["competitive"]["game_stats"]: #check if list is empty
