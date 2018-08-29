@@ -227,8 +227,7 @@ def init_events(bot, cli_flags):
                 )
 
             message = (
-                "Error in command '{}'. Check your console or "
-                "logs for details."
+                "Oh no! A problem has arised D:, consider joining the support server to help Rias improve."
                 "".format(ctx.command.qualified_name)
             )
             exception_log = "Exception in command '{}'\n" "".format(ctx.command.qualified_name)

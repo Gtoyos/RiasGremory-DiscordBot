@@ -263,7 +263,7 @@ class Core(CoreLogic):
                 data = await r.json()
         outdated = StrictVersion(data["info"]["version"]) > StrictVersion(__version__)
         about = (
-            "Hi! Rias desu. I'm a hawaii bot created by [Gtoyos]({}) based "
+            "Hi! Rias desu. I'm a kawaii bot created by [Gtoyos]({}) based "
             "on [Red]({}), an open source bot.\n\n"
             "Feel free to join [here]({}) for any issue or to suggest new ideas "
             "to enhance me (≧◡≦).\n\n".format(org_repo, red_pypi, support_server_url)
