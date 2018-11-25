@@ -104,8 +104,8 @@ class General(commands.Cog):
         """
         author = ctx.author
         player_choice = your_choice.choice
-                if not player_choice:
-                    return await ctx.send("This isn't a valid option. Try rock, paper, or scissors.")
+        if not player_choice:
+             return await ctx.send("This isn't a valid option. Try rock, paper, or scissors.")
         red_choice = choice((RPS.rock, RPS.paper, RPS.scissors))
         cond = {
             (RPS.rock, RPS.paper): False,
