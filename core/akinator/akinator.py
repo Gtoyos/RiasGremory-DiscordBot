@@ -64,10 +64,10 @@ class Akinator(commands.Cog):
         Play Akinator whith Rias!
         """
         try:
-            akinator_session = requests.get(self.wslinks("NEW_SESSION_URL")+str(hash(ctx.author))+"&constraint=ETAT<>'AV'")
+            akinator_session = requests.get(self.wslinks("NEW_SESSION_URL"))
         except Exception as e:
             print("Exception in new session. {}".format(e))
-            akinator_session = requests.get(self.wslinks("NEW_SESSION_URL")+"weirdname&constraint=ETAT<>'AV'")    #if ws throws an error if name is too weird
+            akinator_session = requests.get(self.wslinks("NEW_SESSION_URL"))    #if ws throws an error if name is too weird
         akinator_data = akinator_session.json()
         try:
             if akinator_data["completion"] == "OK":
