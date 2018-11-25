@@ -37,11 +37,11 @@ class General(commands.Cog):
 
     global _
     _ = lambda s: s
-    self.ball = ["It's all looking good senpai", "It is certain senpai O.o", "It is decidedly so onni-chan", "Most likely senapi ^^", "Outlook good :)",
-                 "The deamon says yes", "Without doubts", "Hai so desu", "YES.", "You may rely on Rias desu :)", "Reply hazy, try again :P",
-                 "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again",
-                 "Don't count on it", "Rias Gremory's reply is no.", "My sources say no", "Outlook not so good", "Very doubtful","My senpai will have luck this time",
-                 "Onni-chan will succed!", "Hai hai...", "Wtf are you asking baka?", "Probably not senpai :c"]
+    ball = ["It's all looking good senpai", "It is certain senpai O.o", "It is decidedly so onni-chan", "Most likely senapi ^^", "Outlook good :)",
+             "The deamon says yes", "Without doubts", "Hai so desu", "YES.", "You may rely on Rias desu :)", "Reply hazy, try again :P",
+             "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again",
+             "Don't count on it", "Rias Gremory's reply is no.", "My sources say no", "Outlook not so good", "Very doubtful","My senpai will have luck this time",
+             "Onni-chan will succed!", "Hai hai...", "Wtf are you asking baka?", "Probably not senpai :c"]
     _ = T_
 
     def __init__(self):
