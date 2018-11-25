@@ -16,7 +16,7 @@ class Guildcount(commands.Cog):
 
     def __init__(self, bot: Red):
         self.bot = bot
-        self.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjM0MzE1NjM3NTgwMDY0MzU5NCIsImJvdCI6dHJ1ZSwiaWF0IjoxNTIyODgxMTk0fQ.cBnP8zbeeKuyCwFxOWDENmsgf_tOe8njTD5_QwGDRYQ'  #  set this to your DBL token
+        self.token = 'token'  #  set this to your DBL token
         self.dblpy = dbl.Client(self.bot, self.token)
         self.bot.loop.create_task(self.update_stats())
 
