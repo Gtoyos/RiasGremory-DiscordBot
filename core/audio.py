@@ -987,7 +987,7 @@ class Audio(commands.Cog):
                     "author"
                 ] != ctx.author.id and not await self._can_instaskip(ctx, ctx.author):
                     return await self._embed_msg(
-                        ctx, _("You are not the author of that playlist. (・・ ) ?"")
+                        ctx, _("You are not the author of that playlist. (・・ ) ?")
                     )
                 player = lavalink.get_player(ctx.guild.id)
                 to_append = await self._playlist_tracks(ctx, player, url)
