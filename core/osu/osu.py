@@ -170,8 +170,8 @@ class Osu(commands.Cog):
             "Play count: "+osudata["playcount"]+"\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
-        lastvisitformatted = jsondata["lastvisit"][:-15]
-        jsondata["lastvisit"] = lastvisitformatted
+        lastvisitformatted = jsondata["last_visit"][:-15]
+        jsondata["last_visit"] = lastvisitformatted
         for k in localosudata["personalindex"]:
             z = str(jsondata[k])
             if z != "None":
@@ -229,8 +229,8 @@ class Osu(commands.Cog):
             "Play count: "+osudata["playcount"]+"\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
-        lastvisitformatted = jsondata["lastvisit"][:-15]
-        jsondata["lastvisit"] = lastvisitformatted
+        lastvisitformatted = jsondata["last_visit"][:-15]
+        jsondata["last_visit"] = lastvisitformatted
         for k in localosudata["personalindex"]:
             z = str(jsondata[k])
             if z != "None":
@@ -288,8 +288,8 @@ class Osu(commands.Cog):
             "Play count: "+osudata["playcount"]+"\n"+
             "Total score: "+totalscore+"\n"+
             "Total taps: "+totaltaps+"\n")
-        lastvisitformatted = jsondata["lastvisit"][:-15]
-        jsondata["lastvisit"] = lastvisitformatted
+        lastvisitformatted = jsondata["last_visit"][:-15]
+        jsondata["last_visit"] = lastvisitformatted
         for k in localosudata["personalindex"]:
             z = str(jsondata[k])
             if z != "None":
