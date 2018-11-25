@@ -285,7 +285,6 @@ class Core(commands.Cog, CoreLogic):
         async with aiohttp.ClientSession() as session:
             async with session.get("{}/json".format(red_pypi)) as r:
                 data = await r.json()
-        outdated = StrictVersion(data["info"]["version"]) > StrictVersion(__version__)
         about = (
             "Hi! Rias desu. I'm a kawaii bot created by [Gtoyos]({}) based "
             "on [Red]({}), an open source bot.\n\n"
