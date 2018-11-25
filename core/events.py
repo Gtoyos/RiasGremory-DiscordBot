@@ -372,4 +372,3 @@ def _get_startup_screen_specs():
         ascii_border = False
 
     return on_symbol, off_symbol, ascii_border
-        return on_symbol, off_symbol, ascii_border
