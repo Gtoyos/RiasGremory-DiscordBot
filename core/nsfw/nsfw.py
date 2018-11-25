@@ -21,7 +21,7 @@ import random
 from bs4 import BeautifulSoup
 import os
 
-class Nsfw:
+class Nsfw(commands.Cog):
     """Nsfw Commands"""
 
     def __init__(self, bot: Red):

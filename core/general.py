@@ -1,17 +1,15 @@
-
 import datetime
 import time
 from enum import Enum
 from random import randint, choice
-from urllib.parse import quote_plus
 import aiohttp
 import discord
 from redbot.core import commands
 from redbot.core.i18n import Translator, cog_i18n
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
-from redbot.core.utils.chat_formatting import escape, italics, pagify
+from redbot.core.utils.chat_formatting import escape, italics
 
-_ = Translator("General", __file__)
+_ = T_ = Translator("General", __file__)
 
 
 class RPS(Enum):
@@ -30,57 +28,62 @@ class RPSParser:
         elif argument == "scissors":
             self.choice = RPS.scissors
         else:
-            raise
+            self.choice = None
 
 
-class General:
+@cog_i18n(_)
+class General(commands.Cog):
     """General commands."""
 
-    def __init__(self):
-        self.stopwatches = {}
+    global _
+    _ = lambda s: s
         self.ball = ["It's all looking good senpai", "It is certain senpai O.o", "It is decidedly so onni-chan", "Most likely senapi ^^", "Outlook good :)",
                      "The deamon says yes", "Without doubts", "Hai so desu", "YES.", "You may rely on Rias desu :)", "Reply hazy, try again :P",
                      "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again",
                      "Don't count on it", "Rias Gremory's reply is no.", "My sources say no", "Outlook not so good", "Very doubtful","My senpai will have luck this time",
                      "Onni-chan will succed!", "Hai hai...", "Wtf are you asking baka?", "Probably not senpai :c"]
+    _ = T_
+
+    def __init__(self):
+        super().__init__()
+        self.stopwatches = {}
 
     @commands.command()
     async def choose(self, ctx, *choices):
-        """Chooses between multiple choices.
-
-        If an option has more than one word you
-        should use double quotes.
+        """Choose between multiple options.
+        To denote options which include whitespace, you should use
+        double quotes.
         """
         choices = [escape(c, mass_mentions=True) for c in choices]
         if len(choices) < 2:
-            await ctx.send("I can't choose any option if you don't tell me which they are, baka")
+            await ctx.send(_("Not enough options to pick from."))
         else:
             await ctx.send(choice(choices))
 
     @commands.command()
     async def roll(self, ctx, number: int = 100):
-        """Rolls random number (between 1 and user choice)
-
-        Defaults to 100.
+        """Roll a random number.
+        The result will be between 1 and `<number>`.
+        `<number>` defaults to 100.
         """
         author = ctx.author
         if number > 1:
             n = randint(1, number)
-            await ctx.send(_("{} :game_die: {} :game_die:").format(author.mention, n))
+            await ctx.send("{author.mention} :game_die: {n} :game_die:".format(author=author, n=n))
         else:
-            await ctx.send(_("{} Maybe higher than 1? ;P").format(author.mention))
+            await ctx.send(_("{author.mention} Maybe higher than 1? ;P").format(author=author))
+
 
     @commands.command()
     async def flip(self, ctx, user: discord.Member = None):
-        """Flips a coin... or a user.
-
-        Defaults to coin.
+        """Flip a coin... or a user.
+        Defaults to a coin.
         """
-        if user != None:
+        if user is not None:
             msg = ""
             if user.id == ctx.bot.user.id:
                 user = ctx.author
-                msg = ("Nice try. You think this is funny?\n" "How about *this* instead:\n\n")
+                msg = _("Nice try. You think this is funny?\n How about *this* instead:\n\n")
             char = "abcdefghijklmnopqrstuvwxyz"
             tran = "ɐqɔpǝɟƃɥᴉɾʞlɯuodbɹsʇnʌʍxʎz"
             table = str.maketrans(char, tran)
@@ -91,7 +94,7 @@ class General:
             name = name.translate(table)
             await ctx.send(msg + "(╯°□°）╯︵ " + name[::-1])
         else:
-            await ctx.send("*flips a coin and... "+ choice([("HEADS!*"),("TAILS!*")]))
+            await ctx.send(_("*flips a coin and... ") + choice([_("HEADS!*"), _("TAILS!*")]))
 
     @commands.command()
     async def rps(self, ctx, your_choice: RPSParser):
@@ -101,6 +104,8 @@ class General:
         """
         author = ctx.author
         player_choice = your_choice.choice
+                if not player_choice:
+                    return await ctx.send("This isn't a valid option. Try rock, paper, or scissors.")
         red_choice = choice((RPS.rock, RPS.paper, RPS.scissors))
         cond = {
             (RPS.rock, RPS.paper): False,
@@ -117,39 +122,52 @@ class General:
             outcome = cond[(player_choice, red_choice)]
 
         if outcome is True:
-            await ctx.send("{} You win {}!".format(red_choice.value, author.mention))
+            await ctx.send(
+                _("{choice} You win {author.mention}!").format(
+                    choice=red_choice.value, author=author
+                )
+            )
         elif outcome is False:
-            await ctx.send("{} You lose {}!".format(red_choice.value, author.mention))
+            await ctx.send(
+                _("{choice} You lose {author.mention}!").format(
+                    choice=red_choice.value, author=author
+                )
+            )
         else:
-            await ctx.send("{} We're square {}!".format(red_choice.value, author.mention))
+            await ctx.send(
+                _("{choice} We're square {author.mention}!").format(
+                    choice=red_choice.value, author=author
+                )
+            )
 
     @commands.command(name="8", aliases=["8ball"])
     async def _8ball(self, ctx, *, question: str):
-        """Ask 8 ball a question
-
+        """Ask 8 ball a question.
         Question must end with a question mark.
         """
         if question.endswith("?") and question != "?":
-            await ctx.send("`" + choice(self.ball) + "`")
+            await ctx.send("`" + T_(choice(self.ball)) + "`")
         else:
-            await ctx.send("That doesn't look like a question, baka")
+            await ctx.send(_("That doesn't look like a question."))
 
     @commands.command(aliases=["sw"])
     async def stopwatch(self, ctx):
-        """Starts/stops stopwatch"""
+        """Start or stop the stopwatch."""
         author = ctx.author
-        if not author.id in self.stopwatches:
+        if author.id not in self.stopwatches:
             self.stopwatches[author.id] = int(time.perf_counter())
-            await ctx.send(author.mention +" Stopwatch started!")
+            await ctx.send(author.mention + _(" Stopwatch started!"))
         else:
             tmp = abs(self.stopwatches[author.id] - int(time.perf_counter()))
             tmp = str(datetime.timedelta(seconds=tmp))
-            await ctx.send(author.mention + (" Stopwatch stopped! Time: **") + tmp + "**")
+            await ctx.send(
+                author.mention + _(" Stopwatch stopped! Time: **{seconds}**").format(seconds=tmp)
+            )
             self.stopwatches.pop(author.id, None)
 
     @commands.command()
     async def lmgtfy(self, ctx, *, search_terms: str):
-        """Creates a lmgtfy link
+        """Create a lmgtfy link.
 
          Let me google that for you..."""
         search_terms = escape(
@@ -160,8 +178,7 @@ class General:
     @commands.command(hidden=True)
     @commands.guild_only()
     async def kawaiihug(self, ctx, user: discord.Member, intensity: int = 1):
-        """Because everyone likes hugs
-
+        """Because everyone likes hugs!
         Up to 10 intensity levels.
         You've discoverded an unindexed command!
         Congratulations!"""
@@ -176,33 +193,32 @@ class General:
             msg = "(つ≧▽≦)つ" + name
         elif intensity >= 10:
             msg = "(づ￣ ³￣)づ{} ⊂(´・ω・｀⊂)".format(name)
+        else:
+            # For the purposes of "msg might not be defined" linter errors
+            raise RuntimeError
         await ctx.send(msg)
 
     @commands.command()
     @commands.guild_only()
     async def serverinfo(self, ctx):
-        """Shows server's informations"""
+        """Show server information."""
         guild = ctx.guild
         online = len([m.status for m in guild.members if m.status != discord.Status.offline])
         total_users = len(guild.members)
         text_channels = len(guild.text_channels)
         voice_channels = len(guild.voice_channels)
         passed = (ctx.message.created_at - guild.created_at).days
-        created_at = _("Since {}. That's over {} days ago!").format(
-            guild.created_at.strftime("%d %b %Y %H:%M"), passed
+        created_at = _("Since {date}. That's over {num} days ago!").format(
+            date=guild.created_at.strftime("%d %b %Y %H:%M"), num=passed
         )
-
-        colour = "".join([choice("0123456789ABCDEF") for x in range(6)])
-        colour = randint(0, 0xFFFFFF)
-
-        data = discord.Embed(description=created_at, colour=discord.Colour(value=colour))
-        data.add_field(name=("Region"), value=str(guild.region))
-        data.add_field(name=("Users"), value="{}/{}".format(online, total_users))
-        data.add_field(name=("Text Channels"), value=text_channels)
-        data.add_field(name=("Voice Channels"), value=voice_channels)
-        data.add_field(name=("Roles"), value=len(guild.roles))
-        data.add_field(name=("Owner"), value=str(guild.owner))
-        data.set_footer(text=("Server ID: ") + str(guild.id))
+        data = discord.Embed(description=created_at, colour=(await ctx.embed_colour()))
+        data.add_field(name=_("Region"), value=str(guild.region))
+        data.add_field(name=_("Users"), value=f"{online}/{total_users}")
+        data.add_field(name=_("Text Channels"), value=str(text_channels))
+        data.add_field(name=_("Voice Channels"), value=str(voice_channels))
+        data.add_field(name=_("Roles"), value=str(len(guild.roles)))
+        data.add_field(name=_("Owner"), value=str(guild.owner))
+        data.set_footer(text=_("Server ID: ") + str(guild.id))
 
         if guild.icon_url:
             data.set_author(name=guild.name, url=guild.icon_url)
@@ -212,12 +228,14 @@ class General:
 
         try:
             await ctx.send(embed=data)
-        except discord.HTTPException:
-            await ctx.send(("I need the `Embed links` permission to send this."))
+        except discord.Forbidden:
+            await ctx.send(_("I need the `Embed links` permission to send this."))
 
     @commands.command()
     async def urban(self, ctx, *, word):
-        """Searches urban dictionary entries using the unofficial api"""
+        """Search the Urban Dictionary.
+        This uses the unofficial Urban Dictionary API.
+        """
 
         try:
             url = "https://api.urbandictionary.com/v0/define?term=" + str(word).lower()
@@ -228,32 +246,34 @@ class General:
                 async with session.get(url, headers=headers) as response:
                     data = await response.json()
 
-        except:
+        except aiohttp.ClientError:
             await ctx.send(
-                _("No Urban dictionary entries were found or there was an error in the process")
+                _("No Urban Dictionary entries were found, or there was an error in the process.")
             )
+            return
 
         if data.get("error") != 404:
-
+            if not data["list"]:
+                return await ctx.send(_("No Urban Dictionary entries were found."))
             if await ctx.embed_requested():
                 # a list of embeds
                 embeds = []
                 for ud in data["list"]:
                     embed = discord.Embed()
-                    embed.title = _("{} by {}").format(ud["word"].capitalize(), ud["author"])
+                    embed.title = _("{word} by {author}").format(
+                        word=ud["word"].capitalize(), author=ud["author"]
+                    )
                     embed.url = ud["permalink"]
 
-                    description = "{} \n \n **Example : ** {}".format(
-                        ud["definition"], ud.get("example", "N/A")
-                    )
+                    description = _("{definition}\n\n**Example:** {example}").format(**ud)
                     if len(description) > 2048:
                         description = "{}...".format(description[:2045])
                     embed.description = description
 
                     embed.set_footer(
-                        text=_("{} Down / {} Up , Powered by urban dictionary").format(
-                            ud["thumbs_down"], ud["thumbs_up"]
-                        )
+                        text=_(
+                            "{thumbs_down} Down / {thumbs_up} Up, Powered by Urban Dictionary."
+                        ).format(**ud)
                     )
                     embeds.append(embed)
 
@@ -269,24 +289,15 @@ class General:
             else:
                 messages = []
                 for ud in data["list"]:
-                    description = _("{} \n \n **Example : ** {}").format(
-                        ud["definition"], ud.get("example", "N/A")
-                    )
+                    ud.setdefault("example", "N/A")
+                    description = _("{definition}\n\n**Example:** {example}").format(**ud)
                     if len(description) > 2048:
                         description = "{}...".format(description[:2045])
-                    description = description
 
                     message = _(
-                        "<{}> \n {} by {} \n \n {} \n \n {} Down / {} Up, Powered by urban "
-                        "dictionary"
-                    ).format(
-                        ud["permalink"],
-                        ud["word"].capitalize(),
-                        ud["author"],
-                        description,
-                        ud["thumbs_down"],
-                        ud["thumbs_up"],
-                    )
+                        "<{permalink}>\n {word} by {author}\n\n{description}\n\n"
+                        "{thumbs_down} Down / {thumbs_up} Up, Powered by Urban Dictionary."
+                    ).format(word=ud.pop("word").capitalize(), description=description, **ud)
                     messages.append(message)
 
                 if messages is not None and len(messages) > 0:
@@ -300,6 +311,5 @@ class General:
                     )
         else:
             await ctx.send(
-                _("No Urban dictionary entries were found or there was an error in the process")
-            )
-            return
+                _("No Urban Dictionary entries were found, or there was an error in the process.")
+)

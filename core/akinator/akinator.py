@@ -20,7 +20,7 @@ import json
 import random
 import os
 
-class Akinator:
+class Akinator(commands.Cog):
     """Play Akinator with Rias!"""
 
     def __init__(self, bot: Red):

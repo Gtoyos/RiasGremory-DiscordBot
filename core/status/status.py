@@ -20,7 +20,7 @@ import json
 import random
 import os
 
-class Status:
+class Status(commands.Cog):
     """Internal status module"""
 
     def __init__(self, bot: Red):

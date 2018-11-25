@@ -11,7 +11,7 @@ import aiohttp
 import asyncio
 import logging
 
-class Guildcount:
+class Guildcount(commands.Cog):
     """Internal guildcount for discordbots"""
 
     def __init__(self, bot: Red):

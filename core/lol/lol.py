@@ -12,7 +12,7 @@ import json
 import random
 import os
 
-class Lol:
+class Lol(commands.Cog):
     """League of Legends commands"""
     def __init__(self, bot: Red):
         self.bot = bot

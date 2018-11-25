@@ -20,7 +20,7 @@ import json
 import random
 import os
 
-class Reaction:
+class Reaction(commands.Cog):
     """Reaction Commands"""
 
     def __init__(self, bot: Red):

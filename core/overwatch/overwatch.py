@@ -12,7 +12,7 @@ import json
 import random
 import os
 
-class Overwatch:
+class Overwatch(commands.Cog):
     """Overwatch commands"""
     def __init__(self, bot: Red):
         self.bot = bot

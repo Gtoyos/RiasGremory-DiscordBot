@@ -26,7 +26,7 @@ from .pippy.parser.beatmap import Beatmap
 from .pippy.pp.counter import calculate_pp, Mods, calculate_pp_by_acc
 from .pippy import diff
 
-class Osu:
+class Osu(commands.Cog):
     """Osu! Commands"""
 
     def __init__(self, bot: Red):

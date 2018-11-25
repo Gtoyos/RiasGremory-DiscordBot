@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import datetime
 import importlib
 import itertools
@@ -12,17 +13,22 @@ from collections import namedtuple
 from pathlib import Path
 from random import SystemRandom
 from string import ascii_letters, digits
-from distutils.version import StrictVersion
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union, Tuple, List, Optional, Iterable, Sequence, Dict
 
 import aiohttp
 import discord
 import pkg_resources
 
-from redbot.core import __version__
-from redbot.core import checks
-from redbot.core import i18n
-from redbot.core import commands
+from redbot.core import (
+    __version__,
+    version_info as red_version_info,
+    VersionInfo,
+    checks,
+    commands,
+    errors,
+    i18n,
+)
+from .utils.predicates import MessagePredicate
 from .utils.chat_formatting import pagify, box, inline
 
 if TYPE_CHECKING:
@@ -33,7 +39,7 @@ __all__ = ["Core"]
 log = logging.getLogger("red")
 
 OWNER_DISCLAIMER = (
-    "⚠ **Only** the person who is hosting me should be "
+    "⚠ **Only** the person who is hosting Red should be "
     "owner. **This has SERIOUS security implications. The "
     "owner can access any data that is present on the host "
     "system.** ⚠"
@@ -41,6 +47,7 @@ OWNER_DISCLAIMER = (
 
 
 _ = i18n.Translator("Core", __file__)
+
 
 class CoreLogic:
     def __init__(self, bot: "Red"):
@@ -53,7 +60,9 @@ class CoreLogic:
         self.bot.register_rpc_handler(self._version_info)
         self.bot.register_rpc_handler(self._invite_url)
 
-    async def _load(self, cog_names: list):
+    async def _load(
+        self, cog_names: Iterable[str]
+    ) -> Tuple[List[str], List[str], List[str], List[str]]:
         """
         Loads cogs by name.
         Parameters
@@ -63,11 +72,12 @@ class CoreLogic:
         Returns
         -------
         tuple
-            3 element tuple of loaded, failed, and not found cogs.
+            4-tuple of loaded, failed, not found and already loaded cogs.
         """
         failed_packages = []
         loaded_packages = []
         notfound_packages = []
+        alreadyloaded_packages = []
 
         bot = self.bot
 
@@ -92,6 +102,8 @@ class CoreLogic:
             try:
                 self._cleanup_and_refresh_modules(spec.name)
                 await bot.load_extension(spec)
+            except errors.PackageAlreadyLoaded:
+                alreadyloaded_packages.append(name)
             except Exception as e:
                 log.exception("Package loading failed", exc_info=e)
 
@@ -102,9 +114,11 @@ class CoreLogic:
             else:
                 await bot.add_loaded_package(name)
                 loaded_packages.append(name)
-        return loaded_packages, failed_packages, notfound_packages
 
-    def _cleanup_and_refresh_modules(self, module_name: str):
+        return loaded_packages, failed_packages, notfound_packages, alreadyloaded_packages
+
+    @staticmethod
+    def _cleanup_and_refresh_modules(module_name: str) -> None:
         """Interally reloads modules so that changes are detected"""
         splitted = module_name.split(".")
 
@@ -116,6 +130,7 @@ class CoreLogic:
             else:
                 importlib._bootstrap._exec(lib.__spec__, lib)
 
+        # noinspection PyTypeChecker
         modules = itertools.accumulate(splitted, "{}.{}".format)
         for m in modules:
             maybe_reload(m)
@@ -124,7 +139,10 @@ class CoreLogic:
         for child_name, lib in children.items():
             importlib._bootstrap._exec(lib.__spec__, lib)
 
-    def _get_package_strings(self, packages: list, fmt: str, other: tuple = None):
+    @staticmethod
+    def _get_package_strings(
+        packages: List[str], fmt: str, other: Optional[Tuple[str, ...]] = None
+    ) -> str:
         """
         Gets the strings needed for the load, unload and reload commands
         """
@@ -140,7 +158,7 @@ class CoreLogic:
         final_string = fmt.format(**form)
         return final_string
 
-    async def _unload(self, cog_names: list):
+    async def _unload(self, cog_names: Iterable[str]) -> Tuple[List[str], List[str]]:
         """
         Unloads cogs with the given names.
 
@@ -168,14 +186,16 @@ class CoreLogic:
 
         return unloaded_packages, failed_packages
 
-    async def _reload(self, cog_names):
+    async def _reload(
+        self, cog_names: Sequence[str]
+    ) -> Tuple[List[str], List[str], List[str], List[str]]:
         await self._unload(cog_names)
 
-        loaded, load_failed, not_found = await self._load(cog_names)
+        loaded, load_failed, not_found, already_loaded = await self._load(cog_names)
 
-        return loaded, load_failed, not_found
+        return loaded, load_failed, not_found, already_loaded
 
-    async def _name(self, name: str = None):
+    async def _name(self, name: Optional[str] = None) -> str:
         """
         Gets or sets the bot's username.
 
@@ -194,7 +214,7 @@ class CoreLogic:
 
         return self.bot.user.name
 
-    async def _prefixes(self, prefixes: list = None):
+    async def _prefixes(self, prefixes: Optional[Sequence[str]] = None) -> List[str]:
         """
         Gets or sets the bot's global prefixes.
 
@@ -213,9 +233,10 @@ class CoreLogic:
             await self.bot.db.prefix.set(prefixes)
         return await self.bot.db.prefix()
 
-    async def _version_info(self):
+    @classmethod
+    async def _version_info(cls) -> Dict[str, str]:
         """
-        Version information for Red and discord.py
+        Version information for Rias and discord.py
 
         Returns
         -------
@@ -224,7 +245,7 @@ class CoreLogic:
         """
         return {"redbot": __version__, "discordpy": discord.__version__}
 
-    async def _invite_url(self):
+    async def _invite_url(self) -> str:
         """
         Generates the invite URL for the bot.
 
@@ -238,14 +259,11 @@ class CoreLogic:
 
 
 @i18n.cog_i18n(_)
-class Core(CoreLogic):
-    """Core commands"""
-
-    def __init__(self, bot):
-        super().__init__(bot)
+class Core(commands.Cog, CoreLogic):
+    """Commands related to core functions"""
 
     @commands.command(hidden=True)
-    async def ping(self, ctx):
+    async def ping(self, ctx: commands.Context):
         """Pong."""
         await ctx.send("Pong.")
 
@@ -283,6 +301,7 @@ class Core(CoreLogic):
             await ctx.send(embed=embed)
         except discord.HTTPException:
             await ctx.send("You have to allow me to send embed links, baka.")
+
 
     @commands.command()
     async def uptime(self, ctx: commands.Context):
@@ -323,7 +342,7 @@ class Core(CoreLogic):
         if ctx.invoked_subcommand is None:
             text = "Embed settings:\n\n"
             global_default = await self.bot.db.embeds()
-
+            text += "Global default: {}\n".format(global_default)
             if ctx.guild:
                 guild_setting = await self.bot.db.guild(ctx.guild).embeds()
                 text += "Guild setting: {}\n".format(guild_setting)
@@ -335,10 +354,11 @@ class Core(CoreLogic):
     @checks.is_owner()
     async def embedset_global(self, ctx: commands.Context):
         """
-        Toggle the global embed setting (Gtoyos).
+        Toggle the global embed setting.
 
-        No one can see this except of you, Gtoyos.
-        This is used for changing embeds Globally
+        This is used as a fallback if the user
+        or guild hasn't set a preference. The
+        default is to use embeds.
         """
         current = await self.bot.db.embeds()
         await self.bot.db.embeds.set(not current)
@@ -353,11 +373,13 @@ class Core(CoreLogic):
         """
         Toggle the guild's embed setting.
 
-        If guild setting is None, embeds will be used by
-        default.
+        If enabled is None, the setting will be unset and
+        the global default will be used instead.
 
-        If set, this will apply to all commands done in this
-        guild except for help commands.
+        If set, this is used instead of the global default
+        to determine whether or not to use embeds. This is
+        used for all commands done in a guild channel except
+        for help commands.
         """
         await self.bot.db.guild(ctx.guild).embeds.set(enabled)
         if enabled is None:
@@ -372,15 +394,17 @@ class Core(CoreLogic):
         """
         Toggle the user's embed setting.
 
-        If user setting is None, embeds will be used by
-        default.
+        If enabled is None, the setting will be unset and
+        the global default will be used instead.
 
-        This setting applies to all commands done in a DM
-        with the bot, as well as all help commands everywhere.
+        If set, this is used instead of the global default
+        to determine whether or not to use embeds. This is
+        used for all commands done in a DM with the bot, as
+        well as all help commands everywhere.
         """
         await self.bot.db.user(ctx.author).embeds.set(enabled)
         if enabled is None:
-            await ctx.send(_("Embeds will now fall back to the default setting."))
+            await ctx.send(_("Embeds will now fall back to the global setting."))
         else:
             await ctx.send(
                 _("Embeds are now {} for you. (⌒‿⌒)").format("enabled" if enabled else "disabled")
@@ -388,8 +412,8 @@ class Core(CoreLogic):
 
     @commands.command()
     @checks.is_owner()
-    async def traceback(self, ctx, public: bool = False):
-        """(Gtoyos Command). Shows latest exception.
+    async def traceback(self, ctx: commands.Context, public: bool = False):
+        """Sends to the owner the last command exception that has occurred
 
         If public (yes is specified), it will be sent to the chat instead"""
         if not public:
@@ -398,84 +422,74 @@ class Core(CoreLogic):
             destination = ctx.channel
 
         if self.bot._last_exception:
-            for page in pagify(self.bot._last_exception):
+            for page in pagify(self.bot._last_exception, shorten_by=10):
                 await destination.send(box(page, lang="py"))
         else:
-            await ctx.send("No exception has occurred yet. Yay!")
-
-    @commands.command()
-    @checks.mod_or_permissions(administrator=True)
-    async def invite(self, ctx):
-        """Show's Rias invite url ^^"""
-        if self.bot.user.bot:
-            await ctx.author.send(await self._invite_url())
-        else:
-            await ctx.send("I'm not a bot account. I have no invite URL.")
+            await ctx.send("No exception has occurred yet")
 
     @commands.command()
     @checks.is_owner()
-    async def servers(self, ctx):
-        """(Gtoyos Command). list&leave servers"""
-        owner = ctx.author
+    async def invite(self, ctx: commands.Context):
+        """Shows my invite url"""
+        await ctx.author.send(await self._invite_url())
+
+    @commands.command()
+    @checks.is_owner()
+    async def servers(self, ctx: commands.Context):
+        """Lists and allows to leave servers"""
         guilds = sorted(list(self.bot.guilds), key=lambda s: s.name.lower())
         msg = ""
+        responses = []
         for i, server in enumerate(guilds, 1):
             msg += "{}: {}\n".format(i, server.name)
-
-        msg += "\nTo leave a server, just type its number."
+            responses.append(str(i))
 
         for page in pagify(msg, ["\n"]):
             await ctx.send(page)
 
-        def msg_check(m):
-            return m.author == owner
+        query = await ctx.send("To leave a server, just type its number.")
 
-        while msg is not None:
-            try:
-                msg = await self.bot.wait_for("message", check=msg_check, timeout=15)
-            except asyncio.TimeoutError:
-                await ctx.send("I won't leave any server then.")
-                break
-            try:
-                msg = int(msg.content) - 1
-                if msg < 0:
-                    break
-                await self.leave_confirmation(guilds[msg], owner, ctx)
-                break
-            except (IndexError, ValueError, AttributeError):
-                pass
-    async def leave_confirmation(self, server, owner, ctx):
-        await ctx.send("Are you sure you want me to leave {}? (yes/no)".format(server.name))
-
-        def conf_check(m):
-            return m.author == owner
-
+        pred = MessagePredicate.contained_in(responses, ctx)
         try:
-            msg = await self.bot.wait_for("message", check=conf_check, timeout=15)
-            if msg.content.lower().strip() in ("yes", "y"):
-                if server.owner == ctx.bot.user:
-                    await ctx.send("I cannot leave a guild I am the owner of. *shrug face*")
-                    return
-                await server.leave()
-                if server != ctx.guild:
+            await self.bot.wait_for("message", check=pred, timeout=15)
+        except asyncio.TimeoutError:
+            await query.delete()
+        else:
+            await self.leave_confirmation(guilds[pred.result], ctx)
+
+    async def leave_confirmation(self, guild, ctx):
+        if guild.owner.id == ctx.bot.user.id:
+            await ctx.send("I cannot leave a guild I am the owner of.")
+            return
+
+        await ctx.send("Are you sure you want me to leave {}? (yes/no)".format(guild.name))
+        pred = MessagePredicate.yes_or_no(ctx)
+        try:
+            await self.bot.wait_for("message", check=pred, timeout=15)
+            if pred.result is True:
+                await guild.leave()
+                if guild != ctx.guild:
                     await ctx.send("Done.")
             else:
                 await ctx.send("Alright then.")
         except asyncio.TimeoutError:
-            await ctx.send("I won't leave any server then.")
+            await ctx.send("Response timed out.")
 
     @commands.command()
     @checks.is_owner()
-    async def load(self, ctx, *, cog_name: str):
+    async def load(self, ctx: commands.Context, *cogs: str):
         """Loads packages"""
-
-        cog_names = [c.strip() for c in cog_name.split(" ")]
         async with ctx.typing():
-            loaded, failed, not_found = await self._load(cog_names)
+            loaded, failed, not_found, already_loaded = await self._load(cogs)
 
         if loaded:
             fmt = "Loaded {packs}."
             formed = self._get_package_strings(loaded, fmt)
+            await ctx.send(formed)
+
+        if already_loaded:
+            fmt = "The package{plural} {packs} {other} already loaded."
+            formed = self._get_package_strings(already_loaded, fmt, ("is", "are"))
             await ctx.send(formed)
 
         if failed:
@@ -493,12 +507,9 @@ class Core(CoreLogic):
 
     @commands.command()
     @checks.is_owner()
-    async def unload(self, ctx, *, cog_name: str):
+    async def unload(self, ctx: commands.Context, *cogs: str):
         """Unloads packages"""
-
-        cog_names = [c.strip() for c in cog_name.split(" ")]
-
-        unloaded, failed = await self._unload(cog_names)
+        unloaded, failed = await self._unload(cogs)
 
         if unloaded:
             fmt = "Package{plural} {packs} {other} unloaded."
@@ -512,12 +523,10 @@ class Core(CoreLogic):
 
     @commands.command(name="reload")
     @checks.is_owner()
-    async def reload_(self, ctx, *, cog_name: str):
+    async def reload(self, ctx: commands.Context, *cogs: str):
         """Reloads packages"""
-
-        cog_names = [c.strip() for c in cog_name.split(" ")]
         async with ctx.typing():
-            loaded, failed, not_found = await self._reload(cog_names)
+            loaded, failed, not_found, already_loaded = await self._reload(cogs)
 
         if loaded:
             fmt = "Package{plural} {packs} {other} reloaded."
@@ -536,43 +545,40 @@ class Core(CoreLogic):
 
     @commands.command(name="shutdown")
     @checks.is_owner()
-    async def _shutdown(self, ctx, silently: bool = False):
-        """(Gtoyos Command). Orders me to sleep"""
+    async def _shutdown(self, ctx: commands.Context, silently: bool = False):
+        """Shuts down the bot"""
         wave = "\N{WAVING HAND SIGN}"
         skin = "\N{EMOJI MODIFIER FITZPATRICK TYPE-3}"
-        try:  # We don't want missing perms to stop our shutdown
+        with contextlib.suppress(discord.HTTPException):
             if not silently:
-                await ctx.send(_("Going to sleep... (( _ _ ))..zzzZZ") + wave + skin)
-        except:
-            pass
+                await ctx.send(_("Shutting down... ") + wave + skin)
         await ctx.bot.shutdown()
 
     @commands.command(name="restart")
     @checks.is_owner()
-    async def _restart(self, ctx, silently: bool = False):
-        """(Gtoyos Command). Restarts me. OwO
+    async def _restart(self, ctx: commands.Context, silently: bool = False):
+        """Attempts to restart myself
 
         Makes me quit with exit code 26
         The restart is not guaranteed: it must be dealt
         with by the process manager in use"""
-        try:
+        with contextlib.suppress(discord.HTTPException):
             if not silently:
-                await ctx.send(_("Restarting... (* ^ ω ^)"))
-        except:
-            pass
+                await ctx.send(_("Restarting..."))
         await ctx.bot.shutdown(restart=True)
 
-
-    @commands.group(name="settings")
-    @checks.admin()
-    async def _set(self, ctx):
-        """Change Rias config"""
+    @commands.group(name="set")
+    async def _set(self, ctx: commands.Context):
+        """Changes my settings"""
         if ctx.invoked_subcommand is None:
             if ctx.guild:
-                admin_role_id = await ctx.bot.db.guild(ctx.guild).admin_role()
-                admin_role = discord.utils.get(ctx.guild.roles, id=admin_role_id) or "Not set"
-                mod_role_id = await ctx.bot.db.guild(ctx.guild).mod_role()
-                mod_role = discord.utils.get(ctx.guild.roles, id=mod_role_id) or "Not set"
+                guild = ctx.guild
+                admin_role = (
+                    guild.get_role(await ctx.bot.db.guild(ctx.guild).admin_role()) or "Not set"
+                )
+                mod_role = (
+                    guild.get_role(await ctx.bot.db.guild(ctx.guild).mod_role()) or "Not set"
+                )
                 prefixes = await ctx.bot.db.guild(ctx.guild).prefix()
                 guild_settings = f"Admin role: {admin_role}\nMod role: {mod_role}\n"
             else:
@@ -594,23 +600,23 @@ class Core(CoreLogic):
     @_set.command()
     @checks.guildowner()
     @commands.guild_only()
-    async def adminrole(self, ctx, *, role: discord.Role):
+    async def adminrole(self, ctx: commands.Context, *, role: discord.Role):
         """Sets the admin role for this server"""
         await ctx.bot.db.guild(ctx.guild).admin_role.set(role.id)
-        await ctx.send(_("The admin role for this guild has been set. ＼(≧▽≦)／"))
+        await ctx.send(_("The admin role for this guild has been set.＼(≧▽≦)／"))
 
     @_set.command()
     @checks.guildowner()
     @commands.guild_only()
-    async def modrole(self, ctx, *, role: discord.Role):
+    async def modrole(self, ctx: commands.Context, *, role: discord.Role):
         """Sets the mod role for this server"""
         await ctx.bot.db.guild(ctx.guild).mod_role.set(role.id)
-        await ctx.send(_("The mod role for this guild has been set. ＼(≧▽≦)／"))
+        await ctx.send(_("The mod role for this guild has been set.＼(≧▽≦)／"))
 
     @_set.command(aliases=["usebotcolor"])
     @checks.guildowner()
     @commands.guild_only()
-    async def usebotcolour(self, ctx):
+    async def usebotcolour(self, ctx: commands.Context):
         """
         Toggle whether to use the bot owner-configured colour for embeds.
 
@@ -628,7 +634,7 @@ class Core(CoreLogic):
     @_set.command()
     @checks.guildowner()
     @commands.guild_only()
-    async def serverfuzzy(self, ctx):
+    async def serverfuzzy(self, ctx: commands.Context):
         """
         Toggle whether to enable fuzzy command search for the server.
 
@@ -644,7 +650,7 @@ class Core(CoreLogic):
 
     @_set.command()
     @checks.is_owner()
-    async def fuzzy(self, ctx):
+    async def fuzzy(self, ctx: commands.Context):
         """
         Toggle whether to enable fuzzy command search in DMs.
 
@@ -660,11 +666,11 @@ class Core(CoreLogic):
 
     @_set.command(aliases=["color"])
     @checks.is_owner()
-    async def colour(self, ctx, *, colour: discord.Colour = None):
+    async def colour(self, ctx: commands.Context, *, colour: discord.Colour = None):
         """
-        (Gtoyos's Command) Sets a default colour to be used for the bot's embeds.
+        Sets a default colour to be used for the bot's embeds.
 
-        Acceptable values cor the colour parameter can be found at:
+        Acceptable values for the colour parameter can be found at:
 
         http://discordpy.readthedocs.io/en/rewrite/ext/commands/api.html#discord.ext.commands.ColourConverter
         """
@@ -678,8 +684,8 @@ class Core(CoreLogic):
 
     @_set.command()
     @checks.is_owner()
-    async def avatar(self, ctx, url: str):
-        """(Gtoyos Command). Sets my avatar."""
+    async def avatar(self, ctx: commands.Context, url: str):
+        """Sets my avatar"""
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as r:
                 data = await r.read()
@@ -702,8 +708,8 @@ class Core(CoreLogic):
     @_set.command(name="game")
     @checks.bot_in_a_guild()
     @checks.is_owner()
-    async def _game(self, ctx, *, game: str = None):
-        """(Gtoyos Command). Sets my playing status"""
+    async def _game(self, ctx: commands.Context, *, game: str = None):
+        """Sets my playing status"""
 
         if game:
             game = discord.Game(name=game)
@@ -716,8 +722,8 @@ class Core(CoreLogic):
     @_set.command(name="listening")
     @checks.bot_in_a_guild()
     @checks.is_owner()
-    async def _listening(self, ctx, *, listening: str = None):
-        """(Gtoyos Command). Sets my listening status"""
+    async def _listening(self, ctx: commands.Context, *, listening: str = None):
+        """Sets my listening status"""
 
         status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
         if listening:
@@ -730,8 +736,8 @@ class Core(CoreLogic):
     @_set.command(name="watching")
     @checks.bot_in_a_guild()
     @checks.is_owner()
-    async def _watching(self, ctx, *, watching: str = None):
-        """(Gtoyos Command). Sets my watching status"""
+    async def _watching(self, ctx: commands.Context, *, watching: str = None):
+        """Sets my watching status"""
 
         status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
         if watching:
@@ -744,8 +750,8 @@ class Core(CoreLogic):
     @_set.command()
     @checks.bot_in_a_guild()
     @checks.is_owner()
-    async def status(self, ctx, *, status: str):
-        """(Gtoyos Command). Sets my status.
+    async def status(self, ctx: commands.Context, *, status: str):
+        """Sets my status
 
         Available statuses:
             online
@@ -773,8 +779,8 @@ class Core(CoreLogic):
     @_set.command()
     @checks.bot_in_a_guild()
     @checks.is_owner()
-    async def stream(self, ctx, streamer=None, *, stream_title=None):
-        """(Gtoyos Command). Sets my streaming status
+    async def stream(self, ctx: commands.Context, streamer=None, *, stream_title=None):
+        """Sets my streaming status
         Leaving both streamer and stream_title empty will clear it."""
 
         status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else None
@@ -794,8 +800,8 @@ class Core(CoreLogic):
 
     @_set.command(name="username", aliases=["name"])
     @checks.is_owner()
-    async def _username(self, ctx, *, username: str):
-        """(Gtoyos Command). Changes my name"""
+    async def _username(self, ctx: commands.Context, *, username: str):
+        """Sets my username"""
         try:
             await self._name(name=username)
         except discord.HTTPException:
@@ -813,7 +819,7 @@ class Core(CoreLogic):
     @_set.command(name="nickname")
     @checks.admin()
     @commands.guild_only()
-    async def _nickname(self, ctx, *, nickname: str = None):
+    async def _nickname(self, ctx: commands.Context, *, nickname: str = None):
         """Sets my nickname"""
         try:
             await ctx.guild.me.edit(nick=nickname)
@@ -824,7 +830,7 @@ class Core(CoreLogic):
 
     @_set.command(aliases=["prefixes"])
     @checks.is_owner()
-    async def prefix(self, ctx, *prefixes):
+    async def prefix(self, ctx: commands.Context, *prefixes: str):
         """Sets my global prefix(es)"""
         if not prefixes:
             await ctx.send_help()
@@ -835,29 +841,20 @@ class Core(CoreLogic):
     @_set.command(aliases=["serverprefixes"])
     @checks.admin()
     @commands.guild_only()
-    async def serverprefix(self, ctx, *prefixes):
-        """Sets my server prefix(es)
-
-        Living it in blank will reset the prefixes. To
-        use multiple prefixes write them between spaces.
-        """
+    async def serverprefix(self, ctx: commands.Context, *prefixes: str):
+        """Sets my server prefix(es)"""
         if not prefixes:
             await ctx.bot.db.guild(ctx.guild).prefix.set([])
             await ctx.send(_("Guild prefixes have been reset."))
             return
         prefixes = sorted(prefixes, reverse=True)
         await ctx.bot.db.guild(ctx.guild).prefix.set(prefixes)
-        await ctx.send(_("Prefix(es) set."))
+        await ctx.send(_("Prefix set."))
 
     @_set.command()
-    @checks.admin()
     @commands.cooldown(1, 60 * 10, commands.BucketType.default)
-    async def owner(self, ctx):
-        """Sets Red's main owner"""
-
-        def check(m):
-            return m.author == ctx.author and m.channel == ctx.channel
-
+    async def owner(self, ctx: commands.Context):
+        """Sets my main owner"""
         # According to the Python docs this is suitable for cryptographic use
         random = SystemRandom()
         length = random.randint(25, 35)
@@ -881,10 +878,14 @@ class Core(CoreLogic):
         )
 
         try:
-            message = await ctx.bot.wait_for("message", check=check, timeout=60)
+            message = await ctx.bot.wait_for(
+                "message", check=MessagePredicate.same_context(ctx), timeout=60
+            )
         except asyncio.TimeoutError:
             self.owner.reset_cooldown(ctx)
-            await ctx.send(_("The set owner request has timed out."))
+            await ctx.send(
+                _("The `{prefix}set owner` request has timed out.").format(prefix=ctx.prefix)
+            )
         else:
             if message.content.strip() == token:
                 self.owner.reset_cooldown(ctx)
@@ -896,8 +897,8 @@ class Core(CoreLogic):
 
     @_set.command()
     @checks.is_owner()
-    async def token(self, ctx, token: str):
-        """Changes my token."""
+    async def token(self, ctx: commands.Context, token: str):
+        """Change bot token."""
 
         if not isinstance(ctx.channel, discord.DMChannel):
 
@@ -917,13 +918,13 @@ class Core(CoreLogic):
             return
 
         await ctx.bot.db.token.set(token)
-        await ctx.send("Token set. Restart me kudasai >.< .")
+        await ctx.send("Token set. Restart me.")
 
     @_set.command()
     @checks.is_owner()
     async def locale(self, ctx: commands.Context, locale_name: str):
         """
-        (Gtoyos Command). Changes bot language.
+        Changes bot locale.
 
         Use [p]listlocales to get a list of available locales.
 
@@ -938,16 +939,16 @@ class Core(CoreLogic):
     @_set.command()
     @checks.is_owner()
     async def sentry(self, ctx: commands.Context, on_or_off: bool):
-        """(Gtoyos Command). Enable or disable Sentry logging.
+        """Enable or disable Sentry logging.
 
-        Sentry is the service Red uses to manage error reporting. This should
+        Sentry is the service Rias uses to manage error reporting. This should
         be disabled if you have made your own modifications to the redbot
         package.
         """
         await ctx.bot.db.enable_sentry.set(on_or_off)
         if on_or_off:
             ctx.bot.enable_sentry()
-            await ctx.send(_("Done. Sentry logging is now enabled. This should be turned off."))
+            await ctx.send(_("Done. Sentry logging is now enabled."))
         else:
             ctx.bot.disable_sentry()
             await ctx.send(_("Done. Sentry logging is now disabled."))
@@ -1024,22 +1025,25 @@ class Core(CoreLogic):
     @checks.is_owner()
     async def listlocales(self, ctx: commands.Context):
         """
-        Lists all available languages
+        Lists all available locales
 
-        Use `[p]set locale` to set a locale.
+        Use `[p]set locale` to set a locale
         """
         async with ctx.channel.typing():
             red_dist = pkg_resources.get_distribution("red-discordbot")
             red_path = Path(red_dist.location) / "redbot"
             locale_list = sorted(set([loc.stem for loc in list(red_path.glob("**/*.po"))]))
-            pages = pagify("\n".join(locale_list))
+            if not locale_list:
+                await ctx.send("No languages found.")
+                return
+            pages = pagify("\n".join(locale_list), shorten_by=26)
 
         await ctx.send_interactive(pages, box_lang="Available Locales:")
 
     @commands.command()
     @checks.is_owner()
-    async def backup(self, ctx, backup_path: str = None):
-        """Creates a backup of all my data."""
+    async def backup(self, ctx: commands.Context, backup_path: str = None):
+        """Creates a backup of all data for the instance."""
         from redbot.core.data_manager import basic_config, instance_name
         from redbot.core.drivers.red_json import JSON
 
@@ -1047,21 +1051,20 @@ class Core(CoreLogic):
         if basic_config["STORAGE_TYPE"] == "MongoDB":
             from redbot.core.drivers.red_mongo import Mongo
 
-            m = Mongo("Core", **basic_config["STORAGE_DETAILS"])
+            m = Mongo("Core", "0", **basic_config["STORAGE_DETAILS"])
             db = m.db
-            collection_names = await db.collection_names(include_system_collections=False)
+            collection_names = await db.list_collection_names()
             for c_name in collection_names:
                 if c_name == "Core":
                     c_data_path = data_dir / basic_config["CORE_PATH_APPEND"]
                 else:
-                    c_data_path = data_dir / basic_config["COG_PATH_APPEND"]
-                output = {}
+                    c_data_path = data_dir / basic_config["COG_PATH_APPEND"] / c_name
                 docs = await db[c_name].find().to_list(None)
                 for item in docs:
                     item_id = str(item.pop("_id"))
-                    output[item_id] = item
-                target = JSON(c_name, data_path_override=c_data_path)
-                await target.jsonIO._threadsafe_save_json(output)
+                    output = item
+                    target = JSON(c_name, item_id, data_path_override=c_data_path)
+                    await target.jsonIO._threadsafe_save_json(output)
         backup_filename = "redv3-{}-{}.tar.gz".format(
             instance_name, ctx.message.created_at.strftime("%Y-%m-%d %H-%M-%S")
         )
@@ -1101,29 +1104,31 @@ class Core(CoreLogic):
                     tar.add(str(f), recursive=False)
             print(str(backup_file))
             await ctx.send(
-                _("A backup has been made of this instance. It is at {}.").format((backup_file))
+                _("A backup has been made of this instance. It is at {}.").format(backup_file)
             )
             await ctx.send(_("Would you like to receive a copy via DM? (y/n)"))
 
-            def same_author_check(m):
-                return m.author == ctx.author and m.channel == ctx.channel
-
+            pred = MessagePredicate.yes_or_no(ctx)
             try:
-                msg = await ctx.bot.wait_for("message", check=same_author_check, timeout=60)
+                await ctx.bot.wait_for("message", check=pred, timeout=60)
             except asyncio.TimeoutError:
-                await ctx.send(_("Ok then."))
+                await ctx.send(_("Response timed out."))
             else:
-                if msg.content.lower().strip() == "y":
-                    await ctx.author.send(
-                        _("Here's a copy of the backup"), file=discord.File(str(backup_file))
-                    )
+                if pred.result is True:
+                    await ctx.send(_("OK, it's on its way!"))
+                    async with ctx.author.typing():
+                        await ctx.author.send(
+                            _("Here's a copy of the backup"), file=discord.File(str(backup_file))
+                        )
+                else:
+                    await ctx.send(_("OK then."))
         else:
             await ctx.send(_("That directory doesn't seem to exist..."))
 
     @commands.command()
     @commands.cooldown(1, 60, commands.BucketType.user)
-    async def contact(self, ctx, *, message: str):
-        """Sends a message to the bot creator.
+    async def contact(self, ctx: commands.Context, *, message: str):
+        """Sends a message to my creator.
 
            If you have any issue with Rias feel free to
            join my support server. You can find it typing [p]info"""
@@ -1168,10 +1173,10 @@ class Core(CoreLogic):
                 await ctx.send(
                     _("I cannot send your message, I'm unable to find my owner... *sigh*")
                 )
-            except:
-                await ctx.send("I'm unable to deliver your message. Sorry. >.<")
+            except discord.HTTPException:
+                await ctx.send(_("I'm unable to deliver your message. Sorry. >.<"))
             else:
-                await ctx.send("Your message has been sent. ( ´ ▽ ` )")
+                await ctx.send(_("Your message has been sent. ( ´ ▽ ` )"))
         else:
             msg_text = "{}\nMessage:\n\n{}\n{}".format(description, message, footer)
             try:
@@ -1180,20 +1185,20 @@ class Core(CoreLogic):
                 await ctx.send(
                     _("I cannot send your message, I'm unable to find my owner... *sigh*")
                 )
-            except:
-                await ctx.send(_("I'm unable to deliver your message. Sorry."))
+            except discord.HTTPException:
+                await ctx.send(_("I'm unable to deliver your message. Sorry. >.<"))
             else:
-                await ctx.send("Your message has been sent. ( ´ ▽ ` )")
+                await ctx.send(_("Your message has been sent. ( ´ ▽ ` )"))
 
     @commands.command()
     @checks.is_owner()
-    async def dm(self, ctx, user_id: int, *, message: str):
-        """(Gtoyos Command). Sends a DM to a user
+    async def dm(self, ctx: commands.Context, user_id: int, *, message: str):
+        """Sends a DM to a user
 
         This command needs a user id to work.
         To get a user id enable 'developer mode' in Discord's
         settings, 'appearance' tab. Then right click a user
-        and copy their id. This is the way to reply to any user of Rias"""
+        and copy their id"""
         destination = discord.utils.get(ctx.bot.get_all_members(), id=user_id)
         if destination is None:
             await ctx.send(
@@ -1221,7 +1226,7 @@ class Core(CoreLogic):
 
             try:
                 await destination.send(embed=e)
-            except:
+            except discord.HTTPException:
                 await ctx.send(
                     _("Sorry, I couldn't deliver your message to {}").format(destination)
                 )
@@ -1231,7 +1236,7 @@ class Core(CoreLogic):
             response = "{}\nMessage:\n\n{}".format(description, message)
             try:
                 await destination.send("{}\n{}".format(box(response), content))
-            except:
+            except discord.HTTPException:
                 await ctx.send(
                     _("Sorry, I couldn't deliver your message to {}").format(destination)
                 )
@@ -1240,13 +1245,9 @@ class Core(CoreLogic):
 
     @commands.group()
     @checks.is_owner()
-    async def whitelist(self, ctx):
+    async def whitelist(self, ctx: commands.Context):
         """
-        (Gtoyos Command). Whitelist management commands.
-
-        If the whitelist
-        is not empity. Only whitelisted user will be able
-        to use Rias.
+        Whitelist management commands.
         """
         pass
 
@@ -1262,7 +1263,7 @@ class Core(CoreLogic):
         await ctx.send(_("User added to whitelist."))
 
     @whitelist.command(name="list")
-    async def whitelist_list(self, ctx):
+    async def whitelist_list(self, ctx: commands.Context):
         """
         Lists whitelisted users.
         """
@@ -1276,7 +1277,7 @@ class Core(CoreLogic):
             await ctx.send(box(page))
 
     @whitelist.command(name="remove")
-    async def whitelist_remove(self, ctx, user: discord.User):
+    async def whitelist_remove(self, ctx: commands.Context, user: discord.User):
         """
         Removes user from whitelist.
         """
@@ -1293,7 +1294,7 @@ class Core(CoreLogic):
             await ctx.send(_("User was not in the whitelist."))
 
     @whitelist.command(name="clear")
-    async def whitelist_clear(self, ctx):
+    async def whitelist_clear(self, ctx: commands.Context):
         """
         Clears the whitelist.
         """
@@ -1302,21 +1303,19 @@ class Core(CoreLogic):
 
     @commands.group()
     @checks.is_owner()
-    async def blacklist(self, ctx):
+    async def blacklist(self, ctx: commands.Context):
         """
-        (Gtoyos Command). Blacklist management commands.
-
-        Any user from the blacklist won't be able tu use Rias.
+        blacklist management commands.
         """
         pass
 
     @blacklist.command(name="add")
-    async def blacklist_add(self, ctx, user: discord.User):
+    async def blacklist_add(self, ctx: commands.Context, user: discord.User):
         """
         Adds a user to the blacklist.
         """
         if await ctx.bot.is_owner(user):
-            ctx.send(_("You cannot blacklist an owner!"))
+            await ctx.send(_("You cannot blacklist an owner!"))
             return
 
         async with ctx.bot.db.blacklist() as curr_list:
@@ -1326,7 +1325,7 @@ class Core(CoreLogic):
         await ctx.send(_("User added to blacklist."))
 
     @blacklist.command(name="list")
-    async def blacklist_list(self, ctx):
+    async def blacklist_list(self, ctx: commands.Context):
         """
         Lists blacklisted users.
         """
@@ -1340,7 +1339,7 @@ class Core(CoreLogic):
             await ctx.send(box(page))
 
     @blacklist.command(name="remove")
-    async def blacklist_remove(self, ctx, user: discord.User):
+    async def blacklist_remove(self, ctx: commands.Context, user: discord.User):
         """
         Removes user from blacklist.
         """
@@ -1357,23 +1356,24 @@ class Core(CoreLogic):
             await ctx.send(_("User was not in the blacklist."))
 
     @blacklist.command(name="clear")
-    async def blacklist_clear(self, ctx):
+    async def blacklist_clear(self, ctx: commands.Context):
         """
         Clears the blacklist.
         """
         await ctx.bot.db.blacklist.set([])
         await ctx.send(_("blacklist has been cleared."))
+
     @commands.group()
     @commands.guild_only()
     @checks.admin_or_permissions(administrator=True)
-    async def localwhitelist(self, ctx):
+    async def localwhitelist(self, ctx: commands.Context):
         """
         Whitelist management commands.
         """
         pass
 
     @localwhitelist.command(name="add")
-    async def localwhitelist_add(self, ctx, *, user_or_role: str):
+    async def localwhitelist_add(self, ctx: commands.Context, *, user_or_role: str):
         """
         Adds a user or role to the whitelist.
         """
@@ -1394,7 +1394,7 @@ class Core(CoreLogic):
             await ctx.send(_("Role added to whitelist."))
 
     @localwhitelist.command(name="list")
-    async def localwhitelist_list(self, ctx):
+    async def localwhitelist_list(self, ctx: commands.Context):
         """
         Lists whitelisted users and roles.
         """
@@ -1408,7 +1408,7 @@ class Core(CoreLogic):
             await ctx.send(box(page))
 
     @localwhitelist.command(name="remove")
-    async def localwhitelist_remove(self, ctx, *, user_or_role: str):
+    async def localwhitelist_remove(self, ctx: commands.Context, *, user_or_role: str):
         """
         Removes user or role from whitelist.
         """
@@ -1438,7 +1438,7 @@ class Core(CoreLogic):
                 await ctx.send(_("Role was not in the whitelist."))
 
     @localwhitelist.command(name="clear")
-    async def localwhitelist_clear(self, ctx):
+    async def localwhitelist_clear(self, ctx: commands.Context):
         """
         Clears the whitelist.
         """
@@ -1448,14 +1448,14 @@ class Core(CoreLogic):
     @commands.group()
     @commands.guild_only()
     @checks.admin_or_permissions(administrator=True)
-    async def localblacklist(self, ctx):
+    async def localblacklist(self, ctx: commands.Context):
         """
         blacklist management commands.
         """
         pass
 
     @localblacklist.command(name="add")
-    async def localblacklist_add(self, ctx, *, user_or_role: str):
+    async def localblacklist_add(self, ctx: commands.Context, *, user_or_role: str):
         """
         Adds a user or role to the blacklist.
         """
@@ -1468,7 +1468,7 @@ class Core(CoreLogic):
             user = True
 
         if user and await ctx.bot.is_owner(obj):
-            ctx.send(_("You cannot blacklist an owner!"))
+            await ctx.send(_("You cannot blacklist an owner!"))
             return
 
         async with ctx.bot.db.guild(ctx.guild).blacklist() as curr_list:
@@ -1481,7 +1481,7 @@ class Core(CoreLogic):
             await ctx.send(_("Role added to blacklist."))
 
     @localblacklist.command(name="list")
-    async def localblacklist_list(self, ctx):
+    async def localblacklist_list(self, ctx: commands.Context):
         """
         Lists blacklisted users and roles.
         """
@@ -1495,7 +1495,7 @@ class Core(CoreLogic):
             await ctx.send(box(page))
 
     @localblacklist.command(name="remove")
-    async def localblacklist_remove(self, ctx, *, user_or_role: str):
+    async def localblacklist_remove(self, ctx: commands.Context, *, user_or_role: str):
         """
         Removes user or role from blacklist.
         """
@@ -1525,12 +1525,214 @@ class Core(CoreLogic):
                 await ctx.send(_("Role was not in the blacklist."))
 
     @localblacklist.command(name="clear")
-    async def localblacklist_clear(self, ctx):
+    async def localblacklist_clear(self, ctx: commands.Context):
         """
         Clears the blacklist.
         """
         await ctx.bot.db.guild(ctx.guild).blacklist.set([])
         await ctx.send(_("blacklist has been cleared."))
+
+    @checks.guildowner_or_permissions(administrator=True)
+    @commands.group(name="command")
+    async def command_manager(self, ctx: commands.Context):
+        """Manage the bot's commands."""
+        pass
+
+    @command_manager.group(name="disable", invoke_without_command=True)
+    async def command_disable(self, ctx: commands.Context, *, command: str):
+        """Disable a command.
+        """
+        # Select the scope based on the author's privileges
+        if await ctx.bot.is_owner(ctx.author):
+            await ctx.invoke(self.command_disable_global, command=command)
+        else:
+            await ctx.invoke(self.command_disable_guild, command=command)
+
+    @checks.is_owner()
+    @command_disable.command(name="global")
+    async def command_disable_global(self, ctx: commands.Context, *, command: str):
+        """Disable a command globally."""
+        command_obj: commands.Command = ctx.bot.get_command(command)
+        if command_obj is None:
+            await ctx.send(
+                _("I couldn't find that command. Please note that it is case sensitive.")
+            )
+            return
+
+        async with ctx.bot.db.disabled_commands() as disabled_commands:
+            if command not in disabled_commands:
+                disabled_commands.append(command_obj.qualified_name)
+
+        if not command_obj.enabled:
+            await ctx.send(_("That command is already disabled globally."))
+            return
+        command_obj.enabled = False
+
+        await ctx.tick()
+
+    @commands.guild_only()
+    @command_disable.command(name="server", aliases=["guild"])
+    async def command_disable_guild(self, ctx: commands.Context, *, command: str):
+        """Disable a command in this server only."""
+        command_obj: commands.Command = ctx.bot.get_command(command)
+        if command_obj is None:
+            await ctx.send(
+                _("I couldn't find that command. Please note that it is case sensitive.")
+            )
+            return
+
+        async with ctx.bot.db.guild(ctx.guild).disabled_commands() as disabled_commands:
+            if command not in disabled_commands:
+                disabled_commands.append(command_obj.qualified_name)
+
+        done = command_obj.disable_in(ctx.guild)
+
+        if not done:
+            await ctx.send(_("That command is already disabled in this server."))
+        else:
+            await ctx.tick()
+
+    @command_manager.group(name="enable", invoke_without_command=True)
+    async def command_enable(self, ctx: commands.Context, *, command: str):
+        """Enable a command.
+        """
+        if await ctx.bot.is_owner(ctx.author):
+            await ctx.invoke(self.command_enable_global, command=command)
+        else:
+            await ctx.invoke(self.command_enable_guild, command=command)
+
+    @commands.is_owner()
+    @command_enable.command(name="global")
+    async def command_enable_global(self, ctx: commands.Context, *, command: str):
+        """Enable a command globally."""
+        command_obj: commands.Command = ctx.bot.get_command(command)
+        if command_obj is None:
+            await ctx.send(
+                _("I couldn't find that command. Please note that it is case sensitive.")
+            )
+            return
+
+        async with ctx.bot.db.disabled_commands() as disabled_commands:
+            with contextlib.suppress(ValueError):
+                disabled_commands.remove(command_obj.qualified_name)
+
+        if command_obj.enabled:
+            await ctx.send(_("That command is already enabled globally."))
+            return
+
+        command_obj.enabled = True
+        await ctx.tick()
+
+    @commands.guild_only()
+    @command_enable.command(name="server", aliases=["guild"])
+    async def command_enable_guild(self, ctx: commands.Context, *, command: str):
+        """Enable a command in this server."""
+        command_obj: commands.Command = ctx.bot.get_command(command)
+        if command_obj is None:
+            await ctx.send(
+                _("I couldn't find that command. Please note that it is case sensitive.")
+            )
+            return
+
+        async with ctx.bot.db.guild(ctx.guild).disabled_commands() as disabled_commands:
+            with contextlib.suppress(ValueError):
+                disabled_commands.remove(command_obj.qualified_name)
+
+        done = command_obj.enable_in(ctx.guild)
+
+        if not done:
+            await ctx.send(_("That command is already enabled in this server."))
+        else:
+            await ctx.tick()
+
+    @checks.is_owner()
+    @command_manager.command(name="disabledmsg")
+    async def command_disabledmsg(self, ctx: commands.Context, *, message: str = ""):
+        """Set the bot's response to disabled commands.
+
+        Leave blank to send nothing.
+
+        To include the command name in the message, include the
+        `{command}` placeholder.
+        """
+        await ctx.bot.db.disabled_command_msg.set(message)
+        await ctx.tick()
+
+    @commands.guild_only()
+    @checks.guildowner_or_permissions(manage_guild=True)
+    @commands.group(name="autoimmune")
+    async def autoimmune_group(self, ctx: commands.Context):
+        """
+        Server settings for immunity from automated actions
+        """
+        pass
+
+    @autoimmune_group.command(name="list")
+    async def autoimmune_list(self, ctx: commands.Context):
+        """
+        Get's the current members and roles
+
+        configured for automatic moderation action immunity
+        """
+        ai_ids = await ctx.bot.db.guild(ctx.guild).autoimmune_ids()
+
+        roles = {r.name for r in ctx.guild.roles if r.id in ai_ids}
+        members = {str(m) for m in ctx.guild.members if m.id in ai_ids}
+
+        output = ""
+        if roles:
+            output += _("Roles immune from automated moderation actions:\n")
+            output += ", ".join(roles)
+        if members:
+            if roles:
+                output += "\n"
+            output += _("Members immune from automated moderation actions:\n")
+            output += ", ".join(members)
+
+        if not output:
+            output = _("No immunty settings here.")
+
+        for page in pagify(output):
+            await ctx.send(page)
+
+    @autoimmune_group.command(name="add")
+    async def autoimmune_add(
+        self, ctx: commands.Context, user_or_role: Union[discord.Member, discord.Role]
+    ):
+        """
+        Makes a user or roles immune from automated moderation actions
+        """
+        async with ctx.bot.db.guild(ctx.guild).autoimmune_ids() as ai_ids:
+            if user_or_role.id in ai_ids:
+                return await ctx.send(_("Already added."))
+            ai_ids.append(user_or_role.id)
+        await ctx.tick()
+
+    @autoimmune_group.command(name="remove")
+    async def autoimmune_remove(
+        self, ctx: commands.Context, user_or_role: Union[discord.Member, discord.Role]
+    ):
+        """
+        Makes a user or roles immune from automated moderation actions
+        """
+        async with ctx.bot.db.guild(ctx.guild).autoimmune_ids() as ai_ids:
+            if user_or_role.id not in ai_ids:
+                return await ctx.send(_("Not in list."))
+            ai_ids.remove(user_or_role.id)
+        await ctx.tick()
+
+    @autoimmune_group.command(name="isimmune")
+    async def autoimmune_checkimmune(
+        self, ctx: commands.Context, user_or_role: Union[discord.Member, discord.Role]
+    ):
+        """
+        Checks if a user or role would be considered immune from automated actions
+        """
+
+        if await ctx.bot.is_automod_immune(user_or_role):
+            await ctx.send(_("They are immune"))
+        else:
+            await ctx.send(_("They are not Immune"))
 
     # RPC handlers
     async def rpc_load(self, request):
@@ -1542,7 +1744,7 @@ class Core(CoreLogic):
 
         self._cleanup_and_refresh_modules(spec.name)
 
-        self.bot.load_extension(spec)
+        await self.bot.load_extension(spec)
 
     async def rpc_unload(self, request):
         cog_name = request.params[0]

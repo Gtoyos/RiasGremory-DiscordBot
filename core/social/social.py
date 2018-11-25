@@ -20,7 +20,7 @@ import json
 import random
 import os
 
-class Social:
+class Social(commands.Cog):
     """Social Commands"""
 
     def __init__(self, bot: Red):
